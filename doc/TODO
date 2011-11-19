@@ -1,0 +1,20 @@
+TODO list
+ - port existing classes to 2.0
+   - data
+   - eval
+ - decide which primitive collection package to use
+   - fastutil
+   - Mahout Collections
+   - GNU Trove
+   - Commons Primitives
+ - get rid of IntHashSet
+ - get rating prediction example to run
+ - improve speed of Ratings data structure
+ - make all recommenders JavaBeans
+ - port command-line tools
+ - decide which matrix package to use
+   - jblas
+   - Colt
+ - port the rest of MyMediaLite from C# to Java
+ - think about a partial Scala port that uses the Java port but exports a more
+   elegant interface
