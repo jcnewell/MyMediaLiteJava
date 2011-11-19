@@ -31,10 +31,10 @@ import org.mymedialite.util.Recommender;
 public abstract class MF extends ItemRecommender implements IIterativeModel {
     
   /** Latent user factor matrix */
-  protected Matrix<Double> user_factors;  // [user index] [feature index]
+  protected Matrix<Double> userFactors;  // [user index] [feature index]
   
   /** Latent item factor matrix */
-  protected Matrix<Double> item_factors;  // [item index] [feature index]
+  protected Matrix<Double> itemFactors;  // [item index] [feature index]
 
   /** Mean of the normal distribution used to initialize the latent factors */
   public double initMean;
@@ -55,10 +55,10 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   }
 
   /** Get the latent user factor matrix */
-  public Matrix<Double> getUserFactors() { return user_factors; }
+  public Matrix<Double> getUserFactors() { return userFactors; }
   
   /** Get the latent item factor matrix */
-  public Matrix<Double> getItemFactors() { return item_factors; }
+  public Matrix<Double> getItemFactors() { return itemFactors; }
 
   /** { @inheritDoc } */
   public int getNumIter() { return numIter; }
@@ -67,11 +67,11 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   public void setNumIter(int num_iter) { this.numIter = num_iter; }
   
   protected void initModel() {
-    user_factors = new Matrix<Double>(maxUserID + 1, numFactors);
-    item_factors = new Matrix<Double>(maxItemID + 1, numFactors);
+    userFactors = new Matrix<Double>(maxUserID + 1, numFactors);
+    itemFactors = new Matrix<Double>(maxItemID + 1, numFactors);
 
-    MatrixUtils.initNormal(user_factors, initMean, initStdev);
-    MatrixUtils.initNormal(item_factors, initMean, initStdev);
+    MatrixUtils.initNormal(userFactors, initMean, initStdev);
+    MatrixUtils.initNormal(itemFactors, initMean, initStdev);
   }
   
   /** { @inheritDoc } */
@@ -100,16 +100,16 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
    * @return the predicted weight
    */  
   public double predict(int user_id, int item_id) {
-    if ((user_id < 0) || (user_id >= user_factors.dim1)) {
+    if ((user_id < 0) || (user_id >= userFactors.dim1)) {
       System.out.println("user is unknown: " + user_id);
       return 0;
     }
-    if ((item_id < 0) || (item_id >= item_factors.dim1)) {
+    if ((item_id < 0) || (item_id >= itemFactors.dim1)) {
       System.err.println("item is unknown: " + item_id);
       return 0;
     }
 
-    return MatrixUtils.rowScalarProduct(user_factors, user_id, item_factors, item_id);
+    return MatrixUtils.rowScalarProduct(userFactors, user_id, itemFactors, item_id);
   }
   
   /** { @inheritDoc } */
@@ -120,8 +120,8 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   
   /** { @inheritDoc } */
   public void saveModel(PrintWriter writer) {
-    IMatrixUtils.writeMatrix(writer, user_factors);
-    IMatrixUtils.writeMatrix(writer, item_factors);
+    IMatrixUtils.writeMatrix(writer, userFactors);
+    IMatrixUtils.writeMatrix(writer, itemFactors);
     boolean error = writer.checkError();
     if(error) System.out.println("Error writing file.");
     writer.flush();
@@ -151,8 +151,8 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
       System.err.println("Set num_factors to " + user_factors.getNumberOfColumns());
       this.numFactors = user_factors.getNumberOfColumns();
     }
-    this.user_factors = user_factors;
-    this.item_factors = item_factors;
+    this.userFactors = user_factors;
+    this.itemFactors = item_factors;
     reader.close();
   }
   
