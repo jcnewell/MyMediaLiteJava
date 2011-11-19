@@ -20,6 +20,7 @@ package org.mymedialite.itemrec;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.mymedialite.datatype.*;
@@ -177,9 +178,9 @@ public class BPRMF extends MF {
 				  triple.j = userPosItems.get(triple.u)[rindex];
 			  }
 		  } else {
-			  do {
+			  do
 				  triple.j = random.nextInt(maxItemID + 1);
-			  } while (feedback.getUserMatrix().get(triple.u, triple.j) != itemIsPositive);
+			  while (feedback.getUserMatrix().get(triple.u, triple.j) != itemIsPositive);
 		  }
 		  return itemIsPositive;
 	  }
@@ -198,9 +199,9 @@ public class BPRMF extends MF {
 		  } else {
 			  IntHashSet user_items = feedback.getUserMatrix().getRow(triple.u);
 			  triple.i = user_items.get(random.nextInt (user_items.size()));
-			  do {
+			  do
 				  triple.j = random.nextInt (maxItemID + 1);
-			  } while (feedback.getUserMatrix().get(triple.u, triple.j));
+			  while (feedback.getUserMatrix().get(triple.u, triple.j));
 		  }
 	  }
 	  
@@ -320,6 +321,10 @@ public class BPRMF extends MF {
 		    super.addItem(item_id);
 		    item_factors.addRows(item_id + 1);
 		    MatrixUtils.rowInitNormal(item_factors, initMean, initStdev, item_id);
+		    
+		    // create new item bias array
+		    double[] itemBias = Arrays.copyOf(this.itemBias, item_id + 1);
+		    this.itemBias = itemBias;		    
 	  }
 	
 	  /** {@inheritDoc} */

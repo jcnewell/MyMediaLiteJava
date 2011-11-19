@@ -47,13 +47,13 @@ import org.mymedialite.util.Recommender;
 public class MatrixFactorization extends RatingPredictor implements IIterativeModel /* , IIncrementalRatingPredictor */ { // TODO make incremental
   
 	/** Matrix containing the latent user factors */
-	protected Matrix<Double> user_factors;
+	protected Matrix<Double> userFactors;
 
 	/** Matrix containing the latent item factors */
-	protected Matrix<Double> item_factors;
+	protected Matrix<Double> itemFactors;
 
 	/** The bias (global average) */
-	protected double global_bias;
+	protected double globalBias;
 
 	/** Mean of the normal distribution used to initialize the factors */
 	public double initMean;
@@ -65,20 +65,20 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	public int numFactors;
 
 	/** Learn rate */
-	public double learn_rate;
+	public double learnRate;
 
 	/** Regularization parameter */
 	public double regularization;
 
 	/** Number of iterations over the training data */
-	public int num_iter;
+	public int numIter;
 
 	/** Default constructor */
 	public MatrixFactorization() {
 		// set default values
 		regularization = 0.015;
-		learn_rate = 0.01;
-		num_iter = 30;
+		learnRate = 0.01;
+		numIter = 30;
 		initStdev = 0.1;
 		numFactors = 10;
 	}
@@ -88,10 +88,10 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 		super.initModel();
 
 		// init factor matrices
-		user_factors = new Matrix<Double>(ratings.getMaxUserID() + 1, numFactors);
-		item_factors = new Matrix<Double>(ratings.getMaxItemID() + 1, numFactors);
-		MatrixUtils.initNormal(user_factors, initMean, initStdev);
-		MatrixUtils.initNormal(item_factors, initMean, initStdev);
+		userFactors = new Matrix<Double>(ratings.getMaxUserID() + 1, numFactors);
+		itemFactors = new Matrix<Double>(ratings.getMaxItemID() + 1, numFactors);
+		MatrixUtils.initNormal(userFactors, initMean, initStdev);
+		MatrixUtils.initNormal(itemFactors, initMean, initStdev);
 	}
   
 	/** @override */
@@ -99,7 +99,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 		initModel();
 
 		// learn model parameters
-		global_bias = ratings.getAverage();
+		globalBias = ratings.getAverage();
 		learnFactors(ratings.getRandomIndex(), true, true);
 	}
 
@@ -114,7 +114,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	 */
 	public void retrainUser(int user_id) {
 		if (updateUsers) {
-			MatrixUtils.rowInitNormal(user_factors, initMean, initStdev, user_id);
+			MatrixUtils.rowInitNormal(userFactors, initMean, initStdev, user_id);
 			learnFactors(ratings.getByUser().get(user_id), true, false);
 		}
 	}
@@ -125,7 +125,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	 */
 	public void retrainItem(int item_id) {
 		if (updateItems) {
-			MatrixUtils.rowInitNormal(item_factors, initMean, initStdev, item_id);
+			MatrixUtils.rowInitNormal(itemFactors, initMean, initStdev, item_id);
 			learnFactors(ratings.getByItem().get(item_id), false, true);
 		}
 	}
@@ -146,8 +146,8 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 
 			// Adjust factors
 			for (int f = 0; f < numFactors; f++) {
-				double u_f = user_factors.get(u, f);
-				double i_f = item_factors.get(i, f);
+				double u_f = userFactors.get(u, f);
+				double i_f = itemFactors.get(i, f);
 
 				// compute factor updates
 				double delta_u = err * i_f - regularization * u_f;
@@ -155,15 +155,15 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 
 				// if necessary, apply updates
 				if (update_user)
-					MatrixUtils.inc(user_factors, u, f, learn_rate * delta_u);
+					MatrixUtils.inc(userFactors, u, f, learnRate * delta_u);
 				if (update_item)
-					MatrixUtils.inc(item_factors, i, f, learn_rate * delta_i);
+					MatrixUtils.inc(itemFactors, i, f, learnRate * delta_i);
 			}
 		}
 	}
 
 	private void learnFactors(List<Integer> rating_indices, boolean update_user, boolean update_item) {
-		for (int current_iter = 0; current_iter < num_iter; current_iter++) {
+		for (int current_iter = 0; current_iter < numIter; current_iter++) {
 			iterate(rating_indices, update_user, update_item);
 		}
 	}
@@ -171,7 +171,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	/**
 	 */
 	protected double predict(int user_id, int item_id, boolean bound) {
-		double result = global_bias + MatrixUtils.rowScalarProduct(user_factors, user_id, item_factors, item_id);
+		double result = globalBias + MatrixUtils.rowScalarProduct(userFactors, user_id, itemFactors, item_id);
 
 		if (bound) {
 			if (result > getMaxRating()) return getMaxRating();
@@ -189,10 +189,10 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	   * @returnthe predicted rating</returns>
 	   */
 	  public double predict(int user_id, int item_id) {
-		    if (user_id >= user_factors.dim1)
-		    	return global_bias;
-		    if (item_id >= item_factors.dim1)
-		    	return global_bias;
+		    if (user_id >= userFactors.dim1)
+		    	return globalBias;
+		    if (item_id >= itemFactors.dim1)
+		    	return globalBias;
 		    return predict(user_id, item_id, true);
 	  }
 
@@ -214,7 +214,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	  public void addUser(int user_id) {
 	    if (user_id > maxUserID) {
 	      super.addUser(user_id);
-	      user_factors.addRows(user_id + 1);
+	      userFactors.addRows(user_id + 1);
 	    }
 	  }
 	
@@ -222,7 +222,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	  public void addItem(int item_id) {
 	    if (item_id > maxItemID) {
 	      super.addItem(item_id);
-	      item_factors.addRows(item_id + 1);
+	      itemFactors.addRows(item_id + 1);
 	    }
 	  }
 	
@@ -231,7 +231,7 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	    super.removeUser(user_id);
 	
 	    // set user factors to zero
-	    user_factors.setRowToOneValue(user_id, 0.0D);
+	    userFactors.setRowToOneValue(user_id, 0.0D);
 	  }
 	
 	  /**   */
@@ -239,15 +239,15 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	    super.removeItem(item_id);
 	
 	    // set item factors to zero
-	    item_factors.setRowToOneValue(item_id, 0.0D);
+	    itemFactors.setRowToOneValue(item_id, 0.0D);
 	  }
 	
 	   
 	  public void saveModel(String filename)  throws IOException {
 		    PrintWriter writer = Recommender.getWriter(filename, this.getClass());
-		    writer.println(Double.toString(global_bias));
-		    IMatrixUtils.writeMatrix(writer, user_factors);
-		    IMatrixUtils.writeMatrix(writer, item_factors);
+		    writer.println(Double.toString(globalBias));
+		    IMatrixUtils.writeMatrix(writer, userFactors);
+		    IMatrixUtils.writeMatrix(writer, itemFactors);
 		    boolean error = writer.checkError();
 		    if(error) System.out.println("Error writing file.");
 		    writer.flush();
@@ -264,14 +264,14 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 		    reader.close();
 		
 		    // Assign new model
-		    this.global_bias = bias;
+		    this.globalBias = bias;
 		    // Assign new model
 		    if (this.numFactors != user_factors.getNumberOfColumns()) {
 		    	System.err.println("Set num_factors to " + user_factors.getNumberOfColumns());
 		      	this.numFactors = user_factors.getNumberOfColumns();
 		    }
-		    this.user_factors = user_factors;
-		    this.item_factors = item_factors;
+		    this.userFactors = user_factors;
+		    this.itemFactors = item_factors;
 		      
 		    if (user_factors.getNumberOfColumns() != item_factors.getNumberOfColumns()) {
 		    	throw new IOException("Number of user and item factors must match: " + user_factors.getNumberOfColumns() + " != " + item_factors.getNumberOfColumns());
@@ -307,11 +307,11 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 		    }
 		
 		    for (int u = 0; u <= maxUserID; u++) {
-		    	loss += ratings.getCountByUser().get(u) * regularization * Math.pow(VectorUtils.euclideanNorm(user_factors.getRow(u)), 2);
+		    	loss += ratings.getCountByUser().get(u) * regularization * Math.pow(VectorUtils.euclideanNorm(userFactors.getRow(u)), 2);
 		    }
 		      
 		    for (int i = 0; i <= maxItemID; i++) {
-		    	loss += ratings.getCountByUser().get(i) * regularization * Math.pow(VectorUtils.euclideanNorm(item_factors.getRow(i)), 2);
+		    	loss += ratings.getCountByUser().get(i) * regularization * Math.pow(VectorUtils.euclideanNorm(itemFactors.getRow(i)), 2);
 		    }
 		    
 		    return loss;
@@ -319,16 +319,16 @@ public class MatrixFactorization extends RatingPredictor implements IIterativeMo
 	
 	   
 	  public String toString() {
-	      return "MatrixFactorization num_factors=" + numFactors + " regularization=" + regularization + " learn_rate=" + learn_rate + " num_iter=" + num_iter + " init_mean=" + initMean + " init_stdev=" + initStdev;
+	      return "MatrixFactorization num_factors=" + numFactors + " regularization=" + regularization + " learn_rate=" + learnRate + " num_iter=" + numIter + " init_mean=" + initMean + " init_stdev=" + initStdev;
 	  }
 	
 	  @Override
 	  public void setNumIter(int num_iter) {
-		  this.num_iter = num_iter;
+		  this.numIter = num_iter;
 	  }
 	
 	  @Override
 	  public int getNumIter() {
-		  return num_iter;
+		  return numIter;
 	  }
 }

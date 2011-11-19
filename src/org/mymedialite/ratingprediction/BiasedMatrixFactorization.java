@@ -34,26 +34,26 @@ import org.mymedialite.util.Recommender;
 public class BiasedMatrixFactorization extends MatrixFactorization {
   
   /** Regularization constant for the bias terms */
-  public double bias_regularization = 0;
+  public double biasRegularization = 0;
 
   /** the user biases */
-  protected double[] user_bias;
+  protected double[] userBias;
 
   /** the item biases */
-  protected double[] item_bias;
+  protected double[] itemBias;
   
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void train() {
     // init factor matrices
-    user_factors = new Matrix<Double>(maxUserID + 1, numFactors);
-    item_factors = new Matrix<Double>(maxItemID + 1, numFactors);
-    MatrixUtils.initNormal(user_factors, initMean, initStdev);
-    MatrixUtils.initNormal(item_factors, initMean, initStdev);
+    userFactors = new Matrix<Double>(maxUserID + 1, numFactors);
+    itemFactors = new Matrix<Double>(maxItemID + 1, numFactors);
+    MatrixUtils.initNormal(userFactors, initMean, initStdev);
+    MatrixUtils.initNormal(itemFactors, initMean, initStdev);
 
-    user_bias = new double[maxUserID + 1];
-    for (int u = 0; u <= maxUserID; u++)  user_bias[u] = 0;
-    item_bias = new double[maxItemID + 1];
-    for (int i = 0; i <= maxItemID; i++)  item_bias[i] = 0;
+    userBias = new double[maxUserID + 1];
+    for (int u = 0; u <= maxUserID; u++)  userBias[u] = 0;
+    itemBias = new double[maxItemID + 1];
+    for (int i = 0; i <= maxItemID; i++)  itemBias[i] = 0;
 
     // learn model parameters
 
@@ -61,13 +61,13 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
     double global_average = ratings.getAverage();
 
     // TODO also learn global bias?
-    global_bias = Math.log( (global_average - getMinRating()) / (getMaxRating() - global_average) );
-    for (int current_iter = 0; current_iter < num_iter; current_iter++) {
+    globalBias = Math.log( (global_average - getMinRating()) / (getMaxRating() - global_average) );
+    for (int current_iter = 0; current_iter < numIter; current_iter++) {
       iterate();
     }
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   protected void iterate(List<Integer> rating_indices, boolean update_user, boolean update_item) {
     double rating_range_size = getMaxRating() - getMinRating();
 
@@ -75,9 +75,9 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
       int u = ratings.getUsers().get(index);
       int i = ratings.getItems().get(index);
 
-      double dot_product = global_bias + user_bias[u] + item_bias[i];
+      double dot_product = globalBias + userBias[u] + itemBias[i];
       for (int f = 0; f < numFactors; f++) {
-        dot_product += user_factors.get(u, f) * item_factors.get(i, f);
+        dot_product += userFactors.get(u, f) * itemFactors.get(i, f);
       }
       double sig_dot = 1 / (1 + Math.exp(-dot_product));
 
@@ -87,60 +87,62 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
       double gradient_common = err * sig_dot * (1 - sig_dot) * rating_range_size;
 
       // Adjust biases
-      if (update_user)  user_bias[u] += learn_rate * (gradient_common - bias_regularization * user_bias[u]);
-      if (update_item)  item_bias[i] += learn_rate * (gradient_common - bias_regularization * item_bias[i]);
+      if (update_user)
+    	  userBias[u] += learnRate * (gradient_common - biasRegularization * userBias[u]);
+      if (update_item)
+    	  itemBias[i] += learnRate * (gradient_common - biasRegularization * itemBias[i]);
 
       // Adjust latent factors
       for (int f = 0; f < numFactors; f++) {
-        double u_f = user_factors.get(u, f);
-        double i_f = item_factors.get(i, f);
+        double u_f = userFactors.get(u, f);
+        double i_f = itemFactors.get(i, f);
 
         if (update_user) {
           double delta_u = gradient_common * i_f - regularization * u_f;
-          MatrixUtils.inc(user_factors, u, f, learn_rate * delta_u);
+          MatrixUtils.inc(userFactors, u, f, learnRate * delta_u);
           // this is faster (190 vs. 260 seconds per iteration on Netflix w/ k=30) than
           //    user_factors[u, f] += learn_rate * delta_u;
         }
 
         if (update_item) {
               double delta_i = gradient_common * u_f - regularization * i_f;
-              MatrixUtils.inc(item_factors, i, f, learn_rate * delta_i);
+              MatrixUtils.inc(itemFactors, i, f, learnRate * delta_i);
               // item_factors[i, f] += learn_rate * delta_i;
         }
       }
     }
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public double predict(int user_id, int item_id) {
-    if (user_id >= user_factors.dim1 || item_id >= item_factors.dim1) {
-      return getMinRating() + ( 1 / (1 + Math.exp(-global_bias)) ) * (getMaxRating() - getMinRating());
+    if (user_id >= userFactors.dim1 || item_id >= itemFactors.dim1) {
+      return getMinRating() + ( 1 / (1 + Math.exp(-globalBias)) ) * (getMaxRating() - getMinRating());
     }
     
-    double score = global_bias + user_bias[user_id] + item_bias[item_id];
+    double score = globalBias + userBias[user_id] + itemBias[item_id];
 
     // U*V
     for (int f = 0; f < numFactors; f++) {
-      score += user_factors.get(user_id, f) * item_factors.get(item_id, f);
+      score += userFactors.get(user_id, f) * itemFactors.get(item_id, f);
     }
     
     return getMinRating() + ( 1 / (1 + Math.exp(-score)) ) * (getMaxRating() - getMinRating());
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void SaveModel(String filename) throws IOException {
     PrintWriter writer = Recommender.getWriter(filename, this.getClass());
-    writer.println(Double.toString(global_bias));
-    VectorUtils.writeVectorArray(writer, user_bias);
-    IMatrixUtils.writeMatrix(writer, user_factors);
-    VectorUtils.writeVectorArray(writer, item_bias);
-    IMatrixUtils.writeMatrix(writer, item_factors);
+    writer.println(Double.toString(globalBias));
+    VectorUtils.writeVectorArray(writer, userBias);
+    IMatrixUtils.writeMatrix(writer, userFactors);
+    VectorUtils.writeVectorArray(writer, itemBias);
+    IMatrixUtils.writeMatrix(writer, itemFactors);
     boolean error = writer.checkError();
     if(error) System.out.println("Error writing file.");
     writer.close();
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void loadModel(String filename) throws IOException  {
     BufferedReader reader = Recommender.getReader(filename, this.getClass());
     double bias = Double.parseDouble(reader.readLine());
@@ -164,70 +166,70 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
     this.maxItemID = item_factors.dim1 - 1;
 
     // assign new model
-    this.global_bias = bias;
+    this.globalBias = bias;
     if (this.numFactors != user_factors.dim2) {
       System.out.println("Set numFactors to " + user_factors.dim1);
       this.numFactors = user_factors.dim2;
     }
-    this.user_factors = user_factors;
-    this.item_factors = item_factors;
-    this.user_bias = user_bias;
-    this.item_bias = item_bias;
+    this.userFactors = user_factors;
+    this.itemFactors = item_factors;
+    this.userBias = user_bias;
+    this.itemBias = item_bias;
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void addUser(int user_id) {
     if (user_id > maxUserID) {
       super.addUser(user_id);
 
       // create new user bias array
-      double[] user_bias = Arrays.copyOf(this.user_bias, user_id + 1);
-      this.user_bias = user_bias;
+      double[] user_bias = Arrays.copyOf(this.userBias, user_id + 1);
+      this.userBias = user_bias;
     }
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void addItem(int item_id) {
     if (item_id > maxItemID) {
       super.addItem(item_id);
 
       // create new item bias array
-      double[] item_bias = Arrays.copyOf(this.item_bias, item_id + 1);
-      this.item_bias = item_bias;
+      double[] item_bias = Arrays.copyOf(this.itemBias, item_id + 1);
+      this.itemBias = item_bias;
     }
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void retrainUser(int user_id) {
-    user_bias[user_id] = 0;
+    userBias[user_id] = 0;
     super.retrainUser(user_id);
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void retrainItem(int item_id) {
-      item_bias[item_id] = 0;
+      itemBias[item_id] = 0;
       super.retrainItem(item_id);
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void RemoveUser(int user_id) {
       super.removeUser(user_id);
-      user_bias[user_id] = 0;
+      userBias[user_id] = 0;
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public void RemoveItem(int item_id) {
       super.removeItem(item_id);
-      item_bias[item_id] = 0;
+      itemBias[item_id] = 0;
   }
 
-  /// <inheritdoc/>
+  /** {@inheritDoc} */
   public String ToString() {
     return "BiasedMatrixFactorization num_factors=" + numFactors +
-           " bias_regularization=" + bias_regularization +
+           " bias_regularization=" + biasRegularization +
            " regularization=" + regularization +
-           " learn_rate=" + learn_rate+
-           " num_iter=" + num_iter +
+           " learn_rate=" + learnRate+
+           " num_iter=" + numIter +
            " init_mean=" + initMean +
            " init_stdev=" + initStdev;   
   }
