@@ -40,7 +40,7 @@ import org.mymedialite.util.*;
  */
 public class BPRMF extends MF { 
 	/** Fast, but memory-intensive sampling */
-	protected boolean fast_sampling = false;
+	protected boolean fastSampling = false;
 
 	/** Item bias terms */
 	protected double[] itemBias;
@@ -170,7 +170,7 @@ public class BPRMF extends MF {
 	 */
 	protected boolean sampleOtherItem(SampleTriple triple) {
 		boolean itemIsPositive = feedback.getUserMatrix().get(triple.u, triple.i);
-		if (fast_sampling) {
+		if (fastSampling) {
 			if (itemIsPositive) {
 				int rindex = random.nextInt(userNegItems.get(triple.u).length);
 				triple.j = userNegItems.get(triple.u)[rindex];
@@ -191,7 +191,7 @@ public class BPRMF extends MF {
 	 * @param triple a SampleTriple consisting of a user ID and two item IDs
 	 */
 	protected void sampleItemPair(SampleTriple triple) {
-		if (fast_sampling) {
+		if (fastSampling) {
 			int rindex = random.nextInt(userPosItems.get(triple.u).length);
 			triple.i = userPosItems.get(triple.u)[rindex];
 
@@ -281,7 +281,7 @@ public class BPRMF extends MF {
 	/** {@inheritDoc} */
 	public void addFeedback(int user_id, int item_id) {
 		super.addFeedback(user_id, item_id);
-		if (fast_sampling)
+		if (fastSampling)
 			createFastSamplingData(user_id);
 		// retrain
 		retrainUser(user_id);
@@ -290,10 +290,9 @@ public class BPRMF extends MF {
 
 	/** {@inheritDoc} */
 	public void addFeedback(int user_id, List<Integer> item_ids) {
-		for(int item_id : item_ids) { 
+		for (int item_id : item_ids)
 			super.addFeedback(user_id, item_id);
-		}
-		if (fast_sampling)
+		if (fastSampling)
 			createFastSamplingData(user_id);
 		// retrain
 		retrainUser(user_id);
@@ -303,7 +302,7 @@ public class BPRMF extends MF {
 	/** {@inheritDoc} */
 	public void removeFeedback(int user_id, int item_id) {
 		super.removeFeedback(user_id, item_id);
-		if (fast_sampling)
+		if (fastSampling)
 			createFastSamplingData(user_id);
 		// retrain
 		retrainUser(user_id);
@@ -336,7 +335,7 @@ public class BPRMF extends MF {
 	/** {@inheritDoc} */
 	public void removeUser(int user_id) {
 		super.removeUser(user_id);
-		if (fast_sampling) {
+		if (fastSampling) {
 			userPosItems.set(user_id, null);
 			userNegItems.set(user_id, null);
 		}
@@ -488,7 +487,7 @@ public class BPRMF extends MF {
 			System.out.println("fast_sampling_memory_size=" + fast_sampling_memory_size);
 
 			if (fast_sampling_memory_size <= fastSamplingMemoryLimit) {
-				fast_sampling = true;
+				fastSampling = true;
 				this.userPosItems = new ArrayList<int[]>(maxUserID + 1);
 				this.userNegItems = new ArrayList<int[]>(maxUserID + 1);
 				for (int u = 0; u < maxUserID + 1; u++)
