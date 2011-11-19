@@ -18,3 +18,5 @@ TODO list
  - port the rest of MyMediaLite from C# to Java
  - think about a partial Scala port that uses the Java port but exports a more
    elegant interface
+ - support calling Apache Mahout
+ - support calling LensKit
