@@ -1,0 +1,136 @@
+// Copyright (C) 2010 Steffen Rendle, Zeno Gantner, Christoph Freudenthaler
+// Copyright (C) 2011 Zeno Gantner
+//
+// This file is part of MyMediaLite.
+//
+// MyMediaLite is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// MyMediaLite is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with MyMediaLite.  If not, see <http://www.gnu.org/licenses/>.
+
+package org.mymedialite.itemrecommendation;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import org.mymedialite.IIterativeModel;
+import org.mymedialite.datatype.IMatrixUtils;
+import org.mymedialite.datatype.MatrixUtils;
+
+/** Abstract class for matrix factorization based item predictors */
+public abstract class MF extends ItemRecommender implements IIterativeModel {
+    
+  /** Latent user factor matrix */
+  protected double[][] user_factors;  // [user index] [feature index]
+  
+  /** Latent item factor matrix */
+  protected double[][] item_factors;  // [item index] [feature index]
+
+  /** Mean of the normal distribution used to initialize the latent factors */
+  public double init_mean = 0;
+
+  /** Standard deviation of the normal distribution used to initialize the latent factors */
+  public double init_stdev = 0.1;
+
+  /** Number of latent factors per user/item */
+  public int num_factors = 10;
+
+  /** Number of iterations over the training data */
+  public int num_iter = 30;
+
+  public double[][] getUserFeatures() { return user_factors; }
+
+  public double[][] getItemFeatures() { return item_factors; }
+  
+  public void setNumIter(int numIter) { this.num_iter = numIter; }
+  
+  public int getNumIter() { return num_iter; }
+  
+  /** */
+  public void train() {
+    user_factors = new double[maxUserID + 1][num_factors];
+    item_factors = new double[maxItemID + 1][num_factors]; 
+
+    MatrixUtils.initNormal(user_factors, init_mean, init_stdev);
+    MatrixUtils.initNormal(item_factors, init_mean, init_stdev);
+
+    for (int i=0; i<num_iter; i++) {
+      iterate();
+    }   
+  }
+
+  /** Iterate once over the data */
+  public abstract void iterate();
+
+  /** 
+   * Computes the fit (optimization criterion) on the training data
+   * @return a double representing the fit, lower is better
+   */
+  public abstract double computeFit();
+
+  /**
+   * Predict the weight for a given user-item combination.
+   * If the user or the item are not known to the engine, zero is returned.
+   * To avoid this behavior for unknown entities, use CanPredict() to check before.
+   * @param user_id the user ID
+   * @param name the item ID
+   * @return the predicted weight
+   */  
+  public double predict(int user_id, int item_id) {
+    if ((user_id < 0) || (user_id >= user_factors.length)) {
+      System.out.println("user is unknown: " + user_id);
+      return 0;
+    }
+    if ((item_id < 0) || (item_id >= item_factors.length)) {
+      System.err.println("item is unknown: " + item_id);
+      return 0;
+    }
+    double result = 0;
+    for (int f = 0; f < num_factors; f++)
+      result += user_factors[user_id][f] * item_factors[item_id][f];
+    return result;
+  }
+  
+  public void saveModel(String file) throws IOException {
+    //PrintWriter writer = Recommender.GetWriter(file, this.GetType()) )  // ToDo
+    PrintWriter writer = new PrintWriter(file);
+    IMatrixUtils.writeMatrix(writer, user_factors);
+    IMatrixUtils.writeMatrix(writer, item_factors);
+    boolean error = writer.checkError();
+    if(error) System.out.println("Error writing file.");
+    writer.close();
+  }
+
+  public void loadModel(String file) throws IOException {
+    //Recommender.GetReader(file, this.GetType()) )
+//    BufferedReader reader = new BufferedReader(new FileReader(new File(file)));
+//
+//    double[][] user_factors = (Matrix<double>) IMatrixUtils.ReadMatrix(reader, new Matrix<double>(0, 0));
+//    double[][] item_factors = (Matrix<double>) IMatrixUtils.ReadMatrix(reader, new Matrix<double>(0, 0));
+//
+//    if (user_factors.NumberOfColumns != item_factors.NumberOfColumns)
+//      throw new Exception("Number of user and item factors must match: " + user_factors.NumberOfColumns + " != " + item_factors.NumberOfColumns);
+//
+//    this.MaxUserID = user_factors.NumberOfRows - 1;
+//    this.MaxItemID = item_factors.NumberOfRows - 1;
+//
+//    // assign new model
+//    if (this.num_factors != user_factors.NumberOfColumns) {
+//      Console.Error.WriteLine("Set num_factors to {0}", user_factors.NumberOfColumns);
+//      this.num_factors = user_factors.NumberOfColumns;
+//    }
+//    this.user_factors = user_factors;
+//    this.item_factors = item_factors;
+  }
+  
+}
