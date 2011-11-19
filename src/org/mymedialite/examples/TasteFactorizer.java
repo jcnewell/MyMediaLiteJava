@@ -1,6 +1,5 @@
 package org.mymedialite.examples;
 
-import java.util.Calendar;
 import java.util.Iterator;
 
 import org.apache.mahout.cf.taste.common.TasteException;
@@ -11,6 +10,7 @@ import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.model.Preference;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.mymedialite.data.PosOnlyFeedback;
+import org.mymedialite.datatype.SparseBooleanMatrix;
 import org.mymedialite.itemrecommendation.MF;
 
 public class TasteFactorizer extends AbstractFactorizer {
@@ -37,7 +37,7 @@ public class TasteFactorizer extends AbstractFactorizer {
   public Factorization factorize() throws TasteException {
 
     //System.out.println("TasteFactorizer.factorize(): Load data");
-    PosOnlyFeedback posOnlyFeedback = new PosOnlyFeedback();
+    PosOnlyFeedback<SparseBooleanMatrix> posOnlyFeedback = new PosOnlyFeedback<SparseBooleanMatrix>(new SparseBooleanMatrix());
     if(dataModel == null) System.out.println("dataModel is null.");
     LongPrimitiveIterator itemIterator = dataModel.getItemIDs();
     if(itemIterator == null) System.out.println("itemIterator model is null.");
