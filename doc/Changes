@@ -5,6 +5,7 @@
  - add Mahout jarfile (zeno)
  - eval.ItemsOnline, ratingprediction.IIncrementalRatingPredictor,
    and itemrecommendation.IIncrementalItemRecommender (zeno)
+ - transferred everything available from Chris's 1.0 branch (zeno)
 
 
 2011-11-18	initial port of MyMediaLite 1.05 by Chris Newell
