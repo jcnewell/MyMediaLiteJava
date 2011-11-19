@@ -1,5 +1,5 @@
 2011-11-??	getting closer to 2.02
- - BPRMF: fix bug in incremental updates (zeno)
+ - BPRMF, MatrixFactorization: fix two bugs in incremental updates (zeno)
  - add BiasedMatrixFactroization (zeno, chris)
  - rename package itemrecommendation to itemrec (zeno)
  - add Mahout jarfile (zeno)

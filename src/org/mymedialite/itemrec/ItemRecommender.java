@@ -29,76 +29,83 @@ import org.mymedialite.data.IPosOnlyFeedback;
  * and provides flexible access to it. 
  */
 public abstract class ItemRecommender implements IRecommender, Cloneable {
-	  
-  /** The maximum user ID */
-  protected int maxUserID; // TODO implement getter and setter
 
-  /** The maximum item ID */
-  protected int maxItemID; // TODO implement getter and setter
+	/** The maximum user ID */
+	protected int maxUserID; // TODO implement getter and setter
 
-  /** The feedback data to be used for training */
-  protected IPosOnlyFeedback feedback;
+	/** The maximum item ID */
+	protected int maxItemID; // TODO implement getter and setter
 
-  public void setFeedback(IPosOnlyFeedback feedback) {
-    this.feedback = feedback;
-    maxUserID = feedback.getMaxUserID();
-    maxItemID = feedback.getMaxItemID();
-  }
-  
-  /** Create a shallow copy of the object. */
-  public Object clone() {
-    return this.clone();
-  }
-  
-  public abstract double predict(int userId, int itemId);
+	/** The feedback data to be used for training */
+	protected IPosOnlyFeedback feedback;
 
-  public boolean canPredict(int user_id, int item_id) {
-      return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
-  }
-  
-  public abstract void train();
-  
-  public abstract void loadModel(String filename) throws IOException;
+	public void setFeedback(IPosOnlyFeedback feedback) {
+		this.feedback = feedback;
+		maxUserID = feedback.getMaxUserID();
+		maxItemID = feedback.getMaxItemID();
+	}
 
-  public abstract void loadModel(BufferedReader reader) throws IOException;
-  
-  public abstract void saveModel(String filename) throws IOException;
+	/** Create a shallow copy of the object. */
+	public Object clone() {
+		return this.clone();
+	}
 
-  public abstract void saveModel(PrintWriter writer) throws IOException;
+	public abstract double predict(int userId, int itemId);
 
-  public void addFeedback(int user_id, int item_id) throws IllegalArgumentException {
-    if (user_id > maxUserID) addUser(user_id);
-    if (item_id > maxItemID) addItem(item_id);
-    feedback.add(user_id, item_id);
-  }
+	public boolean canPredict(int user_id, int item_id) {
+		return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
+	}
 
-  public void removeFeedback(int user_id, int item_id) {
-    if (user_id > maxUserID) throw new IllegalArgumentException("Unknown user " + user_id);
-    if (item_id > maxItemID) throw new IllegalArgumentException("Unknown item " + item_id);
-    feedback.remove(user_id, item_id);
-  }
+	public abstract void train();
 
-  protected void addUser(int user_id) {
-    if (user_id > maxUserID)  maxUserID = user_id;
-  }
+	public abstract void loadModel(String filename) throws IOException;
 
-  protected void addItem(int item_id)  {
-      if (item_id > maxItemID)  maxItemID = item_id;
-  }
+	public abstract void loadModel(BufferedReader reader) throws IOException;
 
-  public void removeUser(int user_id) {
-    feedback.removeUser(user_id);
-    if (user_id == maxUserID)  maxUserID--;
-  }
+	public abstract void saveModel(String filename) throws IOException;
 
-  public void removeItem(int item_id) {
-    feedback.removeItem(item_id);
-    if (item_id == maxItemID)  maxItemID--;
-  }
-  
-  @Override
-  public String toString() {
-    return this.getClass().getName();
-  }
-  
+	public abstract void saveModel(PrintWriter writer) throws IOException;
+
+	public void addFeedback(int user_id, int item_id) throws IllegalArgumentException {
+		if (user_id > maxUserID)
+			addUser(user_id);
+		if (item_id > maxItemID)
+			addItem(item_id);
+		feedback.add(user_id, item_id);
+	}
+
+	public void removeFeedback(int user_id, int item_id) {
+		if (user_id > maxUserID)
+			throw new IllegalArgumentException("Unknown user " + user_id);
+		if (item_id > maxItemID)
+			throw new IllegalArgumentException("Unknown item " + item_id);
+		feedback.remove(user_id, item_id);
+	}
+
+	protected void addUser(int user_id) {
+		if (user_id > maxUserID)
+			maxUserID = user_id;
+	}
+
+	protected void addItem(int item_id)  {
+		if (item_id > maxItemID)
+			maxItemID = item_id;
+	}
+
+	public void removeUser(int user_id) {
+		feedback.removeUser(user_id);
+		if (user_id == maxUserID)
+			maxUserID--;
+	}
+
+	public void removeItem(int item_id) {
+		feedback.removeItem(item_id);
+		if (item_id == maxItemID)
+			maxItemID--;
+	}
+
+	@Override
+	public String toString() {
+		return this.getClass().getName();
+	}
 }

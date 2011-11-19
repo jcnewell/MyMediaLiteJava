@@ -224,7 +224,7 @@ public class MatrixUtils {
 		if (j >= matrix2.dim1)
 			throw new IllegalArgumentException("j too big: " + j + ", dim1 is " + matrix2.dim1);
 		if (j >= matrix3.dim1)
-			throw new IllegalArgumentException("j too big: " + k + ", dim1 is " + matrix3.dim1);      
+			throw new IllegalArgumentException("j too big: " + k + ", dim1 is " + matrix3.dim1);
 		if (matrix1.dim2 != matrix2.dim2)
 			throw new IllegalArgumentException("wrong row size: " + matrix1.dim2 + " vs. " + matrix2.dim2);
 		if (matrix1.dim2 != matrix3.dim2)
@@ -232,7 +232,7 @@ public class MatrixUtils {
 
 		double result = 0.0;
 		for (int c = 0; c < matrix1.dim2; c++)
-			result += (Double)matrix1.data[i * matrix1.dim2 + c] * ((Double)matrix2.data[j * matrix2.dim2 + c] - (Double)matrix3.data[k * matrix3.dim2 + c]);
+			result += (Double) matrix1.data[i * matrix1.dim2 + c] * ((Double)matrix2.data[j * matrix2.dim2 + c] - (Double)matrix3.data[k * matrix3.dim2 + c]);
 		return result;
-	}	  
+	}
 }

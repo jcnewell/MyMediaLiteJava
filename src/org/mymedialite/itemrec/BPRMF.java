@@ -124,7 +124,7 @@ public class BPRMF extends MF {
 			lossSampleJ = new int[num_sample_triples];
 
 			for (int c = 0; c < num_sample_triples; c++) {
-				SampleTriple triple = sampleTriple();  
+				SampleTriple triple = sampleTriple();
 				lossSampleU[c] = triple.u;
 				lossSampleI[c] = triple.i;
 				lossSampleJ[c] = triple.j;
@@ -159,14 +159,14 @@ public class BPRMF extends MF {
 			lastLoss = loss;
 
 			System.err.println("loss: " + loss + " learnRate: " + learnRate);
-		}		    
+		}
 	}
 
 	/** 
 	 * Sample another item, given the first one and the user
 	 * @param triple a SampleTriple consisting of a user ID and two item IDs
 	 * @return true if the given item was already seen by the user
-	 */  
+	 */
 	protected boolean sampleOtherItem(SampleTriple triple) {
 		boolean itemIsPositive = feedback.getUserMatrix().get(triple.u, triple.i);
 		if (fast_sampling) {
@@ -312,15 +312,20 @@ public class BPRMF extends MF {
 	/** {@inheritDoc} */
 	public void addUser(int user_id) {
 		super.addUser(user_id);
+		
 		userFactors.addRows(user_id + 1);
 		MatrixUtils.rowInitNormal(userFactors, initMean, initStdev, user_id);
 	}
 
 	/** {@inheritDoc} */
 	public void addItem(int item_id) {
-		super.addItem(item_id);
-		itemFactors.addRows(item_id + 1);
-		MatrixUtils.rowInitNormal(itemFactors, initMean, initStdev, item_id);
+		// get rid of null entries in the factor matrix
+		if (item_id > maxItemID) {
+			itemFactors.addRows(item_id + 1);
+			for (int i = maxItemID + 1; i <= item_id; i++)
+				MatrixUtils.rowInitNormal(itemFactors, initMean, initStdev, i);
+			super.addItem(item_id);
+		}
 
 		// create new item bias array
 		double[] itemBias = Arrays.copyOf(this.itemBias, item_id + 1);
@@ -356,6 +361,18 @@ public class BPRMF extends MF {
 		MatrixUtils.rowInitNormal(userFactors, initMean, initStdev, user_id);
 		IntHashSet user_items = feedback.getUserMatrix().getRow(user_id);
 
+		for (int i = 0; i < userFactors.data.length; i++)
+			if (userFactors.data[i] == null)
+				System.err.println("uf: " + i);
+		
+		for (int i = 0; i < itemFactors.data.length; i++)
+			if (itemFactors.data[i] == null) {
+				System.err.print(  "if: " + i);
+				System.err.print(  " x " + (i / itemFactors.dim1));
+				System.err.println(" y " + (i % itemFactors.dim1));
+			}
+		System.err.flush();
+		
 		for (int i = 0; i < user_items.size(); i++) {
 			SampleTriple triple = new SampleTriple();
 			triple.u = user_id;
