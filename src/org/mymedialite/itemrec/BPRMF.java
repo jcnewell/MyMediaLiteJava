@@ -133,7 +133,8 @@ public class BPRMF extends MF {
 			lastLoss = computeLoss();
 		}
 
-		for (int i = 0; i < numIter; i++) iterate();
+		for (int i = 0; i < numIter; i++)
+			iterate();
 	}
 
 	/** 
@@ -144,8 +145,8 @@ public class BPRMF extends MF {
 		int num_pos_events = feedback.size();
 
 		for (int i = 0; i < num_pos_events; i++) {
-			SampleTriple triple = sampleTriple();      
-			updateFactors(triple.u, triple.i, triple.j, true, true, true);
+			SampleTriple triple = sampleTriple();
+			updateFactors(triple, true, true, true);
 		}
 
 		if (boldDriver) {
@@ -239,40 +240,40 @@ public class BPRMF extends MF {
 	 * @param update_i if true, update the features of the first item
 	 * @param update_j if true, update the features of the second item
 	 */
-	protected void updateFactors(int u, int i, int j, boolean update_u, boolean update_i, boolean update_j) {
-		double x_uij = itemBias[i] - itemBias[j] + MatrixUtils.rowScalarProductWithRowDifference(userFactors, u, itemFactors, i, itemFactors, j);
+	protected void updateFactors(SampleTriple t, boolean update_u, boolean update_i, boolean update_j) {
+		double x_uij = itemBias[t.i] - itemBias[t.j] + MatrixUtils.rowScalarProductWithRowDifference(userFactors, t.u, itemFactors,t.i, itemFactors, t.j);
 		double one_over_one_plus_ex = 1 / (1 + Math.exp(x_uij));
 
 		// Adjust bias terms.
 		if (update_i) {
-			double bias_update = one_over_one_plus_ex - biasReg * itemBias[i];
-			itemBias[i] += learnRate * bias_update;
+			double bias_update = one_over_one_plus_ex - biasReg * itemBias[t.i];
+			itemBias[t.i] += learnRate * bias_update;
 		}
 
 		if (update_j) {
-			double bias_update = -one_over_one_plus_ex - biasReg * itemBias[j];
-			itemBias[j] += learnRate * bias_update;
+			double bias_update = -one_over_one_plus_ex - biasReg * itemBias[t.j];
+			itemBias[t.j] += learnRate * bias_update;
 		}
 
 		// Adjust factors.
 		for (int f = 0; f < numFactors; f++) {
-			double w_uf = userFactors.get(u, f);
-			double h_if = itemFactors.get(i, f);
-			double h_jf = itemFactors.get(j, f);
+			double w_uf = userFactors.get(t.u, f);
+			double h_if = itemFactors.get(t.i, f);
+			double h_jf = itemFactors.get(t.j, f);
 
 			if (update_u) {
 				double uf_update = (h_if - h_jf) * one_over_one_plus_ex - regU * w_uf;
-				userFactors.set(u, f, w_uf + learnRate * uf_update);
+				userFactors.set(t.u, f, w_uf + learnRate * uf_update);
 			}
 
 			if (update_i) {
 				double if_update = w_uf * one_over_one_plus_ex - regI * h_if;
-				itemFactors.set(i, f, h_if + learnRate * if_update);
+				itemFactors.set(t.i, f, h_if + learnRate * if_update);
 			}
 
 			if (update_j) {
 				double jf_update = -w_uf  * one_over_one_plus_ex - regJ * h_jf;
-				itemFactors.set(j, f, h_jf + learnRate * jf_update);
+				itemFactors.set(t.j, f, h_jf + learnRate * jf_update);
 			}
 		}
 	}
@@ -377,7 +378,7 @@ public class BPRMF extends MF {
 			SampleTriple triple = new SampleTriple();
 			triple.u = user_id;
 			sampleItemPair(triple);
-			updateFactors(triple.u, triple.i, triple.j, true, false, false);
+			updateFactors(triple, true, false, false);
 		}
 	}
 
@@ -391,16 +392,17 @@ public class BPRMF extends MF {
 		int num_item_iterations =  num_pos_events  / (maxItemID + 1);
 		for (int i = 0; i < num_item_iterations; i++) {
 			// remark: the item may be updated more or less frequently than in the normal from-scratch training
-			int user_id = sampleUser();
 			SampleTriple triple = new SampleTriple();
 			triple.u = sampleUser();
 			triple.i = item_id;
 			boolean item_is_positive = sampleOtherItem(triple);
 
-			if (item_is_positive)
-				updateFactors(user_id, item_id, triple.j, false, true, false);
-			else
-				updateFactors(user_id, triple.j, item_id, false, false, true);
+			if (item_is_positive) {
+				int j = triple.j;
+				triple.j = triple.i;
+				triple.i = j;
+			}
+			updateFactors(triple, false, false, true);
 		}
 	}
 
@@ -562,7 +564,7 @@ public class BPRMF extends MF {
 
 	private class SampleTriple {
 		int u;  // user_id
-		int i;  // item_id_1
-		int j;  // item_id_2
+		int i;  // item_id positive item
+		int j;  // item_id negative item
 	}	
 }

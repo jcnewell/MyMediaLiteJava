@@ -42,7 +42,8 @@ public class ItemRecommenderExample {
 		// Set up the recommender
 		BPRMF recommender = new BPRMF();
 		//MostPopular recommender = new MostPopular();
-		recommender.setFeedback(training_data);    
+		System.out.println(recommender);
+		recommender.setFeedback(training_data);
 		recommender.train();  
 
 		/*
