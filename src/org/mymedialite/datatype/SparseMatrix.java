@@ -18,10 +18,7 @@
 
 package org.mymedialite.datatype;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.*;
 
 /**
  * Class for storing sparse matrices.
@@ -29,7 +26,7 @@ import java.util.Map.Entry;
  * Indexes are zero-based.
  * <typeparam name="T the matrix element type, must have a default constructor/value</typeparam>
  */
-public class SparseMatrix<T> implements IMatrix<T> { // where T:new() {
+public class SparseMatrix<T> implements IMatrix<T> {
 
 	private int numberOfColumns;
 
@@ -105,11 +102,10 @@ public class SparseMatrix<T> implements IMatrix<T> { // where T:new() {
 	 * @param x the row ID
 	 */
 	public HashMap<Integer, T> get(int x) {
-		if (x >= row_list.size()) {
+		if (x >= row_list.size())
 			return new HashMap<Integer, T>();
-		} else { 
+		else 
 			return row_list.get(x);
-		}
 	}
 
 	/**
@@ -130,9 +126,8 @@ public class SparseMatrix<T> implements IMatrix<T> { // where T:new() {
 	}
 
 	public void set(int x, int y, T value) {
-		if (x >= row_list.size()) {
+		if (x >= row_list.size())
 			for (int i = row_list.size(); i <= x; i++) row_list.add(new HashMap<Integer, T>());
-		}
 		row_list.get(x).put(y, value);
 	}
 
@@ -146,9 +141,8 @@ public class SparseMatrix<T> implements IMatrix<T> { // where T:new() {
 		HashMap<Integer, HashMap<Integer, T>> return_list = new HashMap<Integer, HashMap<Integer, T>>();
 		for(int i=0; i < row_list.size(); i++) {
 			HashMap<Integer, T> row = get(i);
-			if(row.size() > 0) {
+			if(row.size() > 0)
 				return_list.put(i, row);
-			}
 		}
 		return return_list;
 	}
@@ -159,11 +153,9 @@ public class SparseMatrix<T> implements IMatrix<T> { // where T:new() {
 	 */
 	public List<Pair<Integer, Integer>> getNonEmptyEntryIDs() {
 		List <Pair<Integer, Integer>> return_list = new ArrayList<Pair<Integer, Integer>>();
-		for (Entry<Integer, HashMap<Integer, T>> id_row : getNonEmptyRows().entrySet()) {
-			for (Integer col_id : id_row.getValue().keySet()) {
+		for (Map.Entry<Integer, HashMap<Integer, T>> id_row : getNonEmptyRows().entrySet())
+			for (Integer col_id : id_row.getValue().keySet())
 				return_list.add(new Pair<Integer, Integer>(id_row.getKey(), col_id));
-			}
-		}
 		return return_list;
 	}
 
@@ -173,9 +165,8 @@ public class SparseMatrix<T> implements IMatrix<T> { // where T:new() {
 	 */
 	public int getNumberOfNonEmptyEntries() {
 		int counter = 0;
-		for (HashMap<Integer, T> row : row_list) {
+		for (HashMap<Integer, T> row : row_list)
 			counter += row.size();
-		}
 		return counter;
 	}
 

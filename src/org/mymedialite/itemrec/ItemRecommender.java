@@ -18,9 +18,7 @@
 
 package org.mymedialite.itemrec;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import org.mymedialite.IRecommender;
 import org.mymedialite.data.IPosOnlyFeedback;
 

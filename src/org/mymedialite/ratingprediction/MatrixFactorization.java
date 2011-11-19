@@ -18,16 +18,11 @@
 
 package org.mymedialite.ratingprediction;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 
 import org.mymedialite.IIterativeModel;
-import org.mymedialite.datatype.IMatrixUtils;
-import org.mymedialite.datatype.Matrix;
-import org.mymedialite.datatype.MatrixUtils;
-import org.mymedialite.datatype.VectorUtils;
+import org.mymedialite.datatype.*;
 import org.mymedialite.util.Recommender;
 
 /** 

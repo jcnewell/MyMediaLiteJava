@@ -1,5 +1,5 @@
-//Copyright (C) 2010 Steffen Rendle, Zeno Gantner, Chris Newell
-//Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2010 Steffen Rendle, Zeno Gantner, Chris Newell
+// Copyright (C) 2011 Zeno Gantner
 //
 //This file is part of MyMediaLite.
 //
@@ -18,9 +18,7 @@
 
 package org.mymedialite.datatype;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class for storing dense matrices.

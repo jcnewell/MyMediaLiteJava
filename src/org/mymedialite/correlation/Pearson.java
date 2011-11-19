@@ -19,6 +19,7 @@ package org.mymedialite.correlation;
 
 import java.util.HashSet;
 import java.util.List;
+
 import org.mymedialite.data.IRatings;
 import org.mymedialite.datatype.Pair;
 import org.mymedialite.datatype.SparseMatrix;

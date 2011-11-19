@@ -18,13 +18,7 @@
 
 package org.mymedialite.eval;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.data.ISplit;
@@ -209,11 +203,11 @@ public class Items {
 	 * @param relevant_items a collection of integers with all relevant items
 	 * @return a dictionary containing the average results over the different folds of the split
 	 */
-	public static Map<String, Double> evaluateOnSplit(ItemRecommender recommender,
+	public static Map<String, Double> evaluateOnSplit(
+			ItemRecommender recommender,
 			ISplit<IPosOnlyFeedback> split,
 			Collection<Integer> relevant_users,
 			Collection<Integer> relevant_items) {
-
 		return evaluateOnSplit(recommender, split, relevant_users, relevant_items, false);
 	}
 
@@ -226,7 +220,8 @@ public class Items {
 	 * @param show_results set to true to print results to STDERR
 	 * @return a dictionary containing the average results over the different folds of the split
 	 */
-	public static Map<String, Double> evaluateOnSplit(ItemRecommender recommender,
+	public static Map<String, Double> evaluateOnSplit(
+			ItemRecommender recommender,
 			ISplit<IPosOnlyFeedback> split,
 			Collection<Integer> test_users,
 			Collection<Integer> candidate_items,
@@ -240,17 +235,18 @@ public class Items {
 			split_recommender.train();
 			HashMap<String, Double> fold_results = evaluate(split_recommender, split.train().get(fold), split.test().get(fold), test_users, candidate_items);
 
-			for (String key : fold_results.keySet()) {
-				if (avg_results.containsKey(key)) {
+			for (String key : fold_results.keySet())
+				if (avg_results.containsKey(key))
 					avg_results.put(key, avg_results.get(key) + fold_results.get(key));
-				} else {
-					avg_results.put(key, fold_results.get(key));
-				}
-			}
-			if (show_results) System.err.print("fold " + fold + " " + formatResults(avg_results));
+					else
+						avg_results.put(key, fold_results.get(key));
+					if (show_results)
+						System.err.print("fold " + fold + " " + formatResults(avg_results));
 		}
 
-		for (String key : avg_results.keySet()) avg_results.put(key, avg_results.get(key) / split.getNumberOfFolds());
+		for (String key : avg_results.keySet())
+			avg_results.put(key, avg_results.get(key) / split.getNumberOfFolds());
+
 				return avg_results;
 	}
 
@@ -327,11 +323,10 @@ public class Items {
 			avg_prec_sum += (double) hit_count / (i + 1 - left_out);
 		}
 
-		if (hit_count != 0) {
+		if (hit_count != 0)
 			return avg_prec_sum / hit_count;
-		} else {
+		else
 			return 0;
-		}
 	}
 
 	/**
@@ -388,7 +383,7 @@ public class Items {
 		Map <Integer, Double> precision_at_n = new HashMap<Integer, Double>();
 		for(int n : ns)
 			precision_at_n.put(n, precisionAt(ranked_items, correct_items, ignore_items, n));
-		return precision_at_n;
+				return precision_at_n;
 	}
 
 	/**
@@ -425,11 +420,10 @@ public class Items {
 
 			if (!correct_items.contains(item_id)) continue;
 
-			if (i < n + left_out) {
+			if (i < n + left_out)
 				hit_count++;
-			} else {
+			else
 				break;
-			}
 		}
 		return (double) hit_count / n;
 	}
@@ -446,11 +440,10 @@ public class Items {
 			Collection<Integer> correct_items,
 			Collection<Integer> ignore_items,
 			int[] ns) {
-
 		Map <Integer, Double> recall_at_n = new HashMap <Integer, Double>();
 		for (int n : ns)
 			recall_at_n.put(n, recallAt(ranked_items, correct_items, ignore_items, n));
-		return recall_at_n;
+				return recall_at_n;
 	}
 
 	/**
@@ -489,7 +482,8 @@ public class Items {
 	public static int hitsAt(int[] ranked_items, Collection<Integer> correct_items,
 			Collection<Integer> ignore_items, int n) {
 
-		if (n < 1) throw new IllegalArgumentException("n must be at least 1.");
+		if (n < 1)
+			throw new IllegalArgumentException("n must be at least 1.");
 
 		int hit_count = 0;
 		int left_out  = 0;
@@ -501,11 +495,10 @@ public class Items {
 				continue;
 			}
 			if (!correct_items.contains(item_id)) continue;
-			if (i < n + left_out) {
+			if (i < n + left_out)
 				hit_count++;
-			} else {
+			else
 				break;
-			}
 		}
 
 		return hit_count;
@@ -531,11 +524,10 @@ public class Items {
 
 	static Collection<Integer> intersect(Collection<Integer> a, int[] b) {
 		Set<Integer> intersection = new HashSet<Integer>();
-		for(int i : b) {
+		for(int i : b)
 			intersection.add(i);
-		}
-		intersection.retainAll(new HashSet<Integer>(a));
-		return intersection;
+				intersection.retainAll(new HashSet<Integer>(a));
+				return intersection;
 	}
 
 }

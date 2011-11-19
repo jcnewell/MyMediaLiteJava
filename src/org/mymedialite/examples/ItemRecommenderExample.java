@@ -1,9 +1,7 @@
 package org.mymedialite.examples;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import org.mymedialite.data.EntityMapping;
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.eval.Items;

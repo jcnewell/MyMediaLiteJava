@@ -19,12 +19,11 @@
 package org.mymedialite.itemrec;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.mymedialite.datatype.*;
 import org.mymedialite.util.*;
+import org.mymedialite.util.Random;
 
 /**
  * Matrix factorization model for item prediction (ranking) optimized using BPR-Opt.
