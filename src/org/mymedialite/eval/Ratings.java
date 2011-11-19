@@ -19,7 +19,6 @@
 package org.mymedialite.eval;
 
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
