@@ -1,5 +1,5 @@
-//Copyright (C) 2010 Steffen Rendle, Zeno Gantner
-//Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2010 Steffen Rendle, Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -26,20 +26,20 @@ import java.util.Map;
 
 import org.mymedialite.data.IRatings;
 import org.mymedialite.data.ISplit;
+import org.mymedialite.ratingprediction.IIncrementalRatingPredictor;
 import org.mymedialite.ratingprediction.IRatingPredictor;
 import org.mymedialite.ratingprediction.RatingPredictor;
 
 /** Evaluation class */
 public class Ratings {
-
-  /** the evaluation measures for rating prediction offered by the class */
-  public static Collection<String> getMeasures() {
-    HashSet<String> measures = new HashSet<String>();
-    measures.add("RMSE");
-    measures.add("MAE");
-    measures.add("NMAE");
-    return measures;
-  }
+	/** the evaluation measures for rating prediction offered by the class */
+	public static Collection<String> getMeasures() {
+		HashSet<String> measures = new HashSet<String>();
+		measures.add("RMSE");
+		measures.add("MAE");
+		measures.add("NMAE");
+		return measures;
+	}
 
   /** 
    * Format rating prediction results.
@@ -100,7 +100,7 @@ public class Ratings {
    * @param ratings Test cases
    * @return a Dictionary containing the evaluation results
    */
-  public static HashMap<String, Double> evaluateOnline(IRatingPredictor recommender, IRatings ratings) throws IllegalArgumentException {
+  public static HashMap<String, Double> evaluateOnline(IIncrementalRatingPredictor recommender, IRatings ratings) throws IllegalArgumentException {
     double rmse = 0;
     double mae  = 0;
 
@@ -109,12 +109,12 @@ public class Ratings {
 
     // Iterate in random order    // TODO also support chronological order
     for (int index : ratings.getRandomIndex()) {
-      double error = (recommender.predict(ratings.users[index], ratings.items[index]) - ratings.get(index));
+      double error = (recommender.predict(ratings.getUsers().get(index), ratings.getItems().get(index)) - ratings.get(index));
 
       rmse += error * error;
       mae  += Math.abs(error);
 
-      recommender.addRating(ratings.users[index], ratings.items[index], ratings.get(index));
+      recommender.addRating(ratings.getUsers().get(index), ratings.getItems().get(index), ratings.get(index));
     }
     mae  = mae / ratings.size();
     rmse = Math.sqrt(rmse / ratings.size());
@@ -143,29 +143,36 @@ public class Ratings {
    * @param show_results set to true to print results to STDERR
    * @return a dictionary containing the average results over the different folds of the split
    */
-  public static HashMap<String, Double> evaluateOnSplit(RatingPredictor recommender, ISplit<IRatings> split, boolean show_results) {
-    HashMap<String, Double> avg_results = new HashMap<String, Double>();
+  public static HashMap<String, Double> evaluateOnSplit(
+		  RatingPredictor recommender,
+		  ISplit<IRatings> split,
+		  boolean show_results) {
+	  
+	  HashMap<String, Double> avg_results = new HashMap<String, Double>();
 
-    for (int i = 0; i < split.getNumberOfFolds(); i++) {
-      RatingPredictor split_recommender = (RatingPredictor) recommender.clone(); // to avoid changes : recommender
-      split_recommender.setRatings(split.train().get(i));
-      split_recommender.train();
-      HashMap<String, Double> fold_results = evaluate(split_recommender, split.test().get(i));
+	  for (int i = 0; i < split.getNumberOfFolds(); i++)
+		  try {
+			  RatingPredictor split_recommender = recommender.clone(); // to avoid changes : recommender
+			  split_recommender.setRatings(split.train().get(i));
+			  split_recommender.train();
+			  HashMap<String, Double> fold_results = evaluate(split_recommender, split.test().get(i));
+	
+			  for (String key : fold_results.keySet()) {
+				  if (avg_results.containsKey(key)) {
+					  avg_results.put(key, avg_results.get(key) + fold_results.get(key));
+				  } else {
+					  avg_results.put(key, fold_results.get(key));
+				  }
+			  }
+			  if (show_results)
+				  System.err.println("fold " +  i + " " + formatResults(fold_results));
+		  } catch (CloneNotSupportedException e) {
+			  // nothing to do here
+		  }
 
-      for (String key : fold_results.keySet()) {
-        if (avg_results.containsKey(key)) {
-          avg_results.put(key, avg_results.get(key) + fold_results.get(key));
-        } else {
-          avg_results.put(key, fold_results.get(key));
-        }
-      }
-      if (show_results)
-        System.err.println("fold " +  i + " " + formatResults(fold_results));
-    }
-
-    for (String key : avg_results.keySet()) {
-      avg_results.put(key, avg_results.get(key) / split.getNumberOfFolds());
-    }
-    return avg_results;
+	  for (String key : avg_results.keySet()) {
+		  avg_results.put(key, avg_results.get(key) / split.getNumberOfFolds());
+	  }
+	  return avg_results;
   }
 }

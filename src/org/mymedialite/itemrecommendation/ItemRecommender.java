@@ -21,20 +21,20 @@ package org.mymedialite.itemrecommendation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import org.mymedialite.IRecommender;
 import org.mymedialite.data.IPosOnlyFeedback;
 
-/** 
- * Abstract item recommender class that loads the (positive-only implicit feedback) 
- * training data into memory.
- * The data is stored in two sparse matrices: one column-wise and one row-wise.
+/**
+ * Abstract item recommender class that loads the (positive-only implicit feedback) training data into memory
+ * and provides flexible access to it. 
  */
-public abstract class ItemRecommender implements IItemRecommender, Cloneable {
+public abstract class ItemRecommender implements IRecommender, Cloneable {
 	  
   /** The maximum user ID */
-  protected int maxUserID;
+  protected int maxUserID; // TODO implement getter and setter
 
   /** The maximum item ID */
-  protected int maxItemID;
+  protected int maxItemID; // TODO implement getter and setter
 
   /** The feedback data to be used for training */
   protected IPosOnlyFeedback feedback;

@@ -31,10 +31,10 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
   /** Maximum item ID */
   public int maxItemID;
 
-  /** The max rating value */
+  /** The maximum rating value */
   public double max_rating;
   
-  /** The min rating value */
+  /** The minimum rating value */
   public double min_rating;
 
   // TODO find clearer name for this
@@ -49,6 +49,10 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
   /** The rating data */
   protected IRatings ratings;
 
+  public RatingPredictor clone() throws CloneNotSupportedException {
+	  return (RatingPredictor) super.clone();
+  }
+  
   public IRatings getRatings() { 
     return this.ratings;
   }

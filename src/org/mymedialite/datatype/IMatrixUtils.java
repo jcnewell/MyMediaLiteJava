@@ -1,4 +1,4 @@
-//Copyright (C) 2010, 2011 Zeno Gantner, Chris Newell
+// Copyright (C) 2010, 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //

@@ -1,16 +1,11 @@
 package org.mymedialite.examples;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.mymedialite.data.EntityMapping;
 import org.mymedialite.data.IRatings;
-import org.mymedialite.data.Ratings;
-import org.mymedialite.eval.Ratings;
 import org.mymedialite.io.RatingPrediction;
-import org.mymedialite.ratingprediction.IRatingPredictor;
 import org.mymedialite.ratingprediction.MatrixFactorization;
 import org.mymedialite.ratingprediction.RatingPredictor;
 
@@ -28,8 +23,8 @@ public class RatingPredictionExample {
     training_data = null;
     test_data = null;
     try {
-      training_data = RatingPrediction.read(args[0], min_rating, max_rating, user_mapping, item_mapping);
-      test_data = RatingPrediction.read(args[1], min_rating, max_rating, user_mapping, item_mapping);
+      training_data = RatingPrediction.read(args[0], user_mapping, item_mapping);
+      test_data = RatingPrediction.read(args[1], user_mapping, item_mapping);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -44,7 +39,7 @@ public class RatingPredictionExample {
     recommender.train();
 
     // measure the accuracy on the test data set
-    Map<String, Double> results = Ratings.evaluate(recommender, test_data);
+    Map<String, Double> results = org.mymedialite.eval.Ratings.evaluate(recommender, test_data);
     System.out.println("RMSE=" + results.get("RMSE") + " MAE=" + results.get("MAE"));
 
     // make a prediction for a certain user and item

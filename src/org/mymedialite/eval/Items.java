@@ -1,5 +1,5 @@
-//Copyright (C) 2010 Zeno Gantner, Steffen Rendle
-//Copyright (C) 2011 Zeno Gantner, Chris Newell
+// Copyright (C) 2010 Zeno Gantner, Steffen Rendle
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -21,43 +21,30 @@ package org.mymedialite.eval;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.management.RuntimeErrorException;
 
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.data.ISplit;
-import org.mymedialite.data.PosOnlyFeedback;
-import org.mymedialite.datatype.SparseBooleanMatrix;
-import org.mymedialite.itemrecommendation.IItemRecommender;
+import org.mymedialite.IRecommender;
 import org.mymedialite.itemrecommendation.ItemRecommender;
 import org.mymedialite.itemrecommendation.Prediction;
-import org.mymedialite.util.IntHashSet;
 
 /**
  * Evaluation class for item recommendation. 
  */
 public class Items {
 
-  private Items() {}
+	// this is a static class, but Java does not allow us to declare that ;-)
+	private Items() {}
 
-  /**
-   * Get the evaluation measures for item prediction offered by the class.
-   */
-  static public Collection<String> getMeasures() { 
-    HashSet<String> measures = new HashSet<String>();
-    measures.add("AUC");
-    measures.add("prec@5");
-    measures.add("prec@10");
-    measures.add("recall@5");
-    measures.add("recall@10");
-    measures.add("NDCG");
-    measures.add("MAP");
-    return measures;
+	/**
+	 * Get the evaluation measures for item prediction offered by the class.
+	 */
+	static public Collection<String> getMeasures() { 
+		String[] array = { "AUC", "prec@5", "prec@10", "recall@5", "recall@10", "NDCG", "MAP" };
+		return Arrays.asList(array);
   }
 
   /**
@@ -109,17 +96,17 @@ public class Items {
    * @param recommender item recommender
    * @param test test cases
    * @param train training data
-   * @param relevant_users a collection of integers with all relevant_users
-   * @param relevant_items a collection of integers with all relevant items
+   * @param test_users a collection of integers with all relevant_users
+   * @param candidate_items a collection of integers with all candidate items
    * @return a dictionary containing the evaluation results
    */
   public static HashMap<String, Double> evaluate(
-      IItemRecommender recommender,
+      IRecommender recommender,
       IPosOnlyFeedback test,
       IPosOnlyFeedback train,
-      Collection<Integer> relevant_users,
-      Collection<Integer> relevant_items) {
-    return evaluate(recommender, test, train, relevant_users, relevant_items, true);         
+      Collection<Integer> test_users,
+      Collection<Integer> candidate_items) {
+    return evaluate(recommender, test, train, test_users, candidate_items, true);         
   }
 
   /**
@@ -135,17 +122,17 @@ public class Items {
    * @param recommender item recommender
    * @param test test cases
    * @param train training data
-   * @param relevant_users a collection of integers with all relevant users
-   * @param relevant_items a collection of integers with all relevant items
+   * @param test_users a collection of integers with all relevant users
+   * @param candidate_items a collection of integers with all relevant items
    * @param ignore_overlap if true, ignore items that appear for a user in the training set when evaluating for that user
    * @return a dictionary containing the evaluation results
    */
-  public static HashMap<String, Double> evaluate (
-      IItemRecommender recommender,
+  public static HashMap<String, Double> evaluate(
+      IRecommender recommender,
       IPosOnlyFeedback test,
       IPosOnlyFeedback train,
-      Collection<Integer> relevant_users,
-      Collection<Integer> relevant_items,
+      Collection<Integer> test_users,
+      Collection<Integer> candidate_items,
       boolean ignore_overlap) {
 
     // Compute evaluation measures
@@ -158,14 +145,14 @@ public class Items {
     double ndcg_sum      = 0;
     int num_users        = 0;
 
-    for (Integer user_id : relevant_users) {
+    for (Integer user_id : test_users) {
       // Items viewed by the user in the test set that were also present in the training set.
-      HashSet<Integer> correct_items = new HashSet<Integer>(intersect(test.getUserMatrix().getRow(user_id), relevant_items));
+      HashSet<Integer> correct_items = new HashSet<Integer>(intersect(test.getUserMatrix().getRow(user_id), candidate_items));
 
       // The number of items that are really relevant for this user.
-      HashSet<Integer> relevant_items_in_train = new HashSet<Integer> (intersect(train.getUserMatrix().getRow(user_id), relevant_items));
+      HashSet<Integer> candidate_items_in_train = new HashSet<Integer> (intersect(train.getUserMatrix().getRow(user_id), candidate_items));
 
-      int num_eval_items = relevant_items.size() - (ignore_overlap ? relevant_items_in_train.size() : 0);
+      int num_eval_items = candidate_items.size() - (ignore_overlap ? candidate_items_in_train.size() : 0);
 
       // Skip all users that have 0 or #relevant_items test items.
       if (correct_items.size() == 0) continue;
@@ -173,12 +160,12 @@ public class Items {
 
       System.out.println("correct_items:  " + correct_items.size());
       System.out.println("num_eval_items: " + num_eval_items);
-      System.out.println("relevant_items: " + relevant_items.size());
+      System.out.println("relevant_items: " + candidate_items.size());
       System.out.println("training items: " + train.getUserMatrix().getRow(user_id).size());
 
       num_users++;
-      int[] prediction = Prediction.predictItems(recommender, user_id, relevant_items);
-      if (prediction.length != relevant_items.size()) throw new RuntimeException("Not all items have been ranked.");
+      int[] prediction = Prediction.predictItems(recommender, user_id, candidate_items);
+      if (prediction.length != candidate_items.size()) throw new RuntimeException("Not all items have been ranked.");
 
       Collection<Integer> ignore_items = ignore_overlap ? train.getUserMatrix().getRow(user_id) : new ArrayList<Integer>();
 
@@ -208,92 +195,9 @@ public class Items {
     result.put("recall@10", recall_10_sum / num_users);
     result.put("num_users", new Double(num_users));
     result.put("num_lists", new Double(num_users));
-    result.put("num_items", new Double(relevant_items.size()));
+    result.put("num_items", new Double(candidate_items.size()));
 
     return result;
-  }
-
-  /**
-   * Online evaluation for rankings of items.
-   * @param recommender item recommender
-   * @param test test cases
-   * @param train training data (must be connected to the recommender's training data)
-   * @param relevant_users a collection of integers with all relevant users
-   * @param relevant_items a collection of integers with all relevant items
-   * @return a dictionary containing the evaluation results (averaged by user)
-   */
-  public static HashMap<String, Double> evaluateOnline(
-      IItemRecommender recommender,
-      IPosOnlyFeedback test,
-      IPosOnlyFeedback train,
-      Collection<Integer> relevant_users,
-      Collection<Integer> relevant_items) {
-
-    // For better handling, move test data points into arrays.
-    int[] users = new int[test.size()];
-    int[] items = new int[test.size()];
-    int pos = 0;
-    for (int user_id : test.getUserMatrix().getNonEmptyColumnIDs()) {
-      for (int item_id : test.getUserMatrix().getRow(user_id)) {
-        users[pos] = user_id;
-        items[pos] = item_id;
-        pos++;
-      }
-    }
-
-    // Random order of the test data points.
-    int[] random_index = new int[test.size()];
-    for (int index = 0; index < random_index.length; index++) random_index[index] = index;
-    Collections.shuffle(Arrays.asList(random_index));
-    
-    HashMap<Integer, HashMap<String, Double>> results_by_user = new HashMap<Integer, HashMap<String, Double>>();
-
-    for (int index : random_index) {
-      if (relevant_users.contains(users[index]) && relevant_items.contains(items[index])) {
-        // Evaluate user.
-        PosOnlyFeedback<SparseBooleanMatrix> current_test = new PosOnlyFeedback<SparseBooleanMatrix>(new SparseBooleanMatrix());
-        current_test.add(users[index], items[index]);
-        HashMap<String, Double> current_result = evaluate(recommender, current_test, train, current_test.getAllUsers(), relevant_items);
-
-        if (current_result.get("num_users") == 1) {
-          HashMap<String, Double> result = results_by_user.get(users[index]);
-          if (results_by_user.containsKey(users[index])) {
-            for (String measure : getMeasures()) {
-              result.put(measure, result.get(measure) + current_result.get(measure));
-            }
-            result.put("num_items", result.get("num_items") + 1); 
-          } else {
-            results_by_user.put(users[index], current_result);
-            current_result.put("num_items", 1D); 
-            current_result.remove("num_users"); 
-          }
-        }
-      }
-
-      // update recommender
-      recommender.addFeedback(users[index], items[index]);
-    }
-
-    HashMap<String, Double> results = new HashMap<String, Double>();
-    for (String measure : getMeasures())
-      results.put(measure, 0D);
-
-    for (int u : results_by_user.keySet()) {
-      HashMap<String, Double> userResult = results_by_user.get(u);
-      for (String measure : getMeasures()) {
-        results.put(measure, userResult.get(measure) / userResult.get("num_items"));
-      }
-    }
-
-    for (String measure : getMeasures()) {
-      results.put(measure, results.get(measure) / results_by_user.size());
-    }
-
-    results.put("num_users", new Double(results_by_user.size()));
-    results.put("num_items", new Double(relevant_items.size()));
-    results.put("num_lists", new Double(test.size())); // FIXME this is not exact
-
-    return results;
   }
 
   /**
@@ -316,24 +220,24 @@ public class Items {
    * Evaluate on the folds of a dataset split.
    * @param recommender an item recommender
    * @param split a dataset split
-   * @param relevant_users a collection of integers with all relevant users
-   * @param relevant_items a collection of integers with all relevant items
+   * @param test_users a collection of integers with all relevant users
+   * @param candidate_items a collection of integers with all relevant items
    * @param show_results set to true to print results to STDERR
    * @return a dictionary containing the average results over the different folds of the split
    */
   public static HashMap<String, Double> evaluateOnSplit(ItemRecommender recommender,
       ISplit<IPosOnlyFeedback> split,
-      Collection<Integer> relevant_users,
-      Collection<Integer> relevant_items,
+      Collection<Integer> test_users,
+      Collection<Integer> candidate_items,
       boolean show_results) {
 
     HashMap<String, Double> avg_results = new HashMap<String, Double>();
 
     for (int fold = 0; fold < split.getNumberOfFolds(); fold++) {
       ItemRecommender split_recommender = (ItemRecommender)(recommender.clone()); // to avoid changes in recommender
-      split_recommender.feedback = split.train().get(fold);
+      split_recommender.setFeedback(split.train().get(fold));
       split_recommender.train();
-      HashMap<String, Double> fold_results = evaluate(split_recommender, split.train().get(fold), split.test().get(fold), relevant_users, relevant_items);
+      HashMap<String, Double> fold_results = evaluate(split_recommender, split.train().get(fold), split.test().get(fold), test_users, candidate_items);
 
       for (String key : fold_results.keySet()) {
         if (avg_results.containsKey(key)) {

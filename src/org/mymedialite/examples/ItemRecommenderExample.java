@@ -1,16 +1,14 @@
 package org.mymedialite.examples;
 
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import org.mymedialite.data.EntityMapping;
-import org.mymedialite.data.PosOnlyFeedback;
+import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.eval.Items;
 import org.mymedialite.io.ItemRecommendation;
 import org.mymedialite.itemrecommendation.BPRMF;
-import org.mymedialite.itemrecommendation.MostPopular;
 
 public class ItemRecommenderExample {
 
@@ -21,7 +19,7 @@ public class ItemRecommenderExample {
     EntityMapping user_mapping = new EntityMapping();
     EntityMapping item_mapping = new EntityMapping();
     
-    PosOnlyFeedback training_data = null;
+    IPosOnlyFeedback training_data = null;
     try {
       training_data = ItemRecommendation.read(args[0], user_mapping, item_mapping);
     } catch (NumberFormatException e) {
@@ -29,9 +27,10 @@ public class ItemRecommenderExample {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    Collection<Integer> relevant_items = training_data.getAllItems();  // items that will be taken into account in the evaluation
+    Collection<Integer> candidate_items = training_data.getAllItems();  // items that will be taken into account in the evaluation
+    Collection<Integer> test_users      = training_data.getAllUsers();  // users that will be taken into account in the evaluation
   
-    PosOnlyFeedback test_data = null;
+    IPosOnlyFeedback test_data = null;
     try {
       test_data = ItemRecommendation.read(args[1], user_mapping, item_mapping);
     } catch (NumberFormatException e1) {
@@ -77,7 +76,7 @@ public class ItemRecommenderExample {
     
     // Measure the accuracy on the test data set
     try {
-      HashMap<String, Double> results = Items.Evaluate(recommender, test_data, training_data, relevant_items);
+      HashMap<String, Double> results = Items.evaluate(recommender, test_data, training_data, test_users, candidate_items);
       System.out.println("AUC       " + results.get("AUC"));
       System.out.println("MAP       " + results.get("MAP"));
       System.out.println("NDCG      " + results.get("NDCG"));
