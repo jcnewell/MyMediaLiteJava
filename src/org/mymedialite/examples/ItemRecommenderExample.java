@@ -8,7 +8,7 @@ import org.mymedialite.data.EntityMapping;
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.eval.Items;
 import org.mymedialite.io.ItemRecommendation;
-import org.mymedialite.itemrecommendation.BPRMF;
+import org.mymedialite.itemrec.BPRMF;
 
 public class ItemRecommenderExample {
 

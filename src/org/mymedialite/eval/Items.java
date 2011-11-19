@@ -28,8 +28,8 @@ import java.util.Set;
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.data.ISplit;
 import org.mymedialite.IRecommender;
-import org.mymedialite.itemrecommendation.ItemRecommender;
-import org.mymedialite.itemrecommendation.Prediction;
+import org.mymedialite.itemrec.ItemRecommender;
+import org.mymedialite.itemrec.Prediction;
 
 /**
  * Evaluation class for item recommendation. 

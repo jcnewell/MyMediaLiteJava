@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.mymedialite.itemrecommendation.IIncrementalItemRecommender;
+import org.mymedialite.itemrec.IIncrementalItemRecommender;
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.data.PosOnlyFeedback;
 import org.mymedialite.datatype.SparseBooleanMatrix;

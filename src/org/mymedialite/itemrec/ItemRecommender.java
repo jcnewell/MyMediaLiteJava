@@ -16,7 +16,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with MyMediaLite.  If not, see <http://www.gnu.org/licenses/>.
 
-package org.mymedialite.itemrecommendation;
+package org.mymedialite.itemrec;
 
 import java.io.BufferedReader;
 import java.io.IOException;

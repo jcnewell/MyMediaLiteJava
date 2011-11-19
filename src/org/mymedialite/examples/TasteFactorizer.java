@@ -11,7 +11,7 @@ import org.apache.mahout.cf.taste.model.Preference;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.mymedialite.data.PosOnlyFeedback;
 import org.mymedialite.datatype.SparseBooleanMatrix;
-import org.mymedialite.itemrecommendation.MF;
+import org.mymedialite.itemrec.MF;
 
 public class TasteFactorizer extends AbstractFactorizer {
 
