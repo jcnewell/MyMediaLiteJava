@@ -18,7 +18,7 @@
 
 package org.mymedialite.util;
 
-/** Draws random values from a normal distibuted using a simple rejection method. */
+/** Draws random values from a normal distributed using a simple rejection method. */
 public class Random extends java.util.Random {
 	private static final long serialVersionUID = 1L;
 
