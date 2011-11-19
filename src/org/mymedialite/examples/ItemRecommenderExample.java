@@ -93,6 +93,7 @@ public class ItemRecommenderExample {
 		prediction = recommender.predict(user_mapping.toInternalID(userId), item_mapping.toInternalID(itemId));
 		System.out.println("userId: " + userId + " itemId: " + itemId + " prediction: " + prediction); 
 
+		/*
 		userId = 35525;
 		itemId = 21;
 		prediction = recommender.predict(user_mapping.toInternalID(userId), item_mapping.toInternalID(itemId));
@@ -102,6 +103,7 @@ public class ItemRecommenderExample {
 		itemId = 673;
 		prediction = recommender.predict(user_mapping.toInternalID(userId), item_mapping.toInternalID(itemId));
 		System.out.println("userId: " + userId + " itemId: " + itemId + " prediction: " + prediction); 
+		*/
 
 		long end = Calendar.getInstance().getTimeInMillis();
 		System.out.println("Time taken: " + ((end - start) / 1000F) + " seconds");
