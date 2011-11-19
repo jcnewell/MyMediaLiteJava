@@ -239,7 +239,7 @@ public class BPRMF extends MF {
 	   * @param update_j if true, update the features of the second item
 	   */
 	  protected void updateFactors(int u, int i, int j, boolean update_u, boolean update_i, boolean update_j) {
-		  double x_uij = itemBias[i] - itemBias[j] + MatrixUtils.rowScalarProductWithRowDifference(user_factors, u, item_factors, i, item_factors, j);
+		  	double x_uij = itemBias[i] - itemBias[j] + MatrixUtils.rowScalarProductWithRowDifference(user_factors, u, item_factors, i, item_factors, j);
 		    double one_over_one_plus_ex = 1 / (1 + Math.exp(x_uij));
 		
 		    // Adjust bias terms.
