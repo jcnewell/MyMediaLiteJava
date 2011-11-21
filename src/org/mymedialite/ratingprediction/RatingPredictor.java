@@ -1,5 +1,5 @@
 // Copyright (C) 2010 Steffen Rendle, Zeno Gantner
-// Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -25,124 +25,126 @@ import org.mymedialite.data.IRatings;
 /** Abstract class for rating predictors that keep the rating data in memory for training (and possibly prediction) */
 public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 
-  /** Maximum user ID */
-  public int maxUserID;
-  
-  /** Maximum item ID */
-  public int maxItemID;
+	/** Maximum user ID */
+	public int maxUserID;
 
-  /** The maximum rating value */
-  public double maxRating;
-  
-  /** The minimum rating value */
-  public double minRating;
+	/** Maximum item ID */
+	public int maxItemID;
 
-  // TODO find clearer name for this
-  /** true if users shall be updated when doing online updates */
-  /// <value>true if users shall be updated when doing online updates</value>
-  public boolean updateUsers = true;
+	/** The maximum rating value */
+	public double maxRating;
 
-  /** true if items shall be updated when doing online updates */
-  /// <value>true if items shall be updated when doing online updates</value>
-  public boolean updateItems = true;
+	/** The minimum rating value */
+	public double minRating;
 
-  /** The rating data */
-  protected IRatings ratings;
+	// TODO find clearer name for this
+	/** true if users shall be updated when doing online updates */
+	/// <value>true if users shall be updated when doing online updates</value>
+	public boolean updateUsers = true;
 
-  public RatingPredictor clone() throws CloneNotSupportedException {
-	  return (RatingPredictor) super.clone();
-  }
-  
-  public IRatings getRatings() { 
-    return this.ratings;
-  }
- 
-  public void setRatings(IRatings ratings) {
-    this.ratings = ratings;
-  }
+	/** true if items shall be updated when doing online updates */
+	/// <value>true if items shall be updated when doing online updates</value>
+	public boolean updateItems = true;
 
-  @Override
-  public double getMaxRating() {
-    return maxRating;
-  }
+	/** The rating data */
+	protected IRatings ratings;
 
-  @Override
-  public void setMaxRating(double max_rating) {
-    this.maxRating = max_rating;
-  }
+	public RatingPredictor clone() throws CloneNotSupportedException {
+		return (RatingPredictor) super.clone();
+	}
 
-  @Override
-  public double getMinRating() {
-    return minRating;
-  }
+	public IRatings getRatings() { 
+		return this.ratings;
+	}
 
-  @Override
-  public void setMinRating(double min_rating) {
-    this.minRating = min_rating;
-  }
-  
-  /// <inheritdoc/>
-  public abstract double predict(int user_id, int item_id);
+	public void setRatings(IRatings ratings) {
+		this.ratings = ratings;
+	}
 
-  /** 
-   * Inits the recommender model.
-   * This method is called by the Train() method.
-   * When overriding, please call base.InitModel() to get the functions performed in the base class.
-   */
-   protected void initModel() {
-     maxUserID = ratings.getMaxUserID();
-     maxItemID = ratings.getMaxItemID();
-   }
+	@Override
+	public double getMaxRating() {
+		return maxRating;
+	}
 
-   /// <inheritdoc/>
-   public abstract void train();
-   
-   /// <inheritdoc/>
-   public abstract void saveModel(String filename) throws IOException ;
+	@Override
+	public void setMaxRating(double max_rating) {
+		this.maxRating = max_rating;
+	}
 
-   /// <inheritdoc/>
-   public abstract void loadModel(String filename) throws IOException ;    
-   
-   /// <inheritdoc/>
-   public boolean canPredict(int user_id, int item_id) {
-     return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
-   }
+	@Override
+	public double getMinRating() {
+		return minRating;
+	}
 
-   /// <inheritdoc/>
-   public void add(int user_id, int item_id, double rating) {
-     /// Added JCN to override exiting value if it exists.
-     //ratings.add(user_id, item_id, rating);
-     ratings.addOrUpdate(user_id, item_id, rating);
-   }
+	@Override
+	public void setMinRating(double min_rating) {
+		this.minRating = min_rating;
+	}
 
-   /// <inheritdoc/>
-   public void updateRating(int user_id, int item_id, double rating) {
+	/// <inheritdoc/>
+	public abstract double predict(int user_id, int item_id);
 
-   }
-   
-   /// <inheritdoc/>
-   public void removeRating(int user_id, int item_id) {
+	/** 
+	 * Inits the recommender model.
+	 * This method is called by the Train() method.
+	 * When overriding, please call base.InitModel() to get the functions performed in the base class.
+	 */
+	protected void initModel() {
+		maxUserID = ratings.getMaxUserID();
+		maxItemID = ratings.getMaxItemID();
+	}
 
-   }
-   
-   /// <inheritdoc/>
-   public void addUser(int user_id) {
-       maxUserID = Math.max(maxUserID, user_id);
-   }
+	/// <inheritdoc/>
+	public abstract void train();
 
-   /// <inheritdoc/>
-   public void addItem(int item_id) {
-       maxItemID = Math.max(maxItemID, item_id);
-   }
-   
-   /// <inheritdoc/>
-   public void removeUser(int user_id) {
-     if (user_id == maxUserID)  maxUserID--;
-   }
+	/// <inheritdoc/>
+	public abstract void saveModel(String filename) throws IOException ;
 
-   /// <inheritdoc/>
-   public void removeItem(int item_id) {
-     if (item_id == maxItemID)  maxItemID--;
-   }
+	/// <inheritdoc/>
+	public abstract void loadModel(String filename) throws IOException ;    
+
+	/// <inheritdoc/>
+	public boolean canPredict(int user_id, int item_id) {
+		return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
+	}
+
+	/// <inheritdoc/>
+	public void add(int user_id, int item_id, double rating) {
+		/// Added JCN to override exiting value if it exists.
+		//ratings.add(user_id, item_id, rating);
+		ratings.addOrUpdate(user_id, item_id, rating);
+	}
+
+	/// <inheritdoc/>
+	public void updateRating(int user_id, int item_id, double rating) {
+
+	}
+
+	/// <inheritdoc/>
+	public void removeRating(int user_id, int item_id) {
+
+	}
+
+	/// <inheritdoc/>
+	public void addUser(int user_id) {
+		maxUserID = Math.max(maxUserID, user_id);
+	}
+
+	/// <inheritdoc/>
+	public void addItem(int item_id) {
+		maxItemID = Math.max(maxItemID, item_id);
+	}
+
+	/// <inheritdoc/>
+	public void removeUser(int user_id) {
+		if (user_id == maxUserID)
+			maxUserID--;
+	}
+
+	/// <inheritdoc/>
+	public void removeItem(int item_id) {
+		if (item_id == maxItemID)
+			maxItemID--;
+	}
 
 }
