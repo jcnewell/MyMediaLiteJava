@@ -66,100 +66,100 @@ public abstract class DataSet implements IDataSet
 	/**
 	 */
 	public List<List<Integer>> getByUser() {
-		if (by_user == null)
-			BuildUserIndices();
-		return by_user;
+		if (byUser == null)
+			buildUserIndices();
+		return byUser;
 
 	}
 	/**
 	 * Rating indices organized by user.
 	 */
-	protected List<List<Integer>> by_user;
+	protected List<List<Integer>> byUser;
 
 	/**
 	 */
 	public List<List<Integer>> getByItem() {
-		if (by_item == null)
-			BuildItemIndices();
-		return by_item;
+		if (byItem == null)
+			buildItemIndices();
+		return byItem;
 	}
 	/**
 	 * Rating indices organized by item.
 	 */
-	protected List<List<Integer>> by_item;
+	protected List<List<Integer>> byItem;
 
 	/**
 	 */
 	public Integer[] getRandomIndex() {
-		if (random_index == null || random_index.length != size())
-			BuildRandomIndex();
+		if (randomIndex == null || randomIndex.length != size())
+			buildRandomIndex();
 
-		return random_index;
+		return randomIndex;
 	}
-	private Integer[] random_index;
+	private Integer[] randomIndex;
 
 	/**
 	 */
 	public Integer[] getAllUsers() {
-		Set<Integer> result_set = new HashSet<Integer>();
+		Set<Integer> resultSet = new HashSet<Integer>();
 		for (int index = 0; index < users.size(); index++)
-			result_set.add(users.get(index));
-		return result_set.toArray(new Integer[0]);
+			resultSet.add(users.get(index));
+		return resultSet.toArray(new Integer[0]);
 	}
 
 	/**
 	 */
 	public Integer[] getAllItems() {
-		Set<Integer> result_set = new HashSet<Integer>();
+		Set<Integer> resultSet = new HashSet<Integer>();
 		for (int index = 0; index < items.size(); index++)
-			result_set.add(items.get(index));
-		return result_set.toArray(new Integer[0]);
+			resultSet.add(items.get(index));
+		return resultSet.toArray(new Integer[0]);
 	}
 
 	/**
 	 */
-	public void BuildUserIndices()
+	public void buildUserIndices()
 	{
-		by_user = new Vector<List<Integer>>();
+		byUser = new Vector<List<Integer>>();
 		for (int u = 0; u <= maxUserID; u++)
-			by_user.add(new Vector<Integer>());
+			byUser.add(new Vector<Integer>());
 
 		// one pass over the data
 		for (int index = 0; index < size(); index++)
-			by_user.get(users.get(index)).add(index);
+			byUser.get(users.get(index)).add(index);
 	}
 
 	/**
 	 */
-	public void BuildItemIndices()
+	public void buildItemIndices()
 	{
-		by_item = new Vector<List<Integer>>();
+		byItem = new Vector<List<Integer>>();
 		for (int i = 0; i <= maxItemID; i++)
-			by_item.add(new Vector<Integer>());
+			byItem.add(new Vector<Integer>());
 
 		// one pass over the data
 		for (int index = 0; index < size(); index++)
-			by_item.get(items.get(index)).add(index);
+			byItem.get(items.get(index)).add(index);
 	}
 
 	/**
 	 */
-	public void BuildRandomIndex()
+	public void buildRandomIndex()
 	{
-		if (random_index == null || random_index.length != size())
+		if (randomIndex == null || randomIndex.length != size())
 		{
-			random_index = new Integer[size()];
+			randomIndex = new Integer[size()];
 			for (int index = 0; index < size(); index++)
-				random_index[index] = index;
+				randomIndex[index] = index;
 		}
-		Collections.shuffle(Arrays.asList(random_index), Random.getInstance());
+		Collections.shuffle(Arrays.asList(randomIndex), Random.getInstance());
 	}
 
 	/**
 	 */
-	public abstract void RemoveUser(int user_id);
+	public abstract void removeUser(int user_id);
 
 	/**
 	 */
-	public abstract void RemoveItem(int item_id);
+	public abstract void removeItem(int item_id);
 }

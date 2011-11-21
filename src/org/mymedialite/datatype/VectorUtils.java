@@ -89,7 +89,20 @@ public class VectorUtils {
    * @param vector the vector to compute the norm for
    * @return the Euclidean norm of the vector
    */
-  public static Double euclideanNorm(Double[] vector) {
+  public static double euclideanNorm(double[] vector) {
+      double sum = 0;
+      for (double v : vector) {
+        sum += Math.pow(v, 2);
+      }
+      return Math.sqrt(sum);
+  }
+
+  /**
+   * Compute the Euclidean norm of a collection of doubles
+   * @param vector the vector to compute the norm for
+   * @return the Euclidean norm of the vector
+   */
+  public static double euclideanNorm(Double[] vector) {
       double sum = 0;
       for (double v : vector) {
         sum += Math.pow(v, 2);
@@ -102,7 +115,7 @@ public class VectorUtils {
    * @param vector the vector to compute the norm for
    * @return the Euclidean norm of the vector
    */
-  public static Double euclideanNorm(Collection<Double> vector) {
+  public static double euclideanNorm(Collection<Double> vector) {
     double sum = 0;
     for (double v : vector) {
       sum += Math.pow(v, 2);

@@ -18,16 +18,11 @@
 
 package org.mymedialite.eval;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import org.mymedialite.data.IRatings;
 import org.mymedialite.data.ISplit;
-import org.mymedialite.ratingprediction.IIncrementalRatingPredictor;
-import org.mymedialite.ratingprediction.IRatingPredictor;
-import org.mymedialite.ratingprediction.RatingPredictor;
+import org.mymedialite.ratingprediction.*;
 
 /** Evaluation class */
 public class Ratings {

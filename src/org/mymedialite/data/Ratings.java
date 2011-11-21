@@ -23,158 +23,52 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 
 import org.mymedialite.util.IntHashSet;
 
 /**
- * Data structure for storing ratings</summary>
+ * Data structure for storing ratings
  * Small memory overhead for added flexibility.
  * This data structure supports incremental updates.
+ * @version 2.02
  */
-public class Ratings implements IRatings {
-
-	private ArrayList<Integer> users = new ArrayList<Integer>();
-
-	private ArrayList<Integer> items = new ArrayList<Integer>();
+public class Ratings extends DataSet implements IRatings {
 
 	protected ArrayList<Double> values = new ArrayList<Double>();
-
-	private int maxUserID;
-
-	private int maxItemID;
-
-	double minRating = Double.MAX_VALUE;
-
-	double maxRating = Double.MIN_NORMAL;
-
-	private List<List<Integer>> byUser;
-
-	private List<List<Integer>> byItem;
-
-	private List<Integer> randomIndex;
-
-	private ArrayList<Integer> countByUser;
-
-	private ArrayList<Integer> countByItem;
-
-	protected void setUsers(ArrayList<Integer> users) {
-		this.users = users;
-	}
-
-	public List<Integer> getUsers() {
-		return users;
-	}
-
-	protected void setItems(ArrayList<Integer> items) {
-		this.items = items;
-	}
-
-	public List<Integer> getItems() {
-		return items;
-	}
-
 
 	public Double get(int index) {
 		return values.get(index);
 	}
 
-	@Override
 	public Double set(int index, Double rating) {
 		return values.set(index, rating);
-	}
+	}	
 
-	public int size() {
-		return values.size();
-	}
-
-	protected void setMaxUserID(int maxUserID) {
-		this.maxUserID = maxUserID;
-	}
-
-	@Override
-	public int getMaxUserID() {
-		return maxUserID;
-	}
-
-	protected void setMaxItemID(int maxItemID) {
-		this.maxItemID = maxItemID;
-	}
-
-	@Override
-	public int getMaxItemID() {
-		return maxItemID;
-	}
-
-	protected void setMinRating(double value) {
+	public void setMinRating(double value) {
 		minRating = value;    
 	}
-
-	@Override
 	public double getMinRating() {
 		return minRating;    
-	}
-
-	protected void setMaxRating(double value) {
+	}	
+	double minRating = Double.MAX_VALUE;
+	
+	public void setMaxRating(double value) {
 		maxRating = value;
 	}
-
-	@Override
 	public double getMaxRating() {
 		return maxRating;
 	}
+	double maxRating = Double.MIN_NORMAL;
 
-	/** Ratings indices organized by user. */
-	public List<List<Integer>> getByUser() {
-		if (byUser == null)
-			buildUserIndices();
-		return byUser;
-	}
-
-	public void buildUserIndices() {
-		byUser = new ArrayList<List<Integer>>(maxUserID + 1);
-		for (int u = 0; u <= maxUserID; u++)
-			byUser.add(u, new ArrayList<Integer>());
-		// One pass over the data.
-		for (int index = 0; index < size(); index++)
-			byUser.get(users.get(index)).add(index);
-	}
-
-	public List<List<Integer>> getByItem() {
-		if (byItem == null)
-			buildItemIndices();
-		return byItem;
-	}
-
-	public void buildItemIndices() {
-		byItem = new ArrayList<List<Integer>>(maxItemID + 1);
-		for (int i = 0; i <= maxItemID; i++)
-			byItem.add(i, new ArrayList<Integer>());
-
-		for (int index = 0; index < size(); index++)
-			byItem.get(items.get(index)).add(index);
-	}
-
-	public List<Integer> getRandomIndex() {
-		if (randomIndex == null || randomIndex.size() != size())
-			buildRandomIndex();
-		return randomIndex;
-	}
-
-	public void buildRandomIndex() {
-		randomIndex = new ArrayList<Integer>(size());
-		for (int index = 0; index < size(); index++)
-			randomIndex.add(index, index);
-		Collections.shuffle(randomIndex);
-	}
-
+	private ArrayList<Integer> countByUser;
 	public List<Integer> getCountByUser() {
 		if (countByUser == null)
 			buildByUserCounts();
 		return countByUser;
 	}
-
 	public void buildByUserCounts() {
 		countByUser = new ArrayList<Integer>(maxUserID + 1);
 		for (int index = 0; index < size(); index++) {
@@ -187,12 +81,12 @@ public class Ratings implements IRatings {
 		}
 	}       
 
+	private ArrayList<Integer> countByItem;
 	public List<Integer> getCountByItem() {
 		if (countByItem == null || countByItem.size() < maxItemID + 1)
 			buildByItemCounts();
 		return countByItem;
 	}
-
 	public void buildByItemCounts() {
 		countByItem = new ArrayList<Integer>(maxItemID + 1);
 		for (int index = 0; index < size(); index++) {
@@ -213,28 +107,15 @@ public class Ratings implements IRatings {
 		return average;
 	}
 
-	public IntHashSet getAllUsers() {
-		IntHashSet result_set = new IntHashSet();
-		for (int index = 0; index < users.size(); index++)
-			result_set.add(users.get(index));
-		return result_set;
-	}
-
-	public IntHashSet getAllItems() {
-		IntHashSet result_set = new IntHashSet();
-		for (int index = 0; index < items.size(); index++)
-			result_set.add(items.get(index));
-		return result_set;
-	}
-
-	public IntHashSet getUsers(List<Integer> indices) {
+	
+	public Set<Integer> getUsers(List<Integer> indices) {
 		IntHashSet result_set = new IntHashSet();
 		for (int index : indices)
 			result_set.add(users.get(index));
 		return result_set;
 	}
 
-	public IntHashSet getItems(List<Integer> indices) {
+	public Set<Integer> getItems(List<Integer> indices) {
 		IntHashSet result_set = new IntHashSet();
 		for (int index : indices)
 			result_set.add(items.get(index));
