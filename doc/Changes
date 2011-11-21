@@ -3,9 +3,11 @@
  - add BiasedMatrixFactroization (zeno, chris)
  - rename package itemrecommendation to itemrec (zeno)
  - add Mahout jarfile (zeno)
+ - update IRatings and IPosOnlyFeedback s.t. they match MML 2.02 (zeno)
  - eval.ItemsOnline, ratingprediction.IIncrementalRatingPredictor,
    and itemrecommendation.IIncrementalItemRecommender (zeno)
  - transferred everything available from Chris's 1.0 branch (zeno)
  - transferred everything available from Andreas's branch (zeno)
+ - add conversion program to help transferring from C# to Java (chris)
 
 2011-11-18	initial port of MyMediaLite 1.05 by Chris Newell
