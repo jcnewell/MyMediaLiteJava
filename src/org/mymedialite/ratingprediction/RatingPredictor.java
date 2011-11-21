@@ -32,10 +32,10 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
   public int maxItemID;
 
   /** The maximum rating value */
-  public double max_rating;
+  public double maxRating;
   
   /** The minimum rating value */
-  public double min_rating;
+  public double minRating;
 
   // TODO find clearer name for this
   /** true if users shall be updated when doing online updates */
@@ -63,22 +63,22 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 
   @Override
   public double getMaxRating() {
-    return max_rating;
+    return maxRating;
   }
 
   @Override
   public void setMaxRating(double max_rating) {
-    this.max_rating = max_rating;
+    this.maxRating = max_rating;
   }
 
   @Override
   public double getMinRating() {
-    return min_rating;
+    return minRating;
   }
 
   @Override
   public void setMinRating(double min_rating) {
-    this.min_rating = min_rating;
+    this.minRating = min_rating;
   }
   
   /// <inheritdoc/>
