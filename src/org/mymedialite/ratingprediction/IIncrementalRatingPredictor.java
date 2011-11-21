@@ -21,6 +21,7 @@ package org.mymedialite.ratingprediction;
 /**
  * Interface for rating predictors which support incremental training
  * @author Zeno Gantner
+ * @version 2.02
  * By incremental training we mean that after each update, the recommender does not
  * perform a complete re-training using all data, but only a brief update procedure
  * taking into account the update and only a subset of the existing training data.
@@ -33,26 +34,26 @@ package org.mymedialite.ratingprediction;
 public interface IIncrementalRatingPredictor extends IRatingPredictor {
 	 /**
 	  * Add a new rating and perform incremental training
- 	  * @param user_id the ID of the user who performed the rating
- 	  * @param item_id the ID of the rated item
+ 	  * @param userId the ID of the user who performed the rating
+ 	  * @param itemId the ID of the rated item
 	  * @param rating the rating value
 	  */
-	void addRating(int user_id, int item_id, double rating);
+	void addRating(int userId, int itemId, double rating);
 
 	 /**
 	  * Update an existing rating and perform incremental training
-	  * @param user_id the ID of the user who performed the rating
-	  * @param item_id the ID of the rated item
+	  * @param userId the ID of the user who performed the rating
+	  * @param itemId the ID of the rated item
 	  * @param rating the rating value
 	  */
-	void updateRating(int user_id, int item_id, double rating);
+	void updateRating(int userId, int itemId, double rating);
 
 	 /**
 	  * Remove an existing rating and perform "incremental" training
-	  * @param user_id the ID of the user who performed the rating
-	  * @param item_id the ID of the rated item
+	  * @param userId the ID of the user who performed the rating
+	  * @param itemId the ID of the rated item
 	  */
-	void removeRating(int user_id, int item_id);
+	void removeRating(int userId, int itemId);
 
 	/**
 	 * Remove a user from the recommender model, and delete all their ratings
@@ -60,9 +61,9 @@ public interface IIncrementalRatingPredictor extends IRatingPredictor {
 	 * It is up to the recommender implementor whether there should be model updates after this
 	 * action, both options are valid.
 	 * 
-	 * @param user_id the ID of the user to be removed
+	 * @param userId the ID of the user to be removed
 	 */
-	void removeUser(int user_id);
+	void removeUser(int userId);
 
 	 /**
 	  * Remove an item from the recommender model, and delete all ratings of this item
@@ -70,7 +71,7 @@ public interface IIncrementalRatingPredictor extends IRatingPredictor {
 	  * It is up to the recommender implementor whether there should be model updates after this
 	  * action, both options are valid.
 	  * 
-	  * @param item_id the ID of the user to be removed
+	  * @param itemId the ID of the user to be removed
 	  */
-	void removeItem(int item_id);
+	void removeItem(int itemId);
 }

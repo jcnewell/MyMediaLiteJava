@@ -85,8 +85,8 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 	public abstract double predict(int user_id, int item_id);
 
 	/** 
-	 * Inits the recommender model.
-	 * This method is called by the Train() method.
+	 * Initializes the recommender model.
+	 * This method is called by the train() method.
 	 * When overriding, please call base.InitModel() to get the functions performed in the base class.
 	 */
 	protected void initModel() {
@@ -107,44 +107,4 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 	public boolean canPredict(int user_id, int item_id) {
 		return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
 	}
-
-	/// <inheritdoc/>
-	public void add(int user_id, int item_id, double rating) {
-		/// Added JCN to override exiting value if it exists.
-		//ratings.add(user_id, item_id, rating);
-		ratings.addOrUpdate(user_id, item_id, rating);
-	}
-
-	/// <inheritdoc/>
-	public void updateRating(int user_id, int item_id, double rating) {
-
-	}
-
-	/// <inheritdoc/>
-	public void removeRating(int user_id, int item_id) {
-
-	}
-
-	/// <inheritdoc/>
-	public void addUser(int user_id) {
-		maxUserID = Math.max(maxUserID, user_id);
-	}
-
-	/// <inheritdoc/>
-	public void addItem(int item_id) {
-		maxItemID = Math.max(maxItemID, item_id);
-	}
-
-	/// <inheritdoc/>
-	public void removeUser(int user_id) {
-		if (user_id == maxUserID)
-			maxUserID--;
-	}
-
-	/// <inheritdoc/>
-	public void removeItem(int item_id) {
-		if (item_id == maxItemID)
-			maxItemID--;
-	}
-
 }
