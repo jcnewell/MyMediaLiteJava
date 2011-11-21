@@ -1,10 +1,6 @@
 package newell.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class CSharpToJava {
 
@@ -62,19 +58,21 @@ public class CSharpToJava {
 
 					// Process language constructs.
 					line = line.replaceAll("override ", "");
-					line = line.replaceAll(".Count", ".size()");
+					line = line.replaceAll("virtual ", "");
+					line = line.replaceAll("\\.Count", ".size()");
 					line = line.replaceAll("ICollection", "Collection");
+					line = line.replaceAll(" List", " Vector");
 					line = line.replaceAll("IList", "List");
+					line = line.replaceAll("ISet", "Set");
 					line = line.replaceAll("bool", "boolean");
 					line = line.replaceAll(" : I", " implements I");
 					line = line.replaceAll(" : ", " extends ");
-					line = line.replaceAll("<int>", "<Integer>"); 
 					line = line.replaceAll("string", "String");
 					line = line.replaceAll(" \\{ get; \\}", "();");
-					line = line.replaceAll("Console.Out.WriteLine", "System.out.println");
-					line = line.replaceAll("Console.Out.Write", "System.out.print");
-					line = line.replaceAll("Console.Error.WriteLine", "System.err.println");
-					line = line.replaceAll("Console.Error.Write", "System.err.print");
+					line = line.replaceAll("Console\\.Out\\.WriteLine",   "System.out.println");
+					line = line.replaceAll("Console\\.Out\\.Write",       "System.out.print");
+					line = line.replaceAll("Console\\.Error\\.WriteLine", "System.err.println");
+					line = line.replaceAll("Console\\.Error\\.Write",     "System.err.print");
 					line = line.replaceAll(".userMatrix[user_id]", ".getUserMatrix().getRow(user_id)");
 					line = line.replaceAll(".itemMatrix[item_id]", ".getItemMatrix().getRow(item_id)");
 					line = line.replaceAll(" in ", " : ");
@@ -82,20 +80,20 @@ public class CSharpToJava {
 					line = line.replaceAll("<int", "<Integer");
 					line = line.replaceAll("double>", "Double>");
 					line = line.replaceAll("foreach", "for");
+					line = line.replaceAll(" in ", " : ");
 					line = line.replaceAll("static public", "public static");
 					line = line.replaceAll("StreamReader", "BufferedReader");
 					line = line.replaceAll("StreamWriter", "PrintWriter");
-					line = line.replaceAll(" int.parse", " Integer.parseInt");
+					line = line.replaceAll(" int\\.parse", " Integer.parseInt");
 					line = line.replaceAll(" unit ", " int ");
-					//line = line.replaceAll("ArgumentException", "IllegalArgumentException");
-					//line = line.replaceAll(" base", " super");
-					//line = line.replaceAll("", "");
-					//line = line.replaceAll("", "");
+					line = line.replaceAll("\\.Length", ".length");
+					line = line.replaceAll("ArgumentException", "IllegalArgumentException");
+					line = line.replaceAll(" base\\.", " super.");
 
 					char[] chars = line.toCharArray();
-					for (int i = 0; i < chars.length; i++) {
-						if(chars[i] == '.' && i < chars.length - 1) chars[i+1] = Character.toLowerCase(chars[i+1]);
-					}
+					for (int i = 0; i < chars.length; i++)
+						if (chars[i] == '.' && i < chars.length - 1)
+							chars[i+1] = Character.toLowerCase(chars[i+1]);
 					line = new String(chars);
 				}
 
