@@ -20,7 +20,9 @@ package org.mymedialite.data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.management.openmbean.InvalidKeyException;
 
@@ -45,7 +47,7 @@ public class Ratings implements IRatings {
 
 	double minRating = Double.MAX_VALUE;
 
-	double maxRating = Double.MIN_VALUE;
+	double maxRating = Double.MIN_NORMAL;
 
 	private List<List<Integer>> byUser;
 
@@ -74,12 +76,13 @@ public class Ratings implements IRatings {
 	}
 
 
-	public double get(int index) {
+	public Double get(int index) {
 		return values.get(index);
 	}
 
-	public void set(int index) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Double set(int index, Double rating) {
+		return values.set(index, rating);
 	}
 
 	public int size() {
@@ -343,10 +346,10 @@ public class Ratings implements IRatings {
 		add(user_id, item_id, rating);
 	}
 
-	public void removeAt(int index) {
+	public Double remove(int index) {
 		users.remove(index);
 		items.remove(index);
-		values.remove(index);
+		return values.remove(index);
 	}
 
 	public void removeUser(int user_id) {
@@ -388,5 +391,113 @@ public class Ratings implements IRatings {
 	public void insert(int index, double item) { throw new UnsupportedOperationException(); }
 
 	public boolean remove(double item) { throw new UnsupportedOperationException(); }
+
+	@Override
+	public boolean add(Double arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void add(int arg0, Double arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends Double> arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAll(int arg0, Collection<? extends Double> arg1) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean contains(Object arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int indexOf(Object arg0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Iterator<Double> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int lastIndexOf(Object arg0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ListIterator<Double> listIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ListIterator<Double> listIterator(int arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean remove(Object arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<Double> subList(int arg0, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[] toArray() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T[] toArray(T[] arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

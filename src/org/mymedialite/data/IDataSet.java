@@ -1,3 +1,5 @@
+package org.mymedialite.data;
+
 import java.util.List;
 
 // Copyright (C) 2011 Zeno Gantner
@@ -39,7 +41,7 @@ public interface IDataSet
 	/**
 	 * @return the number of interaction events in the dataset.
 	 */
-	int getSize();
+	int size();
 	
 	/**
 	 * @return the user entries.
@@ -62,11 +64,11 @@ public interface IDataSet
 	/**
 	 * @return all user IDs in the dataset.
 	 */
-	List<Integer> getAllUsers();
+	Integer[] getAllUsers();
 	/**
 	 * @return all item IDs in the dataset.
 	 */
-	List<Integer> getAllItems();
+	Integer[] getAllItems();
 
 	/**
 	 * indices by user.
@@ -82,19 +84,13 @@ public interface IDataSet
 	 * get a randomly ordered list of all indices.
 	 * Should be implemented as a lazy data structure
 	 */
-	List<Integer> getRandomIndex();
+	Integer[] getRandomIndex();
 
-	/**
-	 * Build the user indices.
-	 */
+	/** Build the user indices. */
 	void buildUserIndices();
-	/**
-	 * Build the item indices.
-	 */
+	/** Build the item indices. */
 	void buildItemIndices();
-	/**
-	 * Build the random index.
-	 */
+	/** Build the random index. */
 	void buildRandomIndex();
 
 	/**
