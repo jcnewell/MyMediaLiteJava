@@ -32,397 +32,361 @@ import org.mymedialite.util.IntHashSet;
  * This data structure supports incremental updates.
  */
 public class Ratings implements IRatings {
-  
-  private ArrayList<Integer> users;
-  
-  private ArrayList<Integer> items;
-  
-  protected ArrayList<Double> values;
-  
-  private int maxUserID;
-  
-  private int maxItemID;
-  
-  double minRating;
-  
-  double maxRating;
-  
-  private List<List<Integer>> byUser;
-  
-  private List<List<Integer>> byItem;
-  
-  private List<Integer> randomIndex;
-  
-  private ArrayList<Integer> countByUser;
-  
-  private ArrayList<Integer> countByItem;
-  
-  /** Default constructor. */
-  public Ratings() {
-    users  = new ArrayList<Integer>();
-    items  = new ArrayList<Integer>();
-    values = new ArrayList<Double>();
-    minRating = Double.MAX_VALUE;
-    maxRating = Double.MIN_VALUE;
-  }
-  
-  protected void setUsers(ArrayList<Integer> users) {
-    this.users = users;
-  }
-  
-  public List<Integer> getUsers() {
-    return users;
-  }
 
-  protected void setItems(ArrayList<Integer> items) {
-    this.items = items;
-  }
-  
-  public List<Integer> getItems() {
-    return items;
-  }
-  
+	private ArrayList<Integer> users = new ArrayList<Integer>();
 
-  public double get(int index) {
-    return values.get(index);
-  }
-  
-  public void set(int index) {
-    throw new UnsupportedOperationException();
-  }
-  
-  public int size() {
-    return values.size();
-  }
+	private ArrayList<Integer> items = new ArrayList<Integer>();
 
-  protected void setMaxUserID(int maxUserID) {
-    this.maxUserID = maxUserID;
-  }
-  
-  @Override
-  public int getMaxUserID() {
-    return maxUserID;
-  }
+	protected ArrayList<Double> values = new ArrayList<Double>();
 
-  protected void setMaxItemID(int maxItemID) {
-    this.maxItemID = maxItemID;
-  }
-  
-  @Override
-  public int getMaxItemID() {
-    return maxItemID;
-  }
+	private int maxUserID;
 
-  protected void setMinRating(double value) {
-    minRating = value;    
-  }
-  
-  @Override
-  public double getMinRating() {
-    return minRating;    
-  }
+	private int maxItemID;
 
-  protected void setMaxRating(double value) {
-    maxRating = value;
-  }
-  
-  @Override
-  public double getMaxRating() {
-    return maxRating;
-  }
+	double minRating = Double.MAX_VALUE;
 
-  /** Ratings indices organized by user. */
-  public List<List<Integer>> getByUser() {
-    if (byUser == null) buildUserIndices();
-    return byUser;
-  }
+	double maxRating = Double.MIN_VALUE;
 
-  public void buildUserIndices() {
-    byUser = new ArrayList<List<Integer>>(maxUserID + 1);
-    for (int u = 0; u <= maxUserID; u++) {
-      byUser.add(u, new ArrayList<Integer>());
-    }
-    // One pass over the data.
-    for (int index = 0; index < size(); index++) {
-      byUser.get(users.get(index)).add(index);
-    }
-  }
+	private List<List<Integer>> byUser;
 
-  public List<List<Integer>> getByItem() {
-    if (byItem == null) buildItemIndices();
-    return byItem;
-  }
+	private List<List<Integer>> byItem;
 
-  public void buildItemIndices() {
-    byItem = new ArrayList<List<Integer>>(maxItemID + 1);
-    for (int i = 0; i <= maxItemID; i++) {
-      byItem.add(i, new ArrayList<Integer>());
-    }
+	private List<Integer> randomIndex;
 
-    for (int index = 0; index < size(); index++) {
-      byItem.get(items.get(index)).add(index);
-    }
-  }
+	private ArrayList<Integer> countByUser;
 
-  public List<Integer> getRandomIndex() {
-    if (randomIndex == null || randomIndex.size() != size()) buildRandomIndex();
-    return randomIndex;
-  }
+	private ArrayList<Integer> countByItem;
 
-  public void buildRandomIndex() {
-    randomIndex = new ArrayList<Integer>(size());
-    for (int index = 0; index < size(); index++) {
-      randomIndex.add(index, index);
-    }
-    Collections.shuffle(randomIndex);
-  }
+	protected void setUsers(ArrayList<Integer> users) {
+		this.users = users;
+	}
 
-  public List<Integer> getCountByUser() {
-    if (countByUser == null) buildByUserCounts();
-    return countByUser;
-  }
+	public List<Integer> getUsers() {
+		return users;
+	}
 
-  public void buildByUserCounts() {
-    countByUser = new ArrayList<Integer>(maxUserID + 1);
-    for (int index = 0; index < size(); index++) {
-      int userId = users.get(index);
-      Integer count = countByUser.get(userId);
-      if(count != null) {
-        countByUser.set(userId, count + 1);
-      } else {
-        countByUser.set(userId, 1);
-      }
-    }
-  }       
-  
-  public List<Integer> getCountByItem() {
-    System.out.println("getCountByItem");
-    if (countByItem == null || countByItem.size() < maxItemID + 1) buildByItemCounts();
-    return countByItem;
-  }
+	protected void setItems(ArrayList<Integer> items) {
+		this.items = items;
+	}
 
-  public void buildByItemCounts() {
-    System.out.println("buildByItemCounts");
-    countByItem = new ArrayList<Integer>(maxItemID + 1);
-    for (int index = 0; index < size(); index++) {
-      int itemId = items.get(index);
-      Integer count = countByItem.get(itemId);
-      if(count != null) {
-        countByItem.set(itemId, count + 1);
-      } else {
-        countByItem.set(itemId, 1);
-      }
-    }
-  }       
-  
-  // TODO speed up
-  public double getAverage() {
-    double sum = 0;
-    for (int index = 0; index < size(); index++) {
-      sum += get(index);
-    }
-    double average = sum / size();
-    return average;
-  }
+	public List<Integer> getItems() {
+		return items;
+	}
 
-  // TODO think whether we want to have a set or a list here
-  public IntHashSet getAllUsers() {
-    IntHashSet result_set = new IntHashSet();
-    for (int index = 0; index < users.size(); index++) {
-     result_set.add(users.get(index));
-    }
-    return result_set;
-  }
 
-  public IntHashSet getAllItems() {
-    IntHashSet result_set = new IntHashSet();
-    for (int index = 0; index < items.size(); index++) {
-      result_set.add(items.get(index));
-    }
-    return result_set;
-  }
+	public double get(int index) {
+		return values.get(index);
+	}
 
-  public IntHashSet getUsers(List<Integer> indices) {
-    IntHashSet result_set = new IntHashSet();
-    for (int index : indices) {
-      result_set.add(users.get(index));
-    }
-    return result_set;
-  }
+	public void set(int index) {
+		throw new UnsupportedOperationException();
+	}
 
-  public IntHashSet getItems(List<Integer> indices) {
-    IntHashSet result_set = new IntHashSet();
-    for (int index : indices) {
-      result_set.add(items.get(index));
-    }
-    return result_set;
-  }
+	public int size() {
+		return values.size();
+	}
 
-  public double get(int user_id, int item_id) {
-    // TODO speed up
-    for (int index = 0; index < values.size(); index++) {
-      if (users.get(index) == user_id && items.get(index) == item_id) return values.get(index);
-    }
-    throw new InvalidKeyException("rating " + user_id +  ", " + item_id + " not found.");
-  }
+	protected void setMaxUserID(int maxUserID) {
+		this.maxUserID = maxUserID;
+	}
 
-  public Double tryGet(int user_id, int item_id) {
-    // TODO speed up
-    for (int index = 0; index < values.size(); index++) {
-      if (users.get(index) == user_id && items.get(index) == item_id) {
-        return values.get(index);
-      }
-    }
-    return null;
-  }
+	@Override
+	public int getMaxUserID() {
+		return maxUserID;
+	}
 
-  public double get(int user_id, int item_id, Collection<Integer> indexes) {
-    // TODO speed up
-    for (int index : indexes) {
-      if (users.get(index) == user_id && items.get(index) == item_id) return values.get(index);
-    }
-    throw new InvalidKeyException("rating " + user_id + ", " + item_id +  " not found.");
-  }
+	protected void setMaxItemID(int maxItemID) {
+		this.maxItemID = maxItemID;
+	}
 
-  public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
-    // TODO speed up
-    for (int index : indexes) {
-      if (users.get(index) == user_id && items.get(index) == item_id) {
-        return values.get(index);
-      }
-    }
-    return null;
-  }
+	@Override
+	public int getMaxItemID() {
+		return maxItemID;
+	}
 
-  public Integer tryGetIndex(int user_id, int item_id) {
-    // TODO speed up
-    for (int i = 0; i < size(); i++) {
-      if (users.get(i) == user_id && items.get(i) == item_id) {
-        return i;
-      }
-    }
-    return null;
-  }
+	protected void setMinRating(double value) {
+		minRating = value;    
+	}
 
-  public Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes) {
-    // TODO speed up
-    for (int i : indexes) {
-      if (users.get(i) == user_id && items.get(i) == item_id) {
-        return i;
-      }
-    }
-    return null;
-  }
+	@Override
+	public double getMinRating() {
+		return minRating;    
+	}
 
-  public int getIndex(int user_id, int item_id) {
-      // TODO speed up
-      for (int i = 0; i < size(); i++) {
-        if (users.get(i) == user_id && items.get(i) == item_id) return i;
-      }
-      throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
-  }
+	protected void setMaxRating(double value) {
+		maxRating = value;
+	}
 
-  public int getIndex(int user_id, int item_id, Collection<Integer> indexes) {
-      // TODO speed up
-      for (int i : indexes) {
-          if (users.get(i) == user_id && items.get(i) == item_id) return i;
-      }
-      throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
-  }
+	@Override
+	public double getMaxRating() {
+		return maxRating;
+	}
 
-  public void add(int user_id, int item_id, float rating) {
-      add(user_id, item_id, (double) rating);
-      byUser = null;
-  }       
-  
-  public void add(int user_id, int item_id, byte rating) {
-      add(user_id, item_id, (double) rating);
-      byUser = null;
-  }
+	/** Ratings indices organized by user. */
+	public List<List<Integer>> getByUser() {
+		if (byUser == null)
+			buildUserIndices();
+		return byUser;
+	}
 
-  public void add(int user_id, int item_id, double rating) {
-    users.add(user_id);
-    items.add(item_id);
-    values.add(rating);
+	public void buildUserIndices() {
+		byUser = new ArrayList<List<Integer>>(maxUserID + 1);
+		for (int u = 0; u <= maxUserID; u++)
+			byUser.add(u, new ArrayList<Integer>());
+		// One pass over the data.
+		for (int index = 0; index < size(); index++)
+			byUser.get(users.get(index)).add(index);
+	}
 
-    int pos = users.size() - 1;
-    
-    // TODO maybe avoid for fast reading.
-    if (user_id > maxUserID) maxUserID = user_id;
-    if (item_id > maxItemID) maxItemID = item_id;
-    if (rating < minRating)  minRating = rating;
-    if (rating > maxRating)  maxRating = rating;
-      
-    // Update index data structures if necessary.
-    if (byUser != null) {
-      for (int u = byUser.size(); u <= user_id; u++) {
-        byUser.add(new ArrayList<Integer>());
-      }
-      byUser.get(user_id).add(pos);
-    }
-    if (byItem != null) {
-      for (int i = byItem.size(); i <= item_id; i++) {
-        byItem.add(new ArrayList<Integer>());
-      }
-      byItem.get(item_id).add(pos);
-    }
-  }
+	public List<List<Integer>> getByItem() {
+		if (byItem == null)
+			buildItemIndices();
+		return byItem;
+	}
 
-  /** Override an existing value if it exists. */
-  public void addOrUpdate(int user_id, int item_id, double rating) {
-    for (int index = 0; index < values.size(); index++) {
-      if (users.get(index) == user_id && items.get(index) == item_id) {
-        values.set(index, rating);
-        return;
-      }
-    }
-    add(user_id, item_id, rating);
-  }
+	public void buildItemIndices() {
+		byItem = new ArrayList<List<Integer>>(maxItemID + 1);
+		for (int i = 0; i <= maxItemID; i++)
+			byItem.add(i, new ArrayList<Integer>());
 
-  public void removeAt(int index) {
-      users.remove(index);
-      items.remove(index);
-      values.remove(index);
-  }
-  
-  public void removeUser(int user_id) {
-    for (int index = 0; index < size(); index++) {
-      if (users.get(index) == user_id) {
-        users.remove(index);
-        items.remove(index);
-        values.remove(index);
-      }
-    }  
-    if (maxUserID == user_id) maxUserID--;
-  }
+		for (int index = 0; index < size(); index++)
+			byItem.get(items.get(index)).add(index);
+	}
 
-  public void removeItem(int item_id) {
-    for (int index = 0; index < size(); index++) {
-      if (items.get(index) == item_id) {
-        users.remove(index);
-        items.remove(index);
-        values.remove(index);
-      }
-    }
-    if (maxItemID == item_id) maxItemID--;
-  }       
-  
-  public boolean isReadOnly() {
-    return true;
-  }
-  
-  public void add(double item) { throw new UnsupportedOperationException(); }
-  
-  public void clear() { throw new UnsupportedOperationException(); }
-  
-  public boolean contains(double item) { throw new UnsupportedOperationException(); }
+	public List<Integer> getRandomIndex() {
+		if (randomIndex == null || randomIndex.size() != size())
+			buildRandomIndex();
+		return randomIndex;
+	}
 
-  public void copyTo(double[] array, int index) { throw new UnsupportedOperationException(); }        
-  
-  public int indexOf(double item) { throw new UnsupportedOperationException(); }
-  
-  public void insert(int index, double item) { throw new UnsupportedOperationException(); }
+	public void buildRandomIndex() {
+		randomIndex = new ArrayList<Integer>(size());
+		for (int index = 0; index < size(); index++)
+			randomIndex.add(index, index);
+		Collections.shuffle(randomIndex);
+	}
 
-  public boolean remove(double item) { throw new UnsupportedOperationException(); }
+	public List<Integer> getCountByUser() {
+		if (countByUser == null)
+			buildByUserCounts();
+		return countByUser;
+	}
+
+	public void buildByUserCounts() {
+		countByUser = new ArrayList<Integer>(maxUserID + 1);
+		for (int index = 0; index < size(); index++) {
+			int userId = users.get(index);
+			Integer count = countByUser.get(userId);
+			if (count != null)
+				countByUser.set(userId, count + 1);
+			else
+				countByUser.set(userId, 1);
+		}
+	}       
+
+	public List<Integer> getCountByItem() {
+		if (countByItem == null || countByItem.size() < maxItemID + 1)
+			buildByItemCounts();
+		return countByItem;
+	}
+
+	public void buildByItemCounts() {
+		countByItem = new ArrayList<Integer>(maxItemID + 1);
+		for (int index = 0; index < size(); index++) {
+			int itemId = items.get(index);
+			Integer count = countByItem.get(itemId);
+			if (count != null)
+				countByItem.set(itemId, count + 1);
+			else
+				countByItem.set(itemId, 1);
+		}
+	}       
+
+	public double getAverage() {
+		double sum = 0;
+		for (int index = 0; index < size(); index++)
+			sum += get(index);
+		double average = sum / size();
+		return average;
+	}
+
+	public IntHashSet getAllUsers() {
+		IntHashSet result_set = new IntHashSet();
+		for (int index = 0; index < users.size(); index++)
+			result_set.add(users.get(index));
+		return result_set;
+	}
+
+	public IntHashSet getAllItems() {
+		IntHashSet result_set = new IntHashSet();
+		for (int index = 0; index < items.size(); index++)
+			result_set.add(items.get(index));
+		return result_set;
+	}
+
+	public IntHashSet getUsers(List<Integer> indices) {
+		IntHashSet result_set = new IntHashSet();
+		for (int index : indices)
+			result_set.add(users.get(index));
+		return result_set;
+	}
+
+	public IntHashSet getItems(List<Integer> indices) {
+		IntHashSet result_set = new IntHashSet();
+		for (int index : indices)
+			result_set.add(items.get(index));
+		return result_set;
+	}
+
+	public double get(int user_id, int item_id) {
+		for (int index = 0; index < values.size(); index++)
+			if (users.get(index) == user_id && items.get(index) == item_id)
+				return values.get(index);
+		throw new InvalidKeyException("rating " + user_id +  ", " + item_id + " not found.");
+	}
+
+	public Double tryGet(int user_id, int item_id) {
+		for (int index = 0; index < values.size(); index++)
+			if (users.get(index) == user_id && items.get(index) == item_id)
+				return values.get(index);
+		return null;
+	}
+
+	public double get(int user_id, int item_id, Collection<Integer> indexes) {
+		for (int index : indexes)
+			if (users.get(index) == user_id && items.get(index) == item_id)
+				return values.get(index);
+		throw new InvalidKeyException("rating " + user_id + ", " + item_id +  " not found.");
+	}
+
+	public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
+		for (int index : indexes)
+			if (users.get(index) == user_id && items.get(index) == item_id)
+				return values.get(index);
+		return null;
+	}
+
+	public Integer tryGetIndex(int user_id, int item_id) {
+		for (int i = 0; i < size(); i++)
+			if (users.get(i) == user_id && items.get(i) == item_id)
+				return i;
+		return null;
+	}
+
+	public Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes) {
+		for (int i : indexes)
+			if (users.get(i) == user_id && items.get(i) == item_id)
+				return i;
+		return null;
+	}
+
+	public int getIndex(int user_id, int item_id) {
+		for (int i = 0; i < size(); i++)
+			if (users.get(i) == user_id && items.get(i) == item_id)
+				return i;
+		throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
+	}
+
+	public int getIndex(int user_id, int item_id, Collection<Integer> indexes) {
+		for (int i : indexes)
+			if (users.get(i) == user_id && items.get(i) == item_id)
+				return i;
+		throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
+	}
+
+	public void add(int user_id, int item_id, float rating) {
+		add(user_id, item_id, (double) rating);
+		byUser = null;
+	}       
+
+	public void add(int user_id, int item_id, byte rating) {
+		add(user_id, item_id, (double) rating);
+		byUser = null;
+	}
+
+	public void add(int user_id, int item_id, double rating) {
+		users.add(user_id);
+		items.add(item_id);
+		values.add(rating);
+
+		int pos = users.size() - 1;
+
+		if (user_id > maxUserID)
+			maxUserID = user_id;
+		if (item_id > maxItemID)
+			maxItemID = item_id;
+		if (rating < minRating)
+			minRating = rating;
+		if (rating > maxRating)
+			maxRating = rating;
+
+		// Update index data structures if necessary.
+		if (byUser != null) {
+			for (int u = byUser.size(); u <= user_id; u++)
+				byUser.add(new ArrayList<Integer>());
+			byUser.get(user_id).add(pos);
+		}
+		if (byItem != null) {
+			for (int i = byItem.size(); i <= item_id; i++)
+				byItem.add(new ArrayList<Integer>());
+			byItem.get(item_id).add(pos);
+		}
+	}
+
+	/** Override an existing value if it exists. */
+	public void addOrUpdate(int user_id, int item_id, double rating) {
+		for (int index = 0; index < values.size(); index++)
+			if (users.get(index) == user_id && items.get(index) == item_id) {
+				values.set(index, rating);
+				return;
+			}
+		add(user_id, item_id, rating);
+	}
+
+	public void removeAt(int index) {
+		users.remove(index);
+		items.remove(index);
+		values.remove(index);
+	}
+
+	public void removeUser(int user_id) {
+		for (int index = 0; index < size(); index++)
+			if (users.get(index) == user_id) {
+				users.remove(index);
+				items.remove(index);
+				values.remove(index);
+			}
+		if (maxUserID == user_id)
+			maxUserID--;
+	}
+
+	public void removeItem(int item_id) {
+		for (int index = 0; index < size(); index++)
+			if (items.get(index) == item_id) {
+				users.remove(index);
+				items.remove(index);
+				values.remove(index);
+			}
+		if (maxItemID == item_id)
+			maxItemID--;
+	}       
+
+	public boolean isReadOnly() {
+		return true;
+	}
+
+	public void add(double item) { throw new UnsupportedOperationException(); }
+
+	public void clear() { throw new UnsupportedOperationException(); }
+
+	public boolean contains(double item) { throw new UnsupportedOperationException(); }
+
+	public void copyTo(double[] array, int index) { throw new UnsupportedOperationException(); }        
+
+	public int indexOf(double item) { throw new UnsupportedOperationException(); }
+
+	public void insert(int index, double item) { throw new UnsupportedOperationException(); }
+
+	public boolean remove(double item) { throw new UnsupportedOperationException(); }
 
 }
