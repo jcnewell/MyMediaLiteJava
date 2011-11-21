@@ -151,11 +151,10 @@ public class BPRMF extends MF {
 		if (boldDriver) {
 			double loss = computeLoss();
 
-			if (loss > lastLoss) {
+			if (loss > lastLoss)
 				learnRate *= 0.5;
-			} else if (loss < lastLoss) {
+			else if (loss < lastLoss)
 				learnRate *= 1.1;
-			}
 			lastLoss = loss;
 
 			System.err.println("loss: " + loss + " learnRate: " + learnRate);
@@ -450,11 +449,10 @@ public class BPRMF extends MF {
 			for (int i = 0; i < prediction.length; i++) {
 				int item_id = prediction[i];
 
-				if (feedback.getUserMatrix().get(user_id, item_id)) {
+				if (feedback.getUserMatrix().get(user_id, item_id))
 					num_pos_above++;
-				} else {
+				else
 					num_correct_pairs += num_pos_above;
-				}
 			}
 			double user_auc = ((double)num_correct_pairs) / num_eval_pairs;
 			sum_auc += user_auc;
