@@ -24,17 +24,14 @@ import org.mymedialite.datatype.SparseBooleanMatrix;
  * Interface for recommenders that take binary user attributes into account
  * 
  * @author Zeno Gantner, Andreas Hoffmann
+ * @version 2.03
  */
 public interface IUserAttributeAwareRecommender extends IRecommender {
-	/**
+
+  /**
 	 * Getter for number of binary user attributes
 	 */
-	public int getNumUserAttributes();
-	
-	/**
-	 * Setter for number of binary user attributes
-	 */
-	public void setNumUserAttributes(int numOfAttributes);
+	public int numUserAttributes();
 
 	/**
 	 * Getter for binary user attributes
@@ -45,4 +42,5 @@ public interface IUserAttributeAwareRecommender extends IRecommender {
 	 * Setter for binary user attributes
 	 */
 	public void setUserAttributes(SparseBooleanMatrix s);
+
 }

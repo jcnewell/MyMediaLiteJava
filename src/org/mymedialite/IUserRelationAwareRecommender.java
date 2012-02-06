@@ -24,6 +24,7 @@ import org.mymedialite.datatype.SparseBooleanMatrix;
  * Interface for recommenders that take a binary relation over users into account
  * 
  * @author Zeno Gantner, Andreas Hoffmann
+ * @version 2.03
  */
 public interface IUserRelationAwareRecommender extends IRecommender {
 
@@ -40,5 +41,5 @@ public interface IUserRelationAwareRecommender extends IRecommender {
 	/**
 	 * Number of users
 	 */
-	public int getNumUsers();
+	public int numUsers();
 }

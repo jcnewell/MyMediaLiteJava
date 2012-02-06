@@ -1,4 +1,4 @@
-// Copyright (C) 2010 Zeno Gantner, Chris Newell
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -17,25 +17,29 @@
 
 package org.mymedialite;
 
+import java.util.List;
+
 /**
- * Interface representing iteratively trained models.
+ * Interface for classes that provide user similarities.
  * @version 2.03
  */
-public interface IIterativeModel {
+public interface IUserSimilarityProvider {
 
-  /** Set the number of iterations to run the training */
-  void setNumIter(int numIter);
-
-  /** Get the number of iterations to run the training */
-  int getNumIter();
-
-  /** Run one iteration (= pass over the training data) */
-  void iterate();
-
-  /** 
-   * Compute the current loss of the model
-   * @return the current loss; -1 if not implemented
+  /**
+   * get the similarity between two users.
+   * @return the user similarity; higher means more similar
+   * @param user_id1 the ID of the first user
+   * @param user_id2 the ID of the second user
    */
-  double computeLoss();
-  
+  float getUserSimilarity(int user_id1, int user_id2);
+
+  /**
+   * get the most similar users.
+   * @return the users most similar to a given user
+   * @param user_id the ID of the user
+   * @param n the number of similar users to return
+   */
+  int[] getMostSimilarUsers(int user_id, int n);
+
 }
+

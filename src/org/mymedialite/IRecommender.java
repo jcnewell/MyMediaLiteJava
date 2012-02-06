@@ -19,39 +19,44 @@ package org.mymedialite;
 
 import java.io.IOException;
 
-/** Generic interface for simple recommenders. */ 
+/**
+ * Generic interface for simple recommenders.
+ * @version 2.03
+ */ 
 public interface IRecommender {
   
   /**
    * Predict the rating or score for a given user-item combination.
-   * @param user_id the user ID
-   * @param item_id the item ID
+   * @param userId the user ID
+   * @param itemId the item ID
    * @return the predicted score/rating for the given user-item combination
    */
-  double predict(int user_id, int item_id);
+  double predict(int userId, int itemId);
 
   /**
    * Check whether a useful prediction can be made for a given user-item combination.
-   * @param user_id the user ID
-   * @param item_id the item ID
+   * @param userId the user ID
+   * @param itemId the item ID
    * @return true if a useful prediction can be made, false otherwise
    */
-  boolean canPredict(int user_id, int item_id);
+  boolean canPredict(int userId, int itemId);
 
-  /** Learn the model parameters of the recommender from the training data */
+  /**
+   * Learn the model parameters of the recommender from the training data
+   */
   void train();
 
   /**
    * Save the model parameters to a file
-   * @param file the file to write to
+   * @param filename the file to write to
    */
-  void saveModel(String file) throws IOException;
+  void saveModel(String filename) throws IOException;
 
   /**
    * Get the model parameters from a file
-   * @param file the file to read from
+   * @param filename the file to read from
    */
-  void loadModel(String file) throws IOException;
+  void loadModel(String filename) throws IOException;
 
   /** 
    * Return a string representation of the recommender

@@ -25,13 +25,14 @@ import org.mymedialite.datatype.SparseBooleanMatrix;
  * account
  * 
  * @author Zeno Gantner, Andreas Hoffmann
+ * @version 2.03
  */
 public interface IItemAttributeAwareRecommender extends IRecommender {
 
 	/**
 	 * Getter for number of binary item attributes
 	 */
-	public int getNumItemAttributes();
+	public int numItemAttributes();
 
 	/**
 	 * Getter for binary item attributes
@@ -42,4 +43,5 @@ public interface IItemAttributeAwareRecommender extends IRecommender {
 	 * Setter for binary item attributes
 	 */
 	public void setItemAttributes(SparseBooleanMatrix s);
+	
 }

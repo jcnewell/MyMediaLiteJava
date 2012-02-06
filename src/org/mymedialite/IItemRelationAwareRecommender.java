@@ -24,6 +24,7 @@ import org.mymedialite.datatype.SparseBooleanMatrix;
  * Interface for recommenders that take a binary relation over items into account
  * 
  * @author Zeno Gantner Andreas Hoffmann
+ * @version 2.03
  */
 public interface IItemRelationAwareRecommender extends IRecommender {
 
@@ -40,6 +41,6 @@ public interface IItemRelationAwareRecommender extends IRecommender {
 	/**
 	 * Number of items
 	 */
-	public int getNumItems();
+	public int numItems();
 
 }
