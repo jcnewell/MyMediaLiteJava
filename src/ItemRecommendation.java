@@ -759,7 +759,7 @@ public class ItemRecommendation {
       System.err.println("fit_time: min=" + min + ", max=" + max + ", avg=" + avg);
     }
 
-    System.out.println("Memory: " + Memory.getUsage());
+    System.out.println("Memory: " + Memory.getUsage() + " MB");
   }
 
 }

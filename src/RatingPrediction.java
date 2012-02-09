@@ -46,6 +46,7 @@ import org.mymedialite.eval.RatingPredictionEvaluationResults;
 import org.mymedialite.eval.Ratings;
 import org.mymedialite.eval.RatingsCrossValidation;
 import org.mymedialite.eval.RatingsOnline;
+import org.mymedialite.hyperparameter.NelderMead;
 import org.mymedialite.io.AttributeData;
 import org.mymedialite.io.ItemDataFileFormat;
 import org.mymedialite.io.Model;
@@ -191,7 +192,7 @@ public class RatingPrediction {
   }
 
   public static void main(String[] args) throws Exception {
-
+    
     // Handlers for uncaught exceptions and interrupts
     Thread.setDefaultUncaughtExceptionHandler(new Handlers());
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -405,9 +406,8 @@ public class RatingPrediction {
           no_eval = true;
         } else {
           if (search_hp) {
-            // TODO Need DenseVector class to implement NelderMead  
-            //double result = NelderMead.FindMinimum("RMSE", recommender);
-            //System.err.println("estimated quality (on split) {0}", result.ToString(CultureInfo.InvariantCulture));
+            double result = NelderMead.findMinimum("RMSE", recommender);
+            System.out.println("Estimated quality (on split) " + result);
           }
 
           recommender.train();
@@ -434,13 +434,13 @@ public class RatingPrediction {
           System.out.println();
           start = Calendar.getInstance().getTimeInMillis();
           org.mymedialite.ratingprediction.Extensions.writePredictions(recommender, test_data, prediction_file, user_mapping, item_mapping, prediction_line);
-          System.err.print("prediction_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+          System.out.print("prediction_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
         }
       }
       System.out.println();
     }
     Model.save(recommender, save_model_file);
-    displayStats();
+    //displayStats();
 
   }
 
@@ -568,21 +568,22 @@ public class RatingPrediction {
         test_data = StaticRatingData.read(Utils.combine(data_dir, test_file), user_mapping, item_mapping, rating_type, file_format == RatingFileFormat.IGNORE_FIRST_LINE);
     }
 
-    System.err.println("loading_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
-    System.err.println("memory " +  Memory.getUsage());
+    System.out.println("loading_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+    System.out.println("memory " +  Memory.getUsage() + " MB");
   }
 
   static void displayStats() {
     if (training_time_stats.size() > 0)
       // TODO format floating point
-      System.err.println("iteration_time: min=" + Collections.min(training_time_stats) + ", max=" + Collections.max(training_time_stats) + ", avg=" + Utils.average(training_time_stats));
+      System.out.println("iteration_time: min=" + Collections.min(training_time_stats) + ", max=" + Collections.max(training_time_stats) + ", avg=" + Utils.average(training_time_stats));
 
     if (eval_time_stats.size() > 0)
-      System.err.println("eval_time: min=" + Collections.min(eval_time_stats) + ", max=" + Collections.max(eval_time_stats) + ", avg=" + Utils.average(eval_time_stats));
+      System.out.println("eval_time: min=" + Collections.min(eval_time_stats) + ", max=" + Collections.max(eval_time_stats) + ", avg=" + Utils.average(eval_time_stats));
 
     if (compute_fit && fit_time_stats.size() > 0)
-      System.err.println("fit_time: min=" + Collections.min(fit_time_stats) + ", max=" + Collections.max(fit_time_stats) + ", avg=" + Utils.average(fit_time_stats));
-    System.err.println("memory " + Memory.getUsage());
+      System.out.println("fit_time: min=" + Collections.min(fit_time_stats) + ", max=" + Collections.max(fit_time_stats) + ", avg=" + Utils.average(fit_time_stats));
+    
+    System.out.println("memory " + Memory.getUsage() + " MB");
   }
 
 }

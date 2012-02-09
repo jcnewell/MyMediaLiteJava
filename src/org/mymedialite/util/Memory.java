@@ -27,11 +27,11 @@ public class Memory {
   private Memory() {}
 
   /**
-   * the total memory usage in MB.
+   * Get the curent total memory usage in MB.
    * @return the total memory usage in MB
    */
   public static long getUsage() {
-    return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / 1048576;
+    return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576;
   }
 }
 
