@@ -20,6 +20,7 @@ package org.mymedialite.data;
 
 /**
  * Weighted items class.
+ * @version 2.03
  */
 public final class WeightedItem implements Comparable<WeightedItem> {
   

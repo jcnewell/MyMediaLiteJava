@@ -24,7 +24,8 @@ import java.util.*;
  * Class for storing sparse matrices.
  * The data is stored in row-major mode.
  * Indexes are zero-based.
- * <typeparam name="T the matrix element type, must have a default constructor/value</typeparam>
+ * T the matrix element type, must have a default constructor/value
+ * @version 2.03
  */
 public class SparseMatrix<T> implements IMatrix<T> {
 
@@ -58,6 +59,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
 	 * 
 	 */
 	public boolean isSymmetric() {
+	  // TODO
 		//    if (getNumberOfRows() != getNumberOfColumns()) return false;
 		//    for (int i = 0; i < row_list.size(); i++)
 		//      for (var j : row_list[i].keys)
@@ -74,14 +76,14 @@ public class SparseMatrix<T> implements IMatrix<T> {
 	/**
 	 * 
 	 */
-	public int getNumberOfRows() {
+	public int numberOfRows() {
 		return row_list.size();
 	}
 
 	/**
 	 * 
 	 */
-	public int getNumberOfColumns() {
+	public int numberOfColumns() {
 		return numberOfColumns;
 	}
 
@@ -89,6 +91,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
 	 * 
 	 */
 	public IMatrix<T> transpose() {
+	  // TODO
 		//    SparseMatrix<T> transpose = new SparseMatrix<T>(NumberOfColumns, NumberOfRows);
 		//    for (Pair<Integer, int> p : NonEmptyEntryIDs) {
 		//      transpose[p.second, p.first] = this[p.first, p.second];
@@ -127,7 +130,8 @@ public class SparseMatrix<T> implements IMatrix<T> {
 
 	public void set(int x, int y, T value) {
 		if (x >= row_list.size())
-			for (int i = row_list.size(); i <= x; i++) row_list.add(new HashMap<Integer, T>());
+		  for (int i = row_list.size(); i <= x; i++) row_list.add(new HashMap<Integer, T>());
+		
 		row_list.get(x).put(y, value);
 	}
 
@@ -137,7 +141,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
 	 * with their IDs
 	 * .
 	 */
-	public HashMap<Integer, HashMap<Integer, T>> getNonEmptyRows() {
+	public HashMap<Integer, HashMap<Integer, T>> nonEmptyRows() {
 		HashMap<Integer, HashMap<Integer, T>> return_list = new HashMap<Integer, HashMap<Integer, T>>();
 		for(int i=0; i < row_list.size(); i++) {
 			HashMap<Integer, T> row = get(i);
@@ -151,9 +155,9 @@ public class SparseMatrix<T> implements IMatrix<T> {
 	 * The row and column IDs of non-empty entries in the matrix.
 	 * @return The row and column IDs of non-empty entries in the matrix
 	 */
-	public List<Pair<Integer, Integer>> getNonEmptyEntryIDs() {
+	public List<Pair<Integer, Integer>> nonEmptyEntryIDs() {
 		List <Pair<Integer, Integer>> return_list = new ArrayList<Pair<Integer, Integer>>();
-		for (Map.Entry<Integer, HashMap<Integer, T>> id_row : getNonEmptyRows().entrySet())
+		for (Map.Entry<Integer, HashMap<Integer, T>> id_row : nonEmptyRows().entrySet())
 			for (Integer col_id : id_row.getValue().keySet())
 				return_list.add(new Pair<Integer, Integer>(id_row.getKey(), col_id));
 		return return_list;
@@ -163,7 +167,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
 	 * The number of non-empty entries in the matrix.
 	 * @return The number of non-empty entries in the matrix
 	 */
-	public int getNumberOfNonEmptyEntries() {
+	public int numberOfNonEmptyEntries() {
 		int counter = 0;
 		for (HashMap<Integer, T> row : row_list)
 			counter += row.size();

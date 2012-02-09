@@ -20,40 +20,12 @@ package org.mymedialite.ratingprediction;
 /**
  * Base class for rating predictors that support incremental training
  * @author Zeno Gantner
- * @version 2.02
+ * @version 2.03
  */
 public abstract class IncrementalRatingPredictor extends RatingPredictor implements
 		IIncrementalRatingPredictor {
-
-	/**
-	 * @return true if users shall be updated when doing online updates
-	 */
-	public boolean isUpdateItems() {
-		return updateItems;
-	}
-
-	/**
-	 * @param updateItems the updateItems to set
-	 */
-	public void setUpdateItems(boolean updateItems) {
-		this.updateItems = updateItems;
-	}
-
-	/**
-	 * @return true if items shall be updated when doing online updates
-	 */
-	public boolean isUpdateUsers() {
-		return updateUsers;
-	}
-
-	/**
-	 * @param updateUsers the updateUsers to set
-	 */
-	public void setUpdateUsers(boolean updateUsers) {
-		this.updateUsers = updateUsers;
-	}	
-	
-	@Override
+		
+    /** {@inheritDoc} */
 	public void addRating(int userId, int itemId, double rating) {
 		if (userId > maxUserID)
 			addUser(userId);
@@ -63,48 +35,68 @@ public abstract class IncrementalRatingPredictor extends RatingPredictor impleme
 		ratings.add(userId, itemId, rating);
 	}
 
-	public void updateRating(int userId, int itemId, double rating) throws Exception
-	{
+	/** {@inheritDoc} */
+	public void updateRating(int userId, int itemId, double rating) throws IllegalArgumentException {
 		Integer index = ratings.tryGetIndex(userId, itemId);
 		if (index != null)
 			ratings.set(index, rating);
 		else
-			throw new Exception(String.format("Cannot update rating for user %i and item %i: No such rating exists.", userId, itemId));
+			throw new IllegalArgumentException(String.format("Cannot update rating for user %i and item %i: No such rating exists.", userId, itemId));
 	}
 
 	/** {@inheritDoc} */
-	public void removeRating(int userId, int itemId)
-	{
+	public void removeRating(int userId, int itemId) {
 		Integer index = ratings.tryGetIndex(userId, itemId);
 		if (index != null)
 			ratings.remove(index);
 	}
 
-	/** {@inheritDoc} */
-	public void addUser(int userId)
-	{
+	/**
+	 * 
+	 */
+	public void addUser(int userId) {
 		maxUserID = Math.max(maxUserID, userId);
 	}
 
-	/** {@inheritDoc} */
-	public void addItem(int itemId)
-	{
+	/**
+	 * 
+	 */
+	public void addItem(int itemId) {
 		maxItemID = Math.max(maxItemID, itemId);
 	}
 
 	/** {@inheritDoc} */
-	public void RemoveUser(int userId)
-	{
+	public void removeUser(int userId) {
 		if (userId == maxUserID)
 			maxUserID--;
 		ratings.removeUser(userId);
 	}
 
 	/** {@inheritDoc} */
-	public void RemoveItem(int itemId)
-	{
+	public void removeItem(int itemId) {
 		if (itemId == maxItemID)
 			maxItemID--;
 		ratings.removeItem(itemId);
 	}
+	
+	/** {@inheritDoc} */
+    public boolean getUpdateUsers() {
+        return updateUsers;
+    }
+
+    /** {@inheritDoc} */
+    public void setUpdateUsers(boolean updateUsers) {
+        this.updateUsers = updateUsers;
+    }
+	
+    /** {@inheritDoc} */
+    public boolean getUpdateItems() {
+        return updateItems;
+    }
+
+    /** {@inheritDoc} */
+    public void setUpdateItems(boolean updateItems) {
+        this.updateItems = updateItems;
+    }
+    
 }

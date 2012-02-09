@@ -17,13 +17,13 @@
 
 package org.mymedialite.datatype;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.mymedialite.util.IntHashSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Interface for boolean matrices.
+ * @version 2.03
  */
 public interface IBooleanMatrix extends IMatrix<Boolean> {
 
@@ -31,50 +31,50 @@ public interface IBooleanMatrix extends IMatrix<Boolean> {
    * Get a row of the matrix.
    * @param x the row ID
    */
-  IntHashSet getRow(int i);
+  IntCollection get(int i);
 
   /**
    * The number of (true) entries.
    */
-  int getNumberOfEntries();
+  int numberOfEntries();
 
   /**
    * The IDs of the non-empty rows in the matrix (the ones that contain at least one true entry).
    */
-  Collection<Integer> getNonEmptyRowIDs();
+  IntCollection nonEmptyRowIDs();
 
   /**
    * The IDs of the non-empty columns in the matrix (the ones that contain at least one true entry).
    */
-  Collection<Integer> getNonEmptyColumnIDs();
+  IntCollection nonEmptyColumnIDs();
 
   /**
    * Get all true entries (column IDs) of a row.
    * @param row_id the row ID
    * @return a list of column IDs
    */
-  List<Integer> getEntriesByRow(int row_id);
+  IntList getEntriesByRow(int row_id);
 
   /**
    * Get all the number of entries in a row.
    * @param row_id the row ID
    * @return the number of entries in row row_id
    */
-  int getNumEntriesByRow(int row_id);
+  int numEntriesByRow(int row_id);
 
   /**
    * Get all true entries (row IDs) of a column.
    * @param column_id the column ID
    * @return a list of row IDs
    */
-  List<Integer> getEntriesByColumn(int column_id);
+  IntList getEntriesByColumn(int column_id);
 
   /**
    * Get all the number of entries in a column.
    * @param column_id the column ID
    * @return the number of entries in column column_id
    */
-  int getNumEntriesByColumn(int column_id);
+  int numEntriesByColumn(int column_id);
 
   /**
    * Get the overlap of two matrices, i.e. the number of true entries where they agree.

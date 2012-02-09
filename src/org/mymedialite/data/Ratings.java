@@ -17,27 +17,25 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-
 import javax.management.openmbean.InvalidKeyException;
 
-import org.mymedialite.util.IntHashSet;
 
 /**
  * Data structure for storing ratings
  * Small memory overhead for added flexibility.
  * This data structure supports incremental updates.
- * @version 2.02
+ * @version 2.03
  */
 public class Ratings extends DataSet implements IRatings {
 
-	protected ArrayList<Double> values = new ArrayList<Double>();
+	protected List<Double> values = new ArrayList<Double>();
 
 	public Double get(int index) {
 		return values.get(index);
@@ -50,7 +48,7 @@ public class Ratings extends DataSet implements IRatings {
 	public void setMinRating(double value) {
 		minRating = value;    
 	}
-	public double getMinRating() {
+	public double minRating() {
 		return minRating;    
 	}	
 	double minRating = Double.MAX_VALUE;
@@ -58,13 +56,13 @@ public class Ratings extends DataSet implements IRatings {
 	public void setMaxRating(double value) {
 		maxRating = value;
 	}
-	public double getMaxRating() {
+	public double maxRating() {
 		return maxRating;
 	}
 	double maxRating = Double.MIN_NORMAL;
 
 	private ArrayList<Integer> countByUser;
-	public List<Integer> getCountByUser() {
+	public List<Integer> countByUser() {
 		if (countByUser == null)
 			buildByUserCounts();
 		return countByUser;
@@ -82,7 +80,8 @@ public class Ratings extends DataSet implements IRatings {
 	}       
 
 	private ArrayList<Integer> countByItem;
-	public List<Integer> getCountByItem() {
+	
+	public List<Integer> countByItem() {
 		if (countByItem == null || countByItem.size() < maxItemID + 1)
 			buildByItemCounts();
 		return countByItem;
@@ -99,7 +98,7 @@ public class Ratings extends DataSet implements IRatings {
 		}
 	}       
 
-	public double getAverage() {
+	public double average() {
 		double sum = 0;
 		for (int index = 0; index < size(); index++)
 			sum += get(index);
@@ -109,20 +108,20 @@ public class Ratings extends DataSet implements IRatings {
 
 	
 	public Set<Integer> getUsers(List<Integer> indices) {
-		IntHashSet result_set = new IntHashSet();
+		IntArraySet result_set = new IntArraySet();
 		for (int index : indices)
 			result_set.add(users.get(index));
 		return result_set;
 	}
 
 	public Set<Integer> getItems(List<Integer> indices) {
-		IntHashSet result_set = new IntHashSet();
+		IntArraySet result_set = new IntArraySet();
 		for (int index : indices)
 			result_set.add(items.get(index));
 		return result_set;
 	}
 
-	public double get(int user_id, int item_id) {
+	public Double get(int user_id, int item_id) {
 		for (int index = 0; index < values.size(); index++)
 			if (users.get(index) == user_id && items.get(index) == item_id)
 				return values.get(index);
@@ -136,7 +135,7 @@ public class Ratings extends DataSet implements IRatings {
 		return null;
 	}
 
-	public double get(int user_id, int item_id, Collection<Integer> indexes) {
+	public Double get(int user_id, int item_id, Collection<Integer> indexes) {
 		for (int index : indexes)
 			if (users.get(index) == user_id && items.get(index) == item_id)
 				return values.get(index);

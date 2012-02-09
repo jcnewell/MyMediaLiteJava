@@ -17,81 +17,55 @@
 
 package org.mymedialite.data;
 
-import java.util.Collection;
 import org.mymedialite.datatype.IBooleanMatrix;
 
 /**
  * Interface for implicit, positive-only user feedback.
+ * @version 2.03
  */
-public interface IPosOnlyFeedback {
+public interface IPosOnlyFeedback extends IDataSet {
   
   /**
    * By-user access, users are stored in the rows, items in the culumns.
    */
-  IBooleanMatrix getUserMatrix();
+  IBooleanMatrix userMatrix();
 
   /**
    * By-item access, items are stored in the rows, users in the culumns.
    */
-  IBooleanMatrix getItemMatrix();
-
-  /**
-   * The maximum user ID.
-   */
-  int getMaxUserID();
-
-  /**
-   * The maximum item ID.
-   */
-  int getMaxItemID();
-
-  /**
-   * The number of feedback events.
-   */
-  int size();
-
-  /**
-   * Get all users that have given feedback.
-   */
-  Collection<Integer> getAllUsers();
-
-  /**
-   * Get all items mentioned at least once.
-   */
-  Collection<Integer> getAllItems();
+  IBooleanMatrix itemMatrix();
 
   /**
    * Add a user-item event to the data structure.
-   * @param user_id the user ID
-   * @param item_id the item ID
+   * @param userId the user ID
+   * @param itemId the item ID
    */
-  void add(int user_id, int item_id);
+  void add(int userId, int itemId);
+  
+  /**
+   * Get a copy of the item matrix
+   * @return a copy of the item matrix
+   */
+  IBooleanMatrix getItemMatrixCopy();
 
+  /**
+   * Get a copy of the user matrix
+   * @return a copy of the user matrix
+   */
+  IBooleanMatrix getUserMatrixCopy();
+  
   /**
    * Remove a user-item event from the data structure.
-   * @param user_id the user ID
-   * @param item_id the item ID
+   * @param userId the user ID
+   * @param itemId the item ID
    */
-  void remove(int user_id, int item_id);
+  void remove(int userId, int itemId);
 
   /**
-   * Remove all feedback by a given user.
-   * @param user_id the user id
+   * Get the transpose of the dataset (users and items exchanged)
+   * @return the transpose of the dataset
    */
-  void removeUser(int user_id);
-
-  /**
-   * Remove all feedback about a given item.
-   * @param item_id the item ID
-   */
-  void removeItem(int item_id);
-
-  /**
-   * Compute the number of overlapping events in two feedback datasets.
-   * @param s the feedback dataset to compare to
-   * @return the number of overlapping events, i.e. events that have the same user and item ID
-   */
-  int overlap(IPosOnlyFeedback s);
+  IPosOnlyFeedback transpose();
 
 }
 

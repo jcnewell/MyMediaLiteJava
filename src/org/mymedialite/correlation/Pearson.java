@@ -17,9 +17,8 @@
 
 package org.mymedialite.correlation;
 
-import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 import org.mymedialite.data.IRatings;
 import org.mymedialite.datatype.Pair;
 import org.mymedialite.datatype.SparseMatrix;
@@ -28,6 +27,7 @@ import org.mymedialite.taxonomy.EntityType;
 /**
  * Correlation class for Pearson correlation.
  * http://en.wikipedia.org/wiki/Pearson_correlation
+ * @version 2.03
  */
 
 public class Pearson extends RatingCorrelationMatrix {
@@ -39,58 +39,58 @@ public class Pearson extends RatingCorrelationMatrix {
 
 	/**
 	 * Constructor. Create a Pearson correlation matrix.
-	 * @param num_entities the number of entities
+	 * @param numEntities the number of entities
 	 */
-	public Pearson(int num_entities) {
-		super(num_entities);
+	public Pearson(int numEntities) {
+		super(numEntities);
 	}
 
 	/**
 	 * Create a Pearson correlation matrix from given data.
 	 * @param ratings the ratings data
-	 * @param entity_type the entity type, either USER or ITEM
+	 * @param entityType the entity type, either USER or ITEM
 	 * @param shrinkage a shrinkage parameter
 	 * @return the complete Pearson correlation matrix
 	 */
-	public static CorrelationMatrix create(IRatings ratings, int entity_type, float shrinkage) {
+	public static CorrelationMatrix create(IRatings ratings, EntityType entityType, float shrinkage) {
 		Pearson cm;
-		int num_entities = 0;
-		if (entity_type == EntityType.USER) {
-			num_entities = ratings.getMaxUserID() + 1;
-		} else if (entity_type == EntityType.ITEM) {
-			num_entities = ratings.getMaxItemID() + 1;
+		int numEntities = 0;
+		if (entityType == EntityType.USER) {
+			numEntities = ratings.maxUserID() + 1;
+		} else if (entityType == EntityType.ITEM) {
+			numEntities = ratings.maxItemID() + 1;
 		} else {
-			throw new IllegalArgumentException("Unknown entity type: " + entity_type);
+			throw new IllegalArgumentException("Unknown entity type: " + entityType);
 		}
 
 		try {
-			cm = new Pearson(num_entities);
+			cm = new Pearson(numEntities);
 		} catch (OutOfMemoryError e) {
-			System.err.println("Too many entities: " + num_entities);
+			System.err.println("Too many entities: " + numEntities);
 			throw e;
 		}
 		cm.shrinkage = shrinkage;
-		cm.computeCorrelations(ratings, entity_type);
+		cm.computeCorrelations(ratings, entityType);
 		return cm;
 	}
 
 	/**
 	 * Compute correlations between two entities for given ratings.
 	 * @param ratings the rating data
-	 * @param entity_type the entity type, either USER or ITEM
+	 * @param entityType the entity type, either USER or ITEM
 	 * @param i the ID of first entity
 	 * @param j the ID of second entity
 	 * @param shrinkage the shrinkage parameter
 	 */
-	public static float computeCorrelation(IRatings ratings, int entity_type, int i, int j, float shrinkage) {
+	public static float computeCorrelation(IRatings ratings, EntityType entityType, int i, int j, float shrinkage) {
 		if (i == j) return 1;
 
-		List<Integer> ratings1 = (entity_type == EntityType.USER) ? ratings.getByUser().get(i) : ratings.getByItem().get(i);
-		List<Integer> ratings2 = (entity_type == EntityType.USER) ? ratings.getByUser().get(j) : ratings.getByItem().get(j);
+		List<Integer> ratings1 = (entityType == EntityType.USER) ? ratings.byUser().get(i) : ratings.byItem().get(i);
+		List<Integer> ratings2 = (entityType == EntityType.USER) ? ratings.byUser().get(j) : ratings.byItem().get(j);
 
 		// get common ratings for the two entities
-		HashSet<Integer> e1 = (entity_type == EntityType.USER) ? ratings.getItems(ratings1) : ratings.getUsers(ratings1);
-		HashSet<Integer> e2 = (entity_type == EntityType.USER) ? ratings.getItems(ratings2) : ratings.getUsers(ratings2);
+		Set<Integer> e1 = (entityType == EntityType.USER) ? ratings.getItems(ratings1) : ratings.getUsers(ratings1);
+		Set<Integer> e2 = (entityType == EntityType.USER) ? ratings.getItems(ratings2) : ratings.getUsers(ratings2);
 
 		e1.retainAll(e2);
 
@@ -109,7 +109,7 @@ public class Pearson extends RatingCorrelationMatrix {
 			// Get ratings
 			double r1 = 0;
 			double r2 = 0;
-			if (entity_type == EntityType.USER) {
+			if (entityType == EntityType.USER) {
 				r1 = ratings.get(i, other_entity_id, ratings1);
 				r2 = ratings.get(j, other_entity_id, ratings2);
 			} else {
@@ -134,31 +134,31 @@ public class Pearson extends RatingCorrelationMatrix {
 	/**
 	 * Compute correlations for given ratings.
 	 * @param ratings the rating data
-	 * @param entity_type the entity type, either USER or ITEM
+	 * @param entityType the entity type, either USER or ITEM
 	 */
-	public void computeCorrelations(IRatings ratings, int entity_type) {
+	public void computeCorrelations(IRatings ratings, EntityType entityType) {
 
-		if (entity_type != EntityType.USER && entity_type != EntityType.ITEM) throw new IllegalArgumentException("entity type must be either USER or ITEM, not " + entity_type);
+		if (entityType != EntityType.USER && entityType != EntityType.ITEM) throw new IllegalArgumentException("entity type must be either USER or ITEM, not " + entityType);
 
-		List<List<Integer>> ratings_by_other_entity = (entity_type == EntityType.USER) ? ratings.getByItem() : ratings.getByUser();
+		List<List<Integer>> ratings_by_other_entity = (entityType == EntityType.USER) ? ratings.byItem() : ratings.byUser();
 
-		SparseMatrix<Integer> freqs  = new SparseMatrix<Integer>(num_entities, num_entities);
-		SparseMatrix<Double> i_sums  = new SparseMatrix<Double>(num_entities, num_entities);
-		SparseMatrix<Double> j_sums  = new SparseMatrix<Double>(num_entities, num_entities);
-		SparseMatrix<Double> ij_sums = new SparseMatrix<Double>(num_entities, num_entities);
-		SparseMatrix<Double> ii_sums = new SparseMatrix<Double>(num_entities, num_entities);
-		SparseMatrix<Double> jj_sums = new SparseMatrix<Double>(num_entities, num_entities);
+		SparseMatrix<Integer> freqs  = new SparseMatrix<Integer>(numEntities, numEntities);
+		SparseMatrix<Double> i_sums  = new SparseMatrix<Double>(numEntities, numEntities);
+		SparseMatrix<Double> j_sums  = new SparseMatrix<Double>(numEntities, numEntities);
+		SparseMatrix<Double> ij_sums = new SparseMatrix<Double>(numEntities, numEntities);
+		SparseMatrix<Double> ii_sums = new SparseMatrix<Double>(numEntities, numEntities);
+		SparseMatrix<Double> jj_sums = new SparseMatrix<Double>(numEntities, numEntities);
 
 		for (List<Integer> other_entity_ratings : ratings_by_other_entity) {
 			for (int i = 0; i < other_entity_ratings.size(); i++) {
 				int index1 = other_entity_ratings.get(i);
-				int x = (entity_type == EntityType.USER) ? ratings.getUsers().get(index1) : ratings.getItems().get(index1);
+				int x = (entityType == EntityType.USER) ? ratings.users().get(index1) : ratings.items().get(index1);
 
 				// Update pairwise scalar product and frequency
 				for (int j = i + 1; j < other_entity_ratings.size(); j++) {
 
 					int index2 = other_entity_ratings.get(j);
-					int y = (entity_type == EntityType.USER) ? ratings.getUsers().get(index2) : ratings.getItems().get(index2);
+					int y = (entityType == EntityType.USER) ? ratings.users().get(index2) : ratings.items().get(index2);
 
 					double rating1 = ratings.get(index1);
 					double rating2 = ratings.get(index2);
@@ -184,12 +184,12 @@ public class Pearson extends RatingCorrelationMatrix {
 		}
 
 		// The diagonal of the correlation matrix
-		for (int i = 0; i < num_entities; i++) {
+		for (int i = 0; i < numEntities; i++) {
 			set(i, i, 1.0F);
 		}
 
 		// Fill the entries with interactions
-		for (Pair<Integer, Integer> index_pair : freqs.getNonEmptyEntryIDs()) {
+		for (Pair<Integer, Integer> index_pair : freqs.nonEmptyEntryIDs()) {
 			int i = index_pair.first;
 			int j = index_pair.second;
 			int n = freqs.get(i, j);

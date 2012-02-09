@@ -1,4 +1,4 @@
-//Copyright (C) 2011 Zeno Gantner
+//Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -21,6 +21,7 @@ import org.mymedialite.datatype.IBooleanMatrix;
 
 /**
  * CorrelationMatrix that computes correlations over binary data.
+ * @version 2.03
  */
 public class BinaryDataCorrelationMatrix extends CorrelationMatrix {
 
@@ -28,15 +29,15 @@ public class BinaryDataCorrelationMatrix extends CorrelationMatrix {
    * Constructor.
    * @param num_entities the number of entities
    */
-  public BinaryDataCorrelationMatrix(int num_entities) { 
-    super(num_entities);
+  public BinaryDataCorrelationMatrix(int numEntities) { 
+    super(numEntities);
   }
 
   /**
    * Compute the correlations from an implicit feedback, positive-only dataset.
-   * @param entity_data the implicit feedback set, rows contain the entities to correlate
+   * @param entityData the implicit feedback set, rows contain the entities to correlate
    */
-  public void computeCorrelations(IBooleanMatrix entity_data) {
+  public void computeCorrelations(IBooleanMatrix entityData) {
     throw new UnsupportedOperationException();
   }
 }

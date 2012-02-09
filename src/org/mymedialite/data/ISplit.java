@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * Generic dataset splitter interface.
+ * @version 2.03
  */
 public interface ISplit<T> {
 
@@ -28,7 +29,7 @@ public interface ISplit<T> {
    * The number of folds in this split.
    * @return The number of folds in this split
    */
-  int getNumberOfFolds();
+  int numberOfFolds();
 
   /**
    * Training data for the different folds.

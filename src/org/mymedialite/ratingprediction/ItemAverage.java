@@ -1,7 +1,5 @@
-package org.mymedialite.ratingprediction;
-
 //Copyright (C) 2010 Zeno Gantner, Steffen Rendle
-//Copyright (C) 2011 Zeno Gantner
+//Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -18,36 +16,35 @@ package org.mymedialite.ratingprediction;
 //You should have received a copy of the GNU General Public License
 //along with MyMediaLite.  If not, see <http://www.gnu.org/licenses/>.
 
+package org.mymedialite.ratingprediction;
+
 /**
  * Uses the average rating value of an item for prediction.
  *
  * This engine does NOT support online updates.
+ * @version 2.03
  */
 public class ItemAverage extends EntityAverage {
 
-  /// <inheritdoc/>
   @Override
   public void train() {
-    super.train(ratings.getItems(), ratings.getMaxItemID());
+    super.train(ratings.items(), ratings.maxItemID());
   }
 
-  /// <inheritdoc/>
   @Override
   public boolean canPredict(int user_id, int item_id) {
-    return (item_id <= ratings.getMaxItemID());
+    return (item_id <= ratings.maxItemID());
   }
 
-  /// <inheritdoc/>
   @Override
   public double predict(int user_id, int item_id) {
-    if (item_id <= ratings.getMaxItemID()) {
+    if (item_id <= ratings.maxItemID()) {
       return entity_averages.get(item_id);
     } else {
       return global_average;
     }
   }
 
-  /// <inheritdoc/>
   @Override
   public String toString() {
     return "ItemAverage";

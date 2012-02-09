@@ -1,8 +1,4 @@
-package org.mymedialite.data;
-
-import java.util.List;
-
-// Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, CHris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -20,6 +16,10 @@ import java.util.List;
 //  along with MyMediaLite.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+package org.mymedialite.data;
+
+import java.util.List;
+
 /**
  * Interface for different kinds of collaborative filtering data sets.
  * 
@@ -34,74 +34,82 @@ import java.util.List;
  * to access the dataset in a certain fashion.
  * 
  * @author Zeno Gantner
- * @version 2.02
+ * @version 2.03
  */
-public interface IDataSet
-{
-	/**
-	 * @return the number of interaction events in the dataset.
-	 */
-	int size();
-	
-	/**
-	 * @return the user entries.
-	 */
-	List<Integer> getUsers();
-	/**
-	 * @return the item entries.
-	 */
-	List<Integer> getItems();
+public interface IDataSet {
 
-	/**
-	 * @return the maximum user ID in the dataset.
-	 */
-	int getMaxUserID();
-	/**
-	 * @return the maximum item ID in the dataset.
-	 */
-	int getMaxItemID();
+  /**
+   * @return the number of interaction events in the dataset.
+   */
+  int size();
 
-	/**
-	 * @return all user IDs in the dataset.
-	 */
-	Integer[] getAllUsers();
-	/**
-	 * @return all item IDs in the dataset.
-	 */
-	Integer[] getAllItems();
+  /**
+   * @return the user entries.
+   */
+  List<Integer> users();
 
-	/**
-	 * indices by user.
-	 * Should be implemented as a lazy data structure
-	 */
-	List<List<Integer>> getByUser();
-	/**
-	 * indices by item.
-	 * Should be implemented as a lazy data structure
-	 */
-	List<List<Integer>> getByItem();
-	/**
-	 * get a randomly ordered list of all indices.
-	 * Should be implemented as a lazy data structure
-	 */
-	Integer[] getRandomIndex();
+  /**
+   * @return the item entries.
+   */
+  List<Integer> items();
 
-	/** Build the user indices. */
-	void buildUserIndices();
-	/** Build the item indices. */
-	void buildItemIndices();
-	/** Build the random index. */
-	void buildRandomIndex();
+  /**
+   * @return the maximum user ID in the dataset.
+   */
+  int maxUserID();
 
-	/**
-	 * Remove all events related to a given user.
-	 * @param user_id the user ID
-	 */
-	void removeUser(int user_id);
+  /**
+   * @return the maximum item ID in the dataset.
+   */
+  int maxItemID();
 
-	/**
-	 * Remove all events related to a given item.
-	 * @param item_id the item ID
-	 */
-	void removeItem(int item_id);
+  /**
+   * @return all user IDs in the dataset.
+   */
+  List<Integer> allUsers();
+
+  /**
+   * @return all item IDs in the dataset.
+   */
+  List<Integer> allItems();
+
+  /**
+   * indices by user.
+   * Should be implemented as a lazy data structure
+   */
+  List<List<Integer>> byUser();
+
+  /**
+   * indices by item.
+   * Should be implemented as a lazy data structure
+   */
+  List<List<Integer>> byItem();
+
+  /**
+   * get a randomly ordered list of all indices.
+   * Should be implemented as a lazy data structure
+   */
+  List<Integer> randomIndex();
+
+  /** Build the user indices. */
+  void buildUserIndices();
+  
+  /** Build the item indices. */
+  void buildItemIndices();
+  
+  /** Build the random index. */
+  void buildRandomIndex();
+
+  /**
+   * Remove all events related to a given user.
+   * @param user_id the user ID
+   */
+  void removeUser(int user_id);
+
+  /**
+   * Remove all events related to a given item.
+   * @param item_id the item ID
+   */
+  void removeItem(int item_id);
+
 }

@@ -19,28 +19,29 @@ package org.mymedialite.taxonomy;
 
 /**
  * Type to refer to different kinds of entities like users and items.
+ * @version 2.03
  */
-public class EntityType {
+public enum EntityType {
   
   /**
    * Users.
    */
-  public static final int USER = 0;
+  USER,
 
   /**
    * Items like movies, DVDs, books, products, etc..
    */
-  public static final int ITEM = 1;
+  ITEM,
 
   /**
    * Folksonomy tags.
    */
-  public static final int TAG = 2;
+  TAG,
 
   /**
    * Timestamps.
    */
-  public static final int TIMESTAMP = 3;
+  TIMESTAMP,
 
 }
 

@@ -21,24 +21,26 @@ import java.util.*;
 
 /**
  * Interface for rating datasets.
- * @version 2.02
+ * @version 2.03
  */
 public interface IRatings extends List<Double>, IDataSet {
 
 	public int size();
 
 	/** Get the maximum rating in the dataset. */
-	double getMaxRating();  
+	double maxRating(); 
+	
 	/** Get the minimum rating in the dataset. */
-	double getMinRating();  
+	double minRating();  
 
 	/** Get the rating count by user. */
-	List<Integer> getCountByUser();  
+	List<Integer> countByUser();  
+	
 	/** Get the rating count by item. */
-	List<Integer> getCountByItem();  
+	List<Integer> countByItem();  
 
 	/** Average rating in the dataset. */
-	double getAverage();
+	double average();
 
 	/**
 	 * Directly access rating by user and item</summary>
@@ -46,11 +48,11 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * @param itemId the item ID
 	 * @return <value>the rating value for the given user and item
 	 */
-	double get(int userId, int itemId);
+	Double get(int userId, int itemId);
 	
 	/**
 	 * Directly access ratings.
-	 * @param indices the index of the rating
+	 * @param index the index of the rating
 	 * @return the rating value
 	 */
 	Double get(int index);
@@ -96,7 +98,6 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * Try to get the index for given user and item.
 	 * @param user_id the user ID
 	 * @param item_id the item ID
-	 * @param index will contain the index of the first rating encountered that matches the user ID and item ID
 	 * @return true if an index was found for the user and item
 	 */
 	Integer tryGetIndex(int user_id, int item_id);
@@ -138,7 +139,7 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * @param indexes the indexes to look at
 	 * @return the first rating encountered that matches the user ID and item ID
 	 */
-	double get(int user_id, int item_id, Collection<Integer> indexes);
+	Double get(int user_id, int item_id, Collection<Integer> indexes);
 	
 	/**
 	 * Add byte-valued rating to the collection.

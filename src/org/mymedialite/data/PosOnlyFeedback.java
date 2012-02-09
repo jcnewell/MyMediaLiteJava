@@ -17,99 +17,120 @@
 
 package org.mymedialite.data;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mymedialite.datatype.IBooleanMatrix;
-  
+
 /**
  * Data structure for implicit, positive-only user feedback.
  * This data structure supports incremental updates.
+ * @version 2.03
  */
-public class PosOnlyFeedback<T extends IBooleanMatrix> implements IPosOnlyFeedback {
-    
+public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implements IPosOnlyFeedback {
+
   /** By-user access, users are stored in the rows, items in the columns */
   public IBooleanMatrix userMatrix;
 
   /** By-item access, items are stored in the rows, users in the columns */
   public IBooleanMatrix itemMatrix;
-  
-  /** The maximum user ID */
-  private int maxUserID = 0;
 
-  /** The maximum item ID */
-  private int maxItemID = 0;
+  private Class<T> c;
 
   /**
    * Create a PosOnlyFeedback object.
-   * @param t the user-item matrix
+   * @param c the Class<T>
+   * @throws InstantiationException
+   * @throws IllegalAccessException
    */
-  public PosOnlyFeedback(T t) {
-    userMatrix = t;
-    maxUserID = userMatrix.getNumberOfRows();
-    maxItemID = userMatrix.getNumberOfColumns();
+  public PosOnlyFeedback(Class<T> c) throws InstantiationException, IllegalAccessException {
+    super();
+    this.c = c;
+    userMatrix = c.newInstance();
   }
-  
-  public IBooleanMatrix getUserMatrix() {
+
+  /**
+   * By-user access, users are stored in the rows, items in the columns.
+   */
+  public IBooleanMatrix userMatrix() {
+    if(userMatrix == null) userMatrix = getUserMatrixCopy();
     return userMatrix;
   }
 
-  @Override
-  public int getMaxUserID() {
-    return maxUserID;
+  /**
+   * By-item access, items are stored in the rows, users in the columns.
+   */
+  public IBooleanMatrix itemMatrix() {
+    if(itemMatrix == null) itemMatrix = getItemMatrixCopy();
+    return itemMatrix;
   }
 
   @Override
-  public int getMaxItemID() {
-    return maxItemID;
+  public IBooleanMatrix getUserMatrixCopy() {
+    T matrix = null;
+    try {
+      matrix = c.newInstance();
+      for (int index = 0; index < size(); index++)
+        matrix.set(users.get(index), items.get(index), true);
+    } catch (Exception e) { }
+    return matrix;
   }
-  
-  public IBooleanMatrix getItemMatrix() {
-    if(itemMatrix == null) itemMatrix = (IBooleanMatrix) userMatrix.transpose();
-    return itemMatrix;
+
+  @Override
+  public IBooleanMatrix getItemMatrixCopy() {
+    T matrix = null;
+    try {
+      matrix = c.newInstance();
+      for (int index = 0; index < size(); index++)
+        matrix.set(items.get(index), users.get(index), true);
+    } catch (Exception e) { }
+    return matrix;
   }
-  
-  /** the number of feedback events. */
-  public int size() {
-    return userMatrix.getNumberOfEntries();
-  }
-  
-  /**
-   * Get all users that have given feedback.
-   */
-  public Collection<Integer> getAllUsers() {
-    return userMatrix.getNonEmptyRowIDs();
-  }
-  
-  /**
-   * Get all items mentioned at least once.
-   */
-  public Collection<Integer> getAllItems() {
-    if (itemMatrix == null) {
-      return userMatrix.getNonEmptyColumnIDs();
-    } else {
-      return itemMatrix.getNonEmptyRowIDs();
-    }
-  }
-  
+
   /**
    * Add a user-item event to the data structure
    * @param user_id the user ID
    * @param item_id the item ID
    */
   public void add(int user_id, int item_id) {
-    userMatrix.set(user_id, item_id, true);
+    users.add(user_id);
+    items.add(item_id);
+    if (userMatrix != null) userMatrix.set(user_id, item_id, true);
     if (itemMatrix != null) itemMatrix.set(item_id, user_id, true);
     if (user_id > maxUserID) maxUserID = user_id;
     if (item_id > maxItemID) maxItemID = item_id;
   }
-  
+
   /**
    * Remove a user-item event from the data structure.
    * @param user_id the user ID
    * @param item_id >the item ID
    */
   public void remove(int user_id, int item_id) {
-    userMatrix.set(user_id, item_id, false);
+    int index;
+    while((index = tryGetIndex(user_id, item_id)) != -1) {
+      users.remove(index);
+      items.remove(index);
+    }
+
+    if (userMatrix != null) userMatrix.set(user_id, item_id, false);
     if (itemMatrix != null) itemMatrix.set(item_id, user_id, false);
+  }
+
+  /**
+   * Remove the event with a given index
+   * @param index the index of the event to be removed
+   */
+  public void remove(int index) {
+    int user_id = users.get(index);
+    int item_id = items.get(index);
+    users.remove(index);
+    items.remove(index);
+
+    if (tryGetIndex(user_id, item_id) == -1) {
+      if (userMatrix != null) userMatrix.set(user_id, item_id, false);
+      if (itemMatrix != null) itemMatrix.set(item_id, user_id, false);
+    }
   }
 
   /**
@@ -117,12 +138,27 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> implements IPosOnlyFeedba
    * @param user_id the user ID
    */
   public void removeUser(int user_id) {
-    userMatrix.getRow(user_id).clear();
-    if (itemMatrix != null) {
-      for (int i = 0; i < itemMatrix.getNumberOfRows(); i++) {
-        itemMatrix.getRow(i).remove(user_id);
-      }
+    List<Integer> indices = new ArrayList<Integer>();
+    if (byUser != null)
+      indices = byUser().get(user_id);
+    else if (userMatrix != null)
+      indices = new ArrayList<Integer>(userMatrix.get(user_id));
+    else
+      for (int index = 0; index < size(); index++)
+        if (users.get(index) == user_id)
+          indices.add(index);
+
+    // assumption: indices is sorted
+    for (int i = indices.size() - 1; i >= 0; i--) {
+      users.remove(indices.get(i));
+      items.remove(indices.get(i));
     }
+
+    if (userMatrix != null)
+      userMatrix.get(user_id).clear();
+    if (itemMatrix != null)
+      for (int i = 0; i < itemMatrix.numberOfRows(); i++)
+        itemMatrix.get(i).remove(user_id);
   }
 
   /**
@@ -130,19 +166,51 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> implements IPosOnlyFeedba
    * @param item_id the item ID
    */
   public void removeItem(int item_id) {
-    for (int u = 0; u < userMatrix.getNumberOfRows(); u++) {
-      userMatrix.getRow(u).remove(item_id);
+    List<Integer> indices = new ArrayList<Integer>();
+    if (byItem != null)
+      indices = byItem().get(item_id);
+    else if (itemMatrix != null)
+      indices = new ArrayList<Integer>(itemMatrix.get(item_id));
+    else
+      for (int index = 0; index < size(); index++)
+        if (items.get(index) == item_id)
+          indices.add(index);
+
+    // assumption: indices is sorted
+    for (int i = indices.size() - 1; i >= 0; i--) {
+      users.remove(indices.get(i));
+      items.remove(indices.get(i));
     }
-    if (itemMatrix != null)  itemMatrix.getRow(item_id).clear();
+
+    if (userMatrix != null)
+      for (int u = 0; u < userMatrix.numberOfRows(); u++)
+        userMatrix.get(u).remove(item_id);
+
+    if (itemMatrix != null)
+      itemMatrix.get(item_id).clear();
+  }
+
+  @Override
+  public IPosOnlyFeedback transpose() {
+    PosOnlyFeedback<T> transpose = null;
+    try {
+      transpose = new PosOnlyFeedback<T>(c);
+      transpose.users = new ArrayList<Integer>(this.items);
+      transpose.items = new ArrayList<Integer>(this.users);
+    } catch (Exception e) { }
+    return transpose;
   }
 
   /**
-   * Compute the number of overlapping events in two feedback datasets.
-   * @param s the feedback dataset to compare to
-   * @return the number of overlapping events, i.e. events that have the same user and item ID
+   * 
+   * @param user_id
+   * @param item_id
+   * @return the index or -1 if not found.
    */
-  public int overlap(IPosOnlyFeedback s) {
-      return userMatrix.overlap(s.getUserMatrix());
+  public int tryGetIndex(int user_id, int item_id) {
+    for (int i = 0; i < size(); i++) {
+      if (users.get(i) == user_id && items.get(i) == item_id) return i;
+    }
+    return -1;
   }
-
 }

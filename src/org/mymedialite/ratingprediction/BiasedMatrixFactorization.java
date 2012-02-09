@@ -23,32 +23,71 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
-
-import org.mymedialite.datatype.IMatrixUtils;
 import org.mymedialite.datatype.Matrix;
-import org.mymedialite.datatype.MatrixUtils;
-import org.mymedialite.datatype.VectorUtils;
+import org.mymedialite.datatype.MatrixExtensions;
+import org.mymedialite.io.IMatrixExtensions;
+import org.mymedialite.io.Model;
+import org.mymedialite.io.VectorExtensions;
 import org.mymedialite.util.Recommender;
 
-/** Matrix factorization engine with explicit user and item bias */
+
+/**
+ * Matrix factorization engine with explicit user and item bias.
+ * 
+ * @version 2.03
+ */
 public class BiasedMatrixFactorization extends MatrixFactorization {
   
-  /** Regularization constant for the bias terms */
-  public double biasRegularization = 0;
+  private static final String VERSION = "2.03";
+  
+  /** Regularization constant for the bias terms. */
+  public double biasReg = 0;
 
-  /** the user biases */
+  /** Regularization constant for the user factors. */
+  public double regU;
+
+  /** Regularization constant for the item factors. */
+  public double regI;
+  
+  /** The user biases */
   protected double[] userBias;
 
-  /** the item biases */
+  /** The item biases */
   protected double[] itemBias;
+  
+  /**
+   * Set the regularization parameters.
+   * @param regularization
+   * @param regU
+   * @param regI
+   */
+  public void setRegularization(double regularization, double regU, double regI) {
+    super.regularization = regularization;
+    this.regU = regU;
+    this.regI = regI;
+  }
+  
+  /** If set to true, optimize model for MAE instead of RMSE. */
+  public boolean optimizeMAE;
+
+  /**
+   * Use bold driver heuristics for learning rate adaption.
+   *
+   * Literature:
+   *     Rainer Gemulla, Peter J. Haas, Erik Nijkamp, Yannis Sismanis:
+   *     Large-Scale Matrix Factorization with Distributed Stochastic Gradient Descent.
+   *     KDD 2011.
+   *     http://www.mpi-inf.mpg.de/~rgemulla/publications/gemulla11dsgd.pdf
+   */
+  public boolean boldDriver;
   
   /** {@inheritDoc} */
   public void train() {
-    // init factor matrices
+    // Init factor matrices
     userFactors = new Matrix<Double>(maxUserID + 1, numFactors);
     itemFactors = new Matrix<Double>(maxItemID + 1, numFactors);
-    MatrixUtils.initNormal(userFactors, initMean, initStdev);
-    MatrixUtils.initNormal(itemFactors, initMean, initStdev);
+    MatrixExtensions.initNormal(userFactors, initMean, initStdDev);
+    MatrixExtensions.initNormal(itemFactors, initMean, initStdDev);
 
     userBias = new double[maxUserID + 1];
     for (int u = 0; u <= maxUserID; u++)  userBias[u] = 0;
@@ -58,7 +97,7 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
     // learn model parameters
 
     // compute global average
-    double global_average = ratings.getAverage();
+    double global_average = ratings.average();
 
     // TODO also learn global bias?
     globalBias = Math.log( (global_average - getMinRating()) / (getMaxRating() - global_average) );
@@ -72,8 +111,8 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
     double rating_range_size = getMaxRating() - getMinRating();
 
     for (int index : rating_indices) {
-      int u = ratings.getUsers().get(index);
-      int i = ratings.getItems().get(index);
+      int u = ratings.users().get(index);
+      int i = ratings.items().get(index);
 
       double dot_product = globalBias + userBias[u] + itemBias[i];
       for (int f = 0; f < numFactors; f++) {
@@ -88,9 +127,9 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
 
       // Adjust biases
       if (update_user)
-    	  userBias[u] += learnRate * (gradient_common - biasRegularization * userBias[u]);
+    	  userBias[u] += learnRate * (gradient_common - biasReg * userBias[u]);
       if (update_item)
-    	  itemBias[i] += learnRate * (gradient_common - biasRegularization * itemBias[i]);
+    	  itemBias[i] += learnRate * (gradient_common - biasReg * itemBias[i]);
 
       // Adjust latent factors
       for (int f = 0; f < numFactors; f++) {
@@ -99,14 +138,14 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
 
         if (update_user) {
           double delta_u = gradient_common * i_f - regularization * u_f;
-          MatrixUtils.inc(userFactors, u, f, learnRate * delta_u);
+          MatrixExtensions.inc(userFactors, u, f, learnRate * delta_u);
           // this is faster (190 vs. 260 seconds per iteration on Netflix w/ k=30) than
           //    user_factors[u, f] += learn_rate * delta_u;
         }
 
         if (update_item) {
               double delta_i = gradient_common * u_f - regularization * i_f;
-              MatrixUtils.inc(itemFactors, i, f, learnRate * delta_i);
+              MatrixExtensions.inc(itemFactors, i, f, learnRate * delta_i);
               // item_factors[i, f] += learn_rate * delta_i;
         }
       }
@@ -130,13 +169,13 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
   }
 
   /** {@inheritDoc} */
-  public void SaveModel(String filename) throws IOException {
-    PrintWriter writer = Recommender.getWriter(filename, this.getClass());
+  public void saveModel(String filename) throws IOException {
+    PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     writer.println(Double.toString(globalBias));
-    VectorUtils.writeVectorArray(writer, userBias);
-    IMatrixUtils.writeMatrix(writer, userFactors);
-    VectorUtils.writeVectorArray(writer, itemBias);
-    IMatrixUtils.writeMatrix(writer, itemFactors);
+    VectorExtensions.writeVectorArray(writer, userBias);
+    IMatrixExtensions.writeMatrix(writer, userFactors);
+    VectorExtensions.writeVectorArray(writer, itemBias);
+    IMatrixExtensions.writeMatrix(writer, itemFactors);
     boolean error = writer.checkError();
     if(error) System.out.println("Error writing file.");
     writer.close();
@@ -144,15 +183,15 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
 
   /** {@inheritDoc} */
   public void loadModel(String filename) throws IOException  {
-    BufferedReader reader = Recommender.getReader(filename, this.getClass());
+    BufferedReader reader = Model.getReader(filename, this.getClass());
     double bias = Double.parseDouble(reader.readLine());
-    double[] user_bias = VectorUtils.readVectorArray(reader);
-    Matrix<Double> user_factors = (Matrix<Double>) IMatrixUtils.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
-    double[] item_bias = VectorUtils.readVectorArray(reader);
-    Matrix<Double> item_factors = (Matrix<Double>) IMatrixUtils.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    double[] user_bias = VectorExtensions.readVectorArray(reader);
+    Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    double[] item_bias = VectorExtensions.readVectorArray(reader);
+    Matrix<Double> item_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
 
-    if (user_factors.getNumberOfColumns() != item_factors.getNumberOfColumns()) {
-      throw new IOException("Number of user and item factors must match: " + user_factors.getNumberOfColumns() + " != " + item_factors.getNumberOfColumns());
+    if (user_factors.numberOfColumns() != item_factors.numberOfColumns()) {
+      throw new IOException("Number of user and item factors must match: " + user_factors.numberOfColumns() + " != " + item_factors.numberOfColumns());
     }
 
     if (user_bias.length != user_factors.dim1) {
@@ -212,25 +251,28 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
   }
 
   /** {@inheritDoc} */
-  public void RemoveUser(int user_id) {
+  public void removeUser(int user_id) {
       super.removeUser(user_id);
       userBias[user_id] = 0;
   }
 
   /** {@inheritDoc} */
-  public void RemoveItem(int item_id) {
+  public void removeItem(int item_id) {
       super.removeItem(item_id);
       itemBias[item_id] = 0;
   }
 
   /** {@inheritDoc} */
-  public String ToString() {
-    return "BiasedMatrixFactorization num_factors=" + numFactors +
-           " bias_regularization=" + biasRegularization +
-           " regularization=" + regularization +
-           " learn_rate=" + learnRate+
-           " num_iter=" + numIter +
-           " init_mean=" + initMean +
-           " init_stdev=" + initStdev;   
+  public String toString() {
+    return 
+        this.getClass().getName()
+        + " numFactors=" + numFactors
+        + " biasReg=" + biasReg
+        + " regularization=" + regularization
+        + " learnRate=" + learnRate
+        + " numIter=" + numIter
+        + " initMean=" + initMean
+        + " initStdDev=" + initStdDev;   
   }
+  
 }

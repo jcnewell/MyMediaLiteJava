@@ -19,7 +19,10 @@ package org.mymedialite.ratingprediction;
 
 import org.mymedialite.IRecommender;
 
-/** interface for rating predictors */
+/**
+ * Interface for rating predictors.
+ * @version 2.03
+ */
 public interface IRatingPredictor extends IRecommender {
   
   /** Get the max rating value. */
@@ -33,26 +36,5 @@ public interface IRatingPredictor extends IRecommender {
 
   /** Set the min rating value. */
   void setMinRating(double value);
-  
-  /** { @inheritDoc } */
-  void add(int user_id, int item_id, double rating);
-  
-  /** { @inheritDoc } */
-  void updateRating(int user_id, int item_id, double rating);
-  
-  /** { @inheritDoc } */
-  void removeRating(int user_id, int item_id);
-  
-  /** { @inheritDoc } */
-  void addUser(int user_id);
-  
-  /** { @inheritDoc } */
-  void addItem(int item_id);
-  
-  /** { @inheritDoc } */
-  void removeUser(int user_id);
-  
-  /** { @inheritDoc } */
-  void removeItem(int item_id);
 
 }

@@ -29,13 +29,14 @@ import org.mymedialite.datatype.Matrix;
 
 /**
  * Class for computing and storing correlations and similarities.
+ * @version 2.03
  */
 public class CorrelationMatrix extends Matrix<Float> {
 
   /**
    * Number of entities, e.g. users or items.
    */
-  protected int num_entities;
+  protected int numEntities;
 
   /**
    * @return returns true if the matrix is symmetric, which is generally the case for similarity matrices
@@ -48,7 +49,6 @@ public class CorrelationMatrix extends Matrix<Float> {
    * 
    * @param i
    * @param j
-   * @return
    */
   public Float get(int i, int j) {
     return (Float)data[i * dim2 + j];
@@ -67,25 +67,25 @@ public class CorrelationMatrix extends Matrix<Float> {
 
   /**
    * Creates a CorrelationMatrix object for a given number of entities.
-   * @param num_entities number of entities
+   * @param numEntities number of entities
    */
-  public CorrelationMatrix(int num_entities) {
-    super(num_entities, num_entities);
-    this.num_entities = num_entities;
+  public CorrelationMatrix(int numEntities) {
+    super(numEntities, numEntities);
+    this.numEntities = numEntities;
   }
 
   /**
    * Creates a correlation matrix.
    * Gives out a useful warning if there is not enough memory
-   * @param num_entities the number of entities
+   * @param numEntities the number of entities
    * @return the correlation matrix
    */
-  public static CorrelationMatrix create(int num_entities) {
+  public static CorrelationMatrix create(int numEntities) {
     CorrelationMatrix cm;
     try {
-      cm = new CorrelationMatrix(num_entities);
+      cm = new CorrelationMatrix(numEntities);
     } catch (OutOfMemoryError e) {
-      System.err.println("Too many entities: " + num_entities);
+      System.err.println("Too many entities: " + numEntities);
       throw e;
     }
     return cm;
@@ -102,12 +102,12 @@ public class CorrelationMatrix extends Matrix<Float> {
    * @param reader the StreamReader to read from
    */
   public static CorrelationMatrix readCorrelationMatrix(BufferedReader reader) throws IOException {
-    int num_entities = Integer.parseInt(reader.readLine());
+    int numEntities = Integer.parseInt(reader.readLine());
 
-    CorrelationMatrix cm = create(num_entities);
+    CorrelationMatrix cm = create(numEntities);
 
     // Diagonal values.
-    for (int i = 0; i < num_entities; i++) cm.set(i, i, 1.0F);
+    for (int i = 0; i < numEntities; i++) cm.set(i, i, 1.0F);
 
     String regex = "[\t ,]";  // tab, space or commma.
 
@@ -118,8 +118,8 @@ public class CorrelationMatrix extends Matrix<Float> {
       int j = Integer.parseInt(numbers[1]);
       float c = Float.parseFloat(numbers[2]);
 
-      if (i >= num_entities) throw new IOException("Entity ID is too big: i = " + i);
-      if (j >= num_entities) throw new IOException("Entity ID is too big: j = " + j);
+      if (i >= numEntities) throw new IOException("Entity ID is too big: i = " + i);
+      if (j >= numEntities) throw new IOException("Entity ID is too big: j = " + j);
 
       cm.set(i, j, c);
     }
@@ -133,9 +133,9 @@ public class CorrelationMatrix extends Matrix<Float> {
    * 
    */
   public void write(PrintWriter writer) {
-    writer.println(num_entities);
-    for (int i = 0; i < num_entities; i++) {
-      for (int j = i + 1; j < num_entities; j++) {
+    writer.println(numEntities);
+    for (int i = 0; i < numEntities; i++) {
+      for (int j = i + 1; j < numEntities; j++) {
         Float val = get(i, j);
         if (val != 0f) writer.println(i + " " + j + " " + val.toString());
       }
@@ -147,8 +147,7 @@ public class CorrelationMatrix extends Matrix<Float> {
    * Note that you still have to correctly compute and set the entity's correlation values
    * @param entity_id the numerical ID of the entity
    */
-  public void addEntity(int entity_id)
-  {
+  public void addEntity(int entity_id) {
     this.grow(entity_id + 1, entity_id + 1);
   }
 
@@ -159,10 +158,10 @@ public class CorrelationMatrix extends Matrix<Float> {
    * @return the correlation sum
    */
   public double sumUp(int entity_id, Collection<Integer> entities) {
-    if (entity_id < 0 || entity_id >= num_entities) throw new IllegalArgumentException("Invalid entity ID: " + entity_id);
+    if (entity_id < 0 || entity_id >= numEntities) throw new IllegalArgumentException("Invalid entity ID: " + entity_id);
     double result = 0;
     for (int entity_id2 : entities) {
-      if (entity_id2 >= 0 && entity_id2 < num_entities) result += get(entity_id, entity_id2);
+      if (entity_id2 >= 0 && entity_id2 < numEntities) result += get(entity_id, entity_id2);
     }
     return result;
   }
@@ -174,7 +173,7 @@ public class CorrelationMatrix extends Matrix<Float> {
    */
   public List<Integer> getPositivelyCorrelatedEntities(int entity_id) {
     List<Neighbor> result = new ArrayList<Neighbor>();
-    for (int i = 0; i < num_entities; i++) {
+    for (int i = 0; i < numEntities; i++) {
       if(i != entity_id) {
         Neighbor neighbor = new Neighbor(i, get(i, entity_id));
         result.add(neighbor);
@@ -196,14 +195,14 @@ public class CorrelationMatrix extends Matrix<Float> {
    */
   public int[] getNearestNeighbors(int entity_id, int k) {
     List<Neighbor> entities = new ArrayList<Neighbor>();
-    for (int i = 0; i < num_entities; i++) {
+    for (int i = 0; i < numEntities; i++) {
       if(i != entity_id) {
         Neighbor neighbor = new Neighbor(i, get(i, entity_id));
         entities.add(neighbor);
       }
     }
     Collections.sort(entities);    
-    int[] ids = new int[k];
+    int[]  ids = new int[k];
     for(int i = 0; i < k; i++) {
       ids[i] = entities.get(entities.size() - 1 - i).id;
     }

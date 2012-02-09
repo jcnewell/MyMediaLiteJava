@@ -1,5 +1,5 @@
 // Copyright (C) 2010 Steffen Rendle, Zeno Gantner
-// Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -21,7 +21,7 @@ package org.mymedialite.ratingprediction;
 /**
  * Interface for rating predictors which support incremental training
  * @author Zeno Gantner
- * @version 2.02
+ *
  * By incremental training we mean that after each update, the recommender does not
  * perform a complete re-training using all data, but only a brief update procedure
  * taking into account the update and only a subset of the existing training data.
@@ -30,9 +30,11 @@ package org.mymedialite.ratingprediction;
  * a new class. This makes sense e.g. for simple average-based models.
  *
  * This interface assumes that every user can rate every item only once.
+ * @version 2.03
  */
 public interface IIncrementalRatingPredictor extends IRatingPredictor {
-	 /**
+
+     /**
 	  * Add a new rating and perform incremental training
  	  * @param userId the ID of the user who performed the rating
  	  * @param itemId the ID of the rated item
@@ -46,7 +48,7 @@ public interface IIncrementalRatingPredictor extends IRatingPredictor {
 	  * @param itemId the ID of the rated item
 	  * @param rating the rating value
 	  */
-	void updateRating(int userId, int itemId, double rating);
+	void updateRating(int userId, int itemId, double rating) throws IllegalArgumentException;
 
 	 /**
 	  * Remove an existing rating and perform "incremental" training
@@ -65,13 +67,41 @@ public interface IIncrementalRatingPredictor extends IRatingPredictor {
 	 */
 	void removeUser(int userId);
 
-	 /**
-	  * Remove an item from the recommender model, and delete all ratings of this item
-	  * 
-	  * It is up to the recommender implementor whether there should be model updates after this
-	  * action, both options are valid.
-	  * 
-	  * @param itemId the ID of the user to be removed
-	  */
+	/**
+	 * Remove an item from the recommender model, and delete all ratings of this item
+	 * 
+	 * It is up to the recommender implementor whether there should be model updates after this
+	 * action, both options are valid.
+	 * 
+	 * @param itemId the ID of the user to be removed
+	 */
 	void removeItem(int itemId);
+	
+    /**
+     * true if users shall be updated when doing incremental updates.
+     */
+	// TODO this name feels wrong
+    boolean getUpdateUsers();
+    
+    /**
+     * Set to true if users shall be updated when doing incremental updates.
+     * Set to false if you do not want any updates to the user model parameters when doing incremental updates.
+     * Default should be true.
+     * 
+     */
+    void setUpdateUsers(boolean updateUsers);
+
+    /**
+     * true if items shall be updated when doing incremental updates.
+     */
+    // TODO this name feels wrong
+    boolean getUpdateItems();
+    
+    /**
+     * Set to true if items shall be updated when doing incremental updates.
+     * Set to false if you do not want any updates to the item model parameters when doing incremental updates.
+     * Default should true.
+     */
+    void setUpdateItems(boolean updateItems);
+    
 }

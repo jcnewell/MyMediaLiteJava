@@ -23,17 +23,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.mymedialite.util.Recommender;
+import org.mymedialite.io.Model;
 
 /** 
  * Most-popular item recommender
  * Items are weighted by how often they have been seen in the past. 
  * This method is not personalized.
  * This recommender supports incremental updates.
+ * @version 2.03
  */
 public class MostPopular extends ItemRecommender {
 
+  private static final String VERSION = "2.03";
+  
   /** View count */
   protected List<Integer> view_count;
 
@@ -41,8 +43,8 @@ public class MostPopular extends ItemRecommender {
     view_count = new ArrayList<Integer>(maxItemID + 1);
     for (int i = 0; i <= maxItemID; i++) view_count.add(0);
 
-    for (int u = 0; u < feedback.getUserMatrix().getNumberOfRows(); u++) {
-      for (int i : feedback.getUserMatrix().getRow(u)) {
+    for (int u = 0; u < feedback.userMatrix().numberOfRows(); u++) {
+      for (int i : feedback.userMatrix().get(u)) {
         view_count.set(i, view_count.get(i) + 1);
       }
     }
@@ -76,7 +78,7 @@ public class MostPopular extends ItemRecommender {
   }
 
   public void saveModel(String filename) throws IOException {
-    PrintWriter writer = Recommender.getWriter(filename, this.getClass());
+    PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     saveModel(writer);
   }
   
@@ -91,13 +93,13 @@ public class MostPopular extends ItemRecommender {
 
   public void loadModel(String filename) throws IOException {
     System.out.println("MostPopular.loadModel()");
-    BufferedReader reader = Recommender.getReader(filename, this.getClass());
+    BufferedReader reader = Model.getReader(filename, this.getClass());
     loadModel(reader);
   }
   
   public void loadModel(BufferedReader reader) throws IOException {
     int size = Integer.parseInt(reader.readLine());
-    System.out.println("MostPopular size = " + size);
+    System.out.println("MostPopular size: " + size);
     List<Integer> view_count = new ArrayList<Integer>(size);
     
     String line;
@@ -105,7 +107,7 @@ public class MostPopular extends ItemRecommender {
       String[] numbers = line.split(" ");
       int item_id = Integer.parseInt(numbers[0]);
       int count   = Integer.parseInt(numbers[1]);
-      view_count.set(item_id, count);
+      view_count.add(item_id, count);
     }
     this.view_count = view_count;
     maxItemID = view_count.size() - 1;

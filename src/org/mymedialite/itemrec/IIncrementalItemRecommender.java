@@ -1,5 +1,5 @@
 // Copyright (C) 2010 Steffen Rendle, Zeno Gantner
-// Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -27,6 +27,7 @@ import org.mymedialite.IRecommender;
  * Item prediction or item recommendation is the task of predicting items (movies, books, products, videos, jokes)
  * that a user may like, based on past user behavior (and possibly other information).
  * See also http://recsyswiki/wiki/Item_prediction
+ * @version 2.03
  */
 public interface IIncrementalItemRecommender extends IRecommender {
 	/**

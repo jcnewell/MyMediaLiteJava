@@ -21,6 +21,7 @@ import org.mymedialite.data.IRatings;
 
 /**
  * CorrelationMatrix that computes correlations over rating data.
+ * @version 2.03
  */
 public class RatingCorrelationMatrix extends CorrelationMatrix {
 
@@ -37,8 +38,8 @@ public class RatingCorrelationMatrix extends CorrelationMatrix {
 	 * @param ratings the rating data
 	 * @param entity_type EntityType.USER or EntityType.ITEM
 	 */
-	public void ComputeCorrelations(IRatings ratings, int entity_type) {
+  public void computeCorrelations(IRatings ratings, int entity_type) {
 		throw new UnsupportedOperationException();
-	}
+  }
 
 }

@@ -21,89 +21,105 @@ package org.mymedialite.itemrec;
 import java.io.*;
 import org.mymedialite.IRecommender;
 import org.mymedialite.data.IPosOnlyFeedback;
+import org.mymedialite.data.PosOnlyFeedback;
+import org.mymedialite.datatype.SparseBooleanMatrix;
 
 /**
  * Abstract item recommender class that loads the (positive-only implicit feedback) training data into memory
  * and provides flexible access to it. 
+ * @version 2.03
  */
 public abstract class ItemRecommender implements IRecommender, Cloneable {
 
-	/** The maximum user ID */
-	protected int maxUserID; // TODO implement getter and setter
+  /** The maximum user ID */
+  protected int maxUserID;
 
-	/** The maximum item ID */
-	protected int maxItemID; // TODO implement getter and setter
+  /** The maximum item ID */
+  protected int maxItemID;
 
-	/** The feedback data to be used for training */
-	protected IPosOnlyFeedback feedback;
+  /** The feedback data to be used for training */
+  protected IPosOnlyFeedback feedback;
 
-	public void setFeedback(IPosOnlyFeedback feedback) {
-		this.feedback = feedback;
-		maxUserID = feedback.getMaxUserID();
-		maxItemID = feedback.getMaxItemID();
-	}
+  protected ItemRecommender() {
+    try {
+      feedback = new PosOnlyFeedback<SparseBooleanMatrix>(SparseBooleanMatrix.class);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  public IPosOnlyFeedback getFeedback() {
+    return feedback;
+  }
 
-	/** Create a shallow copy of the object. */
-	public Object clone() {
-		return this.clone();
-	}
+  public void setFeedback(IPosOnlyFeedback feedback) {
+    this.feedback = feedback;
+    maxUserID = feedback.maxUserID();
+    maxItemID = feedback.maxItemID();
+  }
 
-	public abstract double predict(int userId, int itemId);
+  /** Create a shallow copy of the object. */
+  // TODO check cloning
+  public ItemRecommender clone() {
+    return this.clone();
+  }
 
-	public boolean canPredict(int user_id, int item_id) {
-		return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
-	}
+  public abstract double predict(int userId, int itemId);
 
-	public abstract void train();
+  public boolean canPredict(int user_id, int item_id) {
+    return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
+  }
 
-	public abstract void loadModel(String filename) throws IOException;
+  public abstract void train();
 
-	public abstract void loadModel(BufferedReader reader) throws IOException;
+  public abstract void loadModel(String filename) throws IOException;
 
-	public abstract void saveModel(String filename) throws IOException;
+  public abstract void loadModel(BufferedReader reader) throws IOException;
 
-	public abstract void saveModel(PrintWriter writer) throws IOException;
+  public abstract void saveModel(String filename) throws IOException;
 
-	public void addFeedback(int user_id, int item_id) throws IllegalArgumentException {
-		if (user_id > maxUserID)
-			addUser(user_id);
-		if (item_id > maxItemID)
-			addItem(item_id);
-		feedback.add(user_id, item_id);
-	}
+  public abstract void saveModel(PrintWriter writer) throws IOException;
 
-	public void removeFeedback(int user_id, int item_id) {
-		if (user_id > maxUserID)
-			throw new IllegalArgumentException("Unknown user " + user_id);
-		if (item_id > maxItemID)
-			throw new IllegalArgumentException("Unknown item " + item_id);
-		feedback.remove(user_id, item_id);
-	}
+  public void addFeedback(int user_id, int item_id) throws IllegalArgumentException {    
+    if (user_id > maxUserID)
+      addUser(user_id);
+    if (item_id > maxItemID)
+      addItem(item_id);
+    feedback.add(user_id, item_id);
+  }
 
-	protected void addUser(int user_id) {
-		if (user_id > maxUserID)
-			maxUserID = user_id;
-	}
+  public void removeFeedback(int user_id, int item_id) {
+    if (user_id > maxUserID)
+      throw new IllegalArgumentException("Unknown user " + user_id);
+    if (item_id > maxItemID)
+      throw new IllegalArgumentException("Unknown item " + item_id);
+    feedback.remove(user_id, item_id);
+  }
 
-	protected void addItem(int item_id)  {
-		if (item_id > maxItemID)
-			maxItemID = item_id;
-	}
+  protected void addUser(int user_id) {
+    if (user_id > maxUserID)
+      maxUserID = user_id;
+  }
 
-	public void removeUser(int user_id) {
-		feedback.removeUser(user_id);
-		if (user_id == maxUserID)
-			maxUserID--;
-	}
+  protected void addItem(int item_id)  {
+    if (item_id > maxItemID)
+      maxItemID = item_id;
+  }
 
-	public void removeItem(int item_id) {
-		feedback.removeItem(item_id);
-		if (item_id == maxItemID)
-			maxItemID--;
-	}
+  public void removeUser(int user_id) {
+    feedback.removeUser(user_id);
+    if (user_id == maxUserID)
+      maxUserID--;
+  }
 
-	@Override
-	public String toString() {
-		return this.getClass().getName();
-	}
+  public void removeItem(int item_id) {
+    feedback.removeItem(item_id);
+    if (item_id == maxItemID)
+      maxItemID--;
+  }
+
+  @Override
+  public String toString() {
+    return this.getClass().getName();
+  }
 }

@@ -17,7 +17,10 @@
 
 package org.mymedialite.datatype;
 
-/** Generic interface for matrix data types */
+/**
+ * Generic interface for matrix data types
+ * @version 2.03
+ */
 public interface IMatrix<T> {
 
   /** 
@@ -40,13 +43,13 @@ public interface IMatrix<T> {
    * Get the number of rows of the matrix.
    * @return the number of rows of the matrix
    */
-  int getNumberOfRows();
+  int numberOfRows();
 
   /** 
    * Get the number of columns of the matrix.
    * @return rhe number of columns of the matrix
    */
-  int getNumberOfColumns();
+  int numberOfColumns();
 
   /**
    * True if the matrix is symmetric, false otherwise.

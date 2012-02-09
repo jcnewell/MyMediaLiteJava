@@ -18,12 +18,14 @@
 
 package org.mymedialite.datatype;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collections;
 
-import org.mymedialite.util.IntHashSet;
 import org.mymedialite.datatype.IMatrix;
 
 /**
@@ -34,10 +36,11 @@ import org.mymedialite.datatype.IMatrix;
  * TODO Implement the classes below.
  * If you need a more memory-efficient data structure, try SparseBooleanMatrixBinarySearch
  * or SparseBooleanMatrixStatic.
+ * @version 2.03
  */
 public class SparseBooleanMatrix implements IBooleanMatrix {
 
-	ArrayList<IntHashSet> row_list = new ArrayList<IntHashSet>();
+	ArrayList<IntArraySet> row_list = new ArrayList<IntArraySet>();
 
 	/** Default constructor */
 	public SparseBooleanMatrix() {}
@@ -52,9 +55,9 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 
 	public void set(int x, int y, Boolean value) {
 		if (value)
-			getRow(x).add(y);
+			get(x).add(y);
 		else
-			getRow(x).remove(y);
+			get(x).remove(y);
 	}
 
 	/**
@@ -62,16 +65,16 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	 * @param x the row ID
 	 * @return the row
 	 */
-	public IntHashSet getRow(int x) {
+	public IntSet get(int x) {
 		if (x >= row_list.size())
 			for (int i = row_list.size(); i <= x; i++)
-				row_list.add(new IntHashSet());
+				row_list.add(new IntArraySet());
 		return row_list.get(x);
 	}
 
 	public boolean isSymmetric() {
 		for (int i = 0; i < row_list.size(); i++)
-			for (int j : row_list.get(i).values()) {
+			for (int j : row_list.get(i).toIntArray()) {
 				if (i > j)
 					continue;  // check every pair only once
 				if (!get(j, i))
@@ -84,28 +87,28 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 		return new SparseBooleanMatrix();
 	}
 
-	public List<Integer> getEntriesByRow(int row_id) {
-		return new ArrayList<Integer>(row_list.get(row_id));
+	public IntList getEntriesByRow(int row_id) {
+		return new IntArrayList(row_list.get(row_id));
 	}
 
-	public int getNumEntriesByRow(int row_id) {
+	public int numEntriesByRow(int row_id) {
 		return row_list.get(row_id).size();
 	}       
 
 	/**
 	 *  Takes O(N) worst-case time, where N is the number of rows, if the internal hash table can be queried in constant time.
 	 */
-	public List<Integer> getEntriesByColumn(int column_id) {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		for (int row_id = 0; row_id < getNumberOfRows(); row_id++)
+	public IntList getEntriesByColumn(int column_id) {
+	  IntList list = new IntArrayList();
+		for (int row_id = 0; row_id < numberOfRows(); row_id++)
 			if (row_list.get(row_id).contains(column_id))
 				list.add(row_id);
 		return list;
 	}     
 
-	public int getNumEntriesByColumn(int column_id) {
+	public int numEntriesByColumn(int column_id) {
 		int count = 0;
-		for (int row_id = 0; row_id < getNumberOfRows(); row_id++)
+		for (int row_id = 0; row_id < numberOfRows(); row_id++)
 			if (row_list.get(row_id).contains(column_id))
 				count++;
 		return count;
@@ -114,8 +117,8 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	/**
 	 * The IDs of the non-empty rows in the matrix (the ones that contain at least one true entry)
 	 */
-	public Collection<Integer> getNonEmptyRowIDs() {
-		HashSet<Integer> row_ids = new HashSet<Integer>();
+	public IntCollection nonEmptyRowIDs() {
+		IntSet row_ids = new IntArraySet();
 		for (int i = 0; i < row_list.size(); i++)
 			if (row_list.get(i).size() > 0)
 				row_ids.add(i);
@@ -125,40 +128,41 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	/**
 	 * Get the IDs of the non-empty columns in the matrix (the ones that contain at least one true entry)
 	 */
-	public Collection<Integer> getNonEmptyColumnIDs() {
-		HashSet<Integer> col_ids = new HashSet<Integer>();
+	public IntCollection nonEmptyColumnIDs() {
+		IntSet col_ids = new IntArraySet();
 		for (int i = 0; i < row_list.size(); i++)
-			for (int id : row_list.get(i).values())
+			for (int id : row_list.get(i).toIntArray())
 				col_ids.add(id);
 		return col_ids;
 	}
 
-	//  public void setRow(int x, IntHashSet row) {
+	//  public void setRow(int x, IntArraySet row) {
 	//      row_list.set(x, row);
 	//  }
 	//
-	//  public void addRow(int x, IntHashSet row) {
+	//  public void addRow(int x, IntArraySet row) {
 	//    row_list.add(x, row);
 	//  }
 
-	public int getNumberOfRows() {
+	public int numberOfRows() {
 		return row_list.size();
 	}
 
-	public int getNumberOfColumns() {
+	public int numberOfColumns() {
 		int max_column_id = -1;
-		for (IntHashSet row : row_list)
-			if (row_list.size() > 0)
-				max_column_id = Math.max(max_column_id, row.max());
+		for (IntSet row : row_list)
+	      if(row.size() > 0) 
+	        max_column_id = Math.max(max_column_id, Collections.max(row));
+		
 		return max_column_id + 1;
 	}
 
 	/**
 	 * Returns the number of (true) entries.
 	 */
-	public int getNumberOfEntries() {
+	public int numberOfEntries() {
 		int n = 0;
-		for (IntHashSet row : row_list)
+		for (IntSet row : row_list)
 			n += row.size();
 		return n;
 	}
@@ -169,7 +173,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	//   * @param y the column ID
 	//   */
 	//  public void add(int x, int y) {
-	//    IntHashSet row = getRow(x);
+	//    IntArraySet row = getRow(x);
 	//    row.add(y);
 	//  }
 
@@ -188,7 +192,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	 */
 	public void removeColumn(int y) {
 		for (int row_id = 0; row_id < row_list.size(); row_id++) {
-			List<Integer> cols = new ArrayList<Integer>(row_list.get(row_id));
+			IntList cols = new IntArrayList(row_list.get(row_id));
 			for (int col_id : cols) {
 				if (col_id >= y)
 					row_list.get(row_id).remove(y);
@@ -202,9 +206,9 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	 * Removes several columns, and fills the gap by decrementing all occurrences of higher column IDs.
 	 * @param delete_columns an array with column IDs
 	 */
-	public void RemoveColumn(int[] delete_columns) {
+	public void removeColumn(int[] delete_columns) {
 		for (int row_id = 0; row_id < row_list.size(); row_id++) {
-			List<Integer> cols = new ArrayList<Integer>(row_list.get(row_id));
+			IntList cols = new IntArrayList(row_list.get(row_id));
 			NEXT_COL:
 				for (int col_id : cols) {
 					int decrease_by = 0;
@@ -231,7 +235,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 	public IMatrix<Boolean> transpose() {
 		SparseBooleanMatrix transpose = new SparseBooleanMatrix();
 		for (int i = 0; i < row_list.size(); i++) {
-			for(int j : this.getRow(i)) {
+			for(int j : this.get(i)) {
 				transpose.set(j, i, true);
 			}
 		}
@@ -242,7 +246,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
 		int c = 0;
 
 		for (int i = 0; i < row_list.size(); i++)
-			for (int j : row_list.get(i).values())
+			for (int j : row_list.get(i).toIntArray())
 				if (s.get(i, j))
 					c++;
 		return c;

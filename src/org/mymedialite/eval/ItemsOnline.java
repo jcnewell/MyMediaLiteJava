@@ -17,98 +17,134 @@
 
 package org.mymedialite.eval;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-
+import java.util.List;
+import org.mymedialite.IRecommender;
 import org.mymedialite.itemrec.IIncrementalItemRecommender;
+import org.mymedialite.util.Utils;
 import org.mymedialite.data.IPosOnlyFeedback;
 import org.mymedialite.data.PosOnlyFeedback;
 import org.mymedialite.datatype.SparseBooleanMatrix;
 
+/**
+ * Online evaluation for rankings of items
+ * @version 2.03
+ */
 public class ItemsOnline {
-	  /**
-	   * Online evaluation for rankings of items.
-	   * @param recommender item recommender
-	   * @param test test cases
-	   * @param train training data (must be connected to the recommender's training data)
-	   * @param test_users a collection of integers with all relevant users
-	   * @param candidate_items a collection of integers with all relevant items
-	   * @return a dictionary containing the evaluation results (averaged by user)
-	   */
-	  public static HashMap<String, Double> evaluate(
-	      IIncrementalItemRecommender recommender,
-	      IPosOnlyFeedback test,
-	      IPosOnlyFeedback train,
-	      Collection<Integer> test_users,
-	      Collection<Integer> candidate_items) {
 
-	    // For better handling, move test data points into arrays.
-	    int[] users = new int[test.size()];
-	    int[] items = new int[test.size()];
-	    int pos = 0;
-	    for (int user_id : test.getUserMatrix().getNonEmptyColumnIDs()) {
-	      for (int item_id : test.getUserMatrix().getRow(user_id)) {
-	        users[pos] = user_id;
-	        items[pos] = item_id;
-	        pos++;
-	      }
-	    }
+  //TODO consider micro- (by item) and macro-averaging (by user, the current thing); repeated events
 
-	    // Random order of the test data points.
-	    int[] random_index = new int[test.size()];
-	    for (int index = 0; index < random_index.length; index++) random_index[index] = index;
-	    Collections.shuffle(Arrays.asList(random_index));
-	    
-	    HashMap<Integer, HashMap<String, Double>> results_by_user = new HashMap<Integer, HashMap<String, Double>>();
+  /**
+   * Online evaluation for rankings of items.
+   * @param recommender the item recommender to be evaluated
+   * @param test test cases
+   * @param training training data (must be connected to the recommender's training data)
+   * @param test_users a list of all test user IDs
+   * @param candidate_items a list of all candidate item IDs
+   * @param  candidate_item_mode the mode used to determine the candidate items
+   * @return a dictionary containing the evaluation results (averaged by user)
+   */
+  public static HashMap<String, Double> evaluate(
+      IRecommender recommender,
+      IPosOnlyFeedback test,
+      IPosOnlyFeedback training,
+      List<Integer> test_users,
+      List<Integer> candidate_items,
+      CandidateItems candidate_item_mode) {
 
-	    for (int index : random_index) {
-	      if (test_users.contains(users[index]) && candidate_items.contains(items[index])) {
-	        // Evaluate user.
-	        PosOnlyFeedback<SparseBooleanMatrix> current_test = new PosOnlyFeedback<SparseBooleanMatrix>(new SparseBooleanMatrix());
-	        current_test.add(users[index], items[index]);
-	        HashMap<String, Double> current_result = evaluate(recommender, current_test, train, current_test.getAllUsers(), candidate_items);
+    if (!(recommender instanceof IIncrementalItemRecommender))
+      throw new IllegalArgumentException("recommender must be of type IIncrementalItemRecommender");
+    
+    IIncrementalItemRecommender incremental_recommender = (IIncrementalItemRecommender)recommender;
+   
+    // prepare candidate items once to avoid recreating them
+    if(candidate_item_mode.equals(CandidateItems.TRAINING))
+      candidate_items = training.allItems();
+    
+    else if(candidate_item_mode.equals(CandidateItems.TEST))
+      candidate_items = test.allItems();
+   
+    else if(candidate_item_mode.equals(CandidateItems.OVERLAP))
+      candidate_items = new ArrayList<Integer>(Utils.intersect(test.allItems(), training.allItems()));
+       
+    else if(candidate_item_mode.equals(CandidateItems.UNION))
+      candidate_items = new ArrayList<Integer>(Utils.union(test.allItems(), training.allItems()));
+ 
+    candidate_item_mode = CandidateItems.EXPLICIT;
+    
+    // For better handling, move test data points into arrays.
+    int[] users = new int[test.size()];
+    int[] items = new int[test.size()];
+    int pos = 0;
+    for (int user_id : test.userMatrix().nonEmptyColumnIDs()) {
+      for (int item_id : test.userMatrix().get(user_id)) {
+        users[pos] = user_id;
+        items[pos] = item_id;
+        pos++;
+      }
+    }
 
-	        if (current_result.get("num_users") == 1) {
-	          HashMap<String, Double> result = results_by_user.get(users[index]);
-	          if (results_by_user.containsKey(users[index])) {
-	            for (String measure : Items.getMeasures()) {
-	              result.put(measure, result.get(measure) + current_result.get(measure));
-	            }
-	            result.put("num_items", result.get("num_items") + 1); 
-	          } else {
-	            results_by_user.put(users[index], current_result);
-	            current_result.put("num_items", 1D); 
-	            current_result.remove("num_users"); 
-	          }
-	        }
-	      }
+    // Random order of the test data points.
+    List<Integer> random_index = new ArrayList<Integer>(test.size());
+    for (int index = 0; index < random_index.size(); index++) random_index.add(index, index);
+    Collections.shuffle(random_index);
 
-	      // update recommender
-	      recommender.addFeedback(users[index], items[index]);
-	    }
+    HashMap<Integer, HashMap<String, Double>> results_by_user = new HashMap<Integer, HashMap<String, Double>>();
 
-	    HashMap<String, Double> results = new HashMap<String, Double>();
-	    for (String measure : Items.getMeasures())
-	      results.put(measure, 0D);
+    for (int index : random_index) {
+      if (test_users.contains(users[index]) && candidate_items.contains(items[index])) {
+        // Evaluate user.
+        PosOnlyFeedback<SparseBooleanMatrix> current_test = null;
+        try {
+          current_test = new PosOnlyFeedback<SparseBooleanMatrix>(SparseBooleanMatrix.class);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        current_test.add(users[index], items[index]);
+        HashMap<String, Double> current_result = evaluate(recommender, current_test, training, current_test.allUsers(), candidate_items,candidate_item_mode);
 
-	    for (int u : results_by_user.keySet()) {
-	      HashMap<String, Double> userResult = results_by_user.get(u);
-	      for (String measure : Items.getMeasures()) {
-	        results.put(measure, userResult.get(measure) / userResult.get("num_items"));
-	      }
-	    }
+        if (current_result.get("num_users") == 1) {
+          HashMap<String, Double> result = results_by_user.get(users[index]);
+          if (results_by_user.containsKey(users[index])) {
+            for (String measure : Items.getMeasures()) {
+              result.put(measure, result.get(measure) + current_result.get(measure));
+            }
+            result.put("num_items", result.get("num_items") + 1); 
+          } else {
+            results_by_user.put(users[index], current_result);
+            current_result.put("num_items", 1D); 
+            current_result.remove("num_users"); 
+          }
+        }
+      }
 
-	    for (String measure : Items.getMeasures()) {
-	      results.put(measure, results.get(measure) / results_by_user.size());
-	    }
+      // update recommender
+      incremental_recommender.addFeedback(users[index], items[index]);
+    }
 
-	    results.put("num_users", new Double(results_by_user.size()));
-	    results.put("num_items", new Double(candidate_items.size()));
-	    results.put("num_lists", new Double(test.size())); // FIXME this is not exact
+    HashMap<String, Double> results = new HashMap<String, Double>();
+    for (String measure : Items.getMeasures())
+      results.put(measure, 0D);
 
-	    return results;
-	  }
+    for (int u : results_by_user.keySet()) {
+      HashMap<String, Double> userResult = results_by_user.get(u);
+      for (String measure : Items.getMeasures()) {
+        results.put(measure, userResult.get(measure) / userResult.get("num_items"));
+      }
+    }
+
+    for (String measure : Items.getMeasures()) {
+      results.put(measure, results.get(measure) / results_by_user.size());
+    }
+
+    results.put("num_users", new Double(results_by_user.size()));
+    results.put("num_items", new Double(candidate_items.size()));
+    results.put("num_lists", new Double(test.size())); // FIXME this is not exact
+
+    return results;
+  }
 
 }

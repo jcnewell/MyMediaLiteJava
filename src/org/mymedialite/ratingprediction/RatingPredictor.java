@@ -22,7 +22,10 @@ import java.io.IOException;
 
 import org.mymedialite.data.IRatings;
 
-/** Abstract class for rating predictors that keep the rating data in memory for training (and possibly prediction) */
+/**
+ * Abstract class for rating predictors that keep the rating data in memory for training (and possibly prediction)
+ * @version 2.03
+ */
 public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 
 	/** Maximum user ID */
@@ -39,11 +42,9 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 
 	// TODO find clearer name for this
 	/** true if users shall be updated when doing online updates */
-	/// <value>true if users shall be updated when doing online updates</value>
 	public boolean updateUsers = true;
 
 	/** true if items shall be updated when doing online updates */
-	/// <value>true if items shall be updated when doing online updates</value>
 	public boolean updateItems = true;
 
 	/** The rating data */
@@ -87,11 +88,11 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 	/** 
 	 * Initializes the recommender model.
 	 * This method is called by the train() method.
-	 * When overriding, please call base.InitModel() to get the functions performed in the base class.
+	 * When overriding, please call super.initModel() to get the functions performed in the base class.
 	 */
 	protected void initModel() {
-		maxUserID = ratings.getMaxUserID();
-		maxItemID = ratings.getMaxItemID();
+		maxUserID = ratings.maxUserID();
+		maxItemID = ratings.maxItemID();
 	}
 
 	/// <inheritdoc/>

@@ -20,9 +20,10 @@ package org.mymedialite.ratingprediction;
 
 import java.io.*;
 import java.util.List;
-
 import org.mymedialite.IIterativeModel;
 import org.mymedialite.datatype.*;
+import org.mymedialite.io.IMatrixExtensions;
+import org.mymedialite.io.Model;
 import org.mymedialite.util.Recommender;
 
 /** 
@@ -37,299 +38,293 @@ import org.mymedialite.util.Recommender;
  * (1) (preferred) Use the BiasedMatrixFactorization engine, which is more stable.
  * (2) Change the range of rating values (1 to 5 works generally well with the default settings).
  * (3) Change the learn_rate (decrease it if your range is larger than 1 to 5).
+ * 
+ * This recommender supports incremental updates.
+ * @version 2.03
  */
-//public class MatrixFactorization extends RatingPredictor implements IIterativeModel {
-public class MatrixFactorization extends RatingPredictor implements IIterativeModel /* , IIncrementalRatingPredictor */ { // TODO make incremental
+public class MatrixFactorization extends IncrementalRatingPredictor implements IIterativeModel  {
 
-	/** Matrix containing the latent user factors */
-	protected Matrix<Double> userFactors;
+  private static final String VERSION = "2.03";
+  
+  /** Matrix containing the latent user factors */
+  protected Matrix<Double> userFactors;
 
-	/** Matrix containing the latent item factors */
-	protected Matrix<Double> itemFactors;
+  /** Matrix containing the latent item factors */
+  protected Matrix<Double> itemFactors;
 
-	/** The bias (global average) */
-	protected double globalBias;
+  /** The bias (global average) */
+  protected double globalBias;
 
-	/** Mean of the normal distribution used to initialize the factors */
-	public double initMean;
+  /** Mean of the normal distribution used to initialize the factors */
+  public double initMean;
 
-	/** Standard deviation of the normal distribution used to initialize the factors */
-	public double initStdev;
+  /** Standard deviation of the normal distribution used to initialize the factors */
+  public double initStdDev;
 
-	/** Number of latent factors */
-	public int numFactors;
+  /** Number of latent factors */
+  public int numFactors;
 
-	/** Learn rate */
-	public double learnRate;
+  /** Learn rate */
+  public double learnRate;
 
-	/** Regularization parameter */
-	public double regularization;
+  /** Regularization parameter */
+  public double regularization;
 
-	/** Number of iterations over the training data */
-	public int numIter;
+  /** Number of iterations over the training data */
+  public int numIter;
 
-	/** Default constructor */
-	public MatrixFactorization() {
-		// set default values
-		regularization = 0.015;
-		learnRate = 0.01;
-		numIter = 30;
-		initStdev = 0.1;
-		numFactors = 10;
-	}
+  /** Default constructor */
+  public MatrixFactorization() {
+    // Set default values
+    regularization = 0.015;
+    learnRate = 0.01;
+    numIter = 30;
+    initStdDev = 0.1;
+    numFactors = 10;
+  }
 
-	/** Initialize the model data structure */
-	protected void initModel() {
-		super.initModel();
+  /** Initialize the model data structure */
+  protected void initModel() {
+    super.initModel();
 
-		// init factor matrices
-		userFactors = new Matrix<Double>(ratings.getMaxUserID() + 1, numFactors);
-		itemFactors = new Matrix<Double>(ratings.getMaxItemID() + 1, numFactors);
-		MatrixUtils.initNormal(userFactors, initMean, initStdev);
-		MatrixUtils.initNormal(itemFactors, initMean, initStdev);
-	}
+    // init factor matrices
+    userFactors = new Matrix<Double>(ratings.maxUserID() + 1, numFactors);
+    itemFactors = new Matrix<Double>(ratings.maxItemID() + 1, numFactors);
+    MatrixExtensions.initNormal(userFactors, initMean, initStdDev);
+    MatrixExtensions.initNormal(itemFactors, initMean, initStdDev);
+  }
 
-	/** @override */
-	public void train() {
-		initModel();
+  /** @override */
+  public void train() {
+    initModel();
 
-		// learn model parameters
-		globalBias = ratings.getAverage();
-		learnFactors(ratings.getRandomIndex(), true, true);
-	}
+    // learn model parameters
+    globalBias = ratings.average();
+    learnFactors(ratings.randomIndex(), true, true);
+  }
 
-	/**   */
-	public void iterate() {
-		iterate(ratings.getRandomIndex(), true, true);
-	}
+  /**   */
+  public void iterate() {
+    iterate(ratings.randomIndex(), true, true);
+  }
 
-	/** 
-	 * Updates the latent factors on a user
-	 * @param user_id the user ID 
-	 */
-	public void retrainUser(int user_id) {
-		if (updateUsers) {
-			MatrixUtils.rowInitNormal(userFactors, initMean, initStdev, user_id);
-			learnFactors(ratings.getByUser().get(user_id), true, false);
-		}
-	}
+  /** 
+   * Updates the latent factors on a user
+   * @param user_id the user ID 
+   */
+  public void retrainUser(int user_id) {
+    if (updateUsers) {
+      MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStdDev);
+      learnFactors(ratings.byUser().get(user_id), true, false);
+    }
+  }
 
-	/**
-	 * Updates the latent factors of an item
-	 * @param item_id the item ID
-	 */
-	public void retrainItem(int item_id) {
-		if (updateItems) {
-			MatrixUtils.rowInitNormal(itemFactors, initMean, initStdev, item_id);
-			learnFactors(ratings.getByItem().get(item_id), false, true);
-		}
-	}
+  /**
+   * Updates the latent factors of an item
+   * @param item_id the item ID
+   */
+  public void retrainItem(int item_id) {
+    if (updateItems) {
+      MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStdDev);
+      learnFactors(ratings.byItem().get(item_id), false, true);
+    }
+  }
 
-	/**
-	 * Iterate once over rating data and adjust corresponding factors (stochastic gradient descent)
-	 * @param rating_indices a list of indices pointing to the ratings to iterate over
-	 * @param update_user true if user factors to be updated
-	 * @param update_item true if item factors to be updated
-	 */
-	protected void iterate(List<Integer> rating_indices, boolean update_user, boolean update_item) {
-		for (int index : rating_indices) {
-			int u = ratings.getUsers().get(index);
-			int i = ratings.getItems().get(index);
+  /**
+   * Iterate once over rating data and adjust corresponding factors (stochastic gradient descent)
+   * @param rating_indices a list of indices pointing to the ratings to iterate over
+   * @param update_user true if user factors to be updated
+   * @param update_item true if item factors to be updated
+   */
+  protected void iterate(List<Integer> rating_indices, boolean update_user, boolean update_item) {
+    for (int index : rating_indices) {
+      int u = ratings.users().get(index);
+      int i = ratings.items().get(index);
 
-			double p = predict(u, i, false);
-			double err = ratings.get(index) - p;
+      double p = predict(u, i, false);
+      double err = ratings.get(index) - p;
 
-			// Adjust factors
-			for (int f = 0; f < numFactors; f++) {
-				double u_f = userFactors.get(u, f);
-				double i_f = itemFactors.get(i, f);
+      // Adjust factors
+      for (int f = 0; f < numFactors; f++) {
+        double u_f = userFactors.get(u, f);
+        double i_f = itemFactors.get(i, f);
 
-				// compute factor updates
-				double delta_u = err * i_f - regularization * u_f;
-				double delta_i = err * u_f - regularization * i_f;
+        // If necessary, compute and apply updates
+        if (update_user) {
+          double delta_u = err * i_f - regularization * u_f;
+          MatrixExtensions.inc(userFactors, u, f, learnRate * delta_u);
+        }
+        
+        if (update_item) {
+          double delta_i = err * u_f - regularization * i_f;
+          MatrixExtensions.inc(itemFactors, i, f, learnRate * delta_i);
+        }
+      }
+    }
+  }
 
-				// if necessary, apply updates
-				if (update_user)
-					MatrixUtils.inc(userFactors, u, f, learnRate * delta_u);
-				if (update_item)
-					MatrixUtils.inc(itemFactors, i, f, learnRate * delta_i);
-			}
-		}
-	}
+  private void learnFactors(List<Integer> rating_indices, boolean update_user, boolean update_item) {
+    for (int current_iter = 0; current_iter < numIter; current_iter++) {
+      iterate(rating_indices, update_user, update_item);
+    }
+  }
 
-	private void learnFactors(List<Integer> rating_indices, boolean update_user, boolean update_item) {
-		for (int current_iter = 0; current_iter < numIter; current_iter++) {
-			iterate(rating_indices, update_user, update_item);
-		}
-	}
+  /**
+   */
+  protected double predict(int user_id, int item_id, boolean bound) {
+    double result = globalBias + MatrixExtensions.rowScalarProduct(userFactors, user_id, itemFactors, item_id);
 
-	/**
-	 */
-	protected double predict(int user_id, int item_id, boolean bound) {
-		double result = globalBias + MatrixUtils.rowScalarProduct(userFactors, user_id, itemFactors, item_id);
+    if (bound) {
+      if (result > getMaxRating()) return getMaxRating();
+      if (result < getMinRating()) return getMinRating();
+    }
+    return result;
+  }
 
-		if (bound) {
-			if (result > getMaxRating()) return getMaxRating();
-			if (result < getMinRating()) return getMinRating();
-		}
-		return result;
-	}
+  /**
+   * Predict the rating of a given user for a given item
+   * If the user or the item are not known to the engine, the global average is returned.
+   * To avoid this behavior for unknown entities, use CanPredict() to check before.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @returnthe predicted rating</returns>
+   */
+  public double predict(int user_id, int item_id) {
+    if (user_id >= userFactors.dim1)
+      return globalBias;
+    if (item_id >= itemFactors.dim1)
+      return globalBias;
+    return predict(user_id, item_id, true);
+  }
 
-	/**
-	 * Predict the rating of a given user for a given item
-	 * If the user or the item are not known to the engine, the global average is returned.
-	 * To avoid this behavior for unknown entities, use CanPredict() to check before.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @returnthe predicted rating</returns>
-	 */
-	public double predict(int user_id, int item_id) {
-		if (user_id >= userFactors.dim1)
-			return globalBias;
-		if (item_id >= itemFactors.dim1)
-			return globalBias;
-		return predict(user_id, item_id, true);
-	}
+  /**   */
+  public void addRating(int user_id, int item_id, double rating) {
+    super.addRating(user_id, item_id, rating);
+    retrainUser(user_id);
+    retrainItem(item_id);
+  }
 
-	/**   */
-	public void add(int user_id, int item_id, double rating) {
-		super.add(user_id, item_id, rating);
-		retrainUser(user_id);
-		retrainItem(item_id);
-	}
+  /**   */
+  public void updateRating(int user_id, int item_id, double rating) {
+    super.updateRating(user_id, item_id, rating);
+    retrainUser(user_id);
+    retrainItem(item_id);
+  }
+  
+  public void removeRating(int user_id, int item_id) {
+      super.removeRating(user_id, item_id);
+      retrainUser(user_id);
+      retrainItem(item_id);
+  }
 
-	/**   */
-	public void updateRating(int user_id, int item_id, double rating) {
-		super.updateRating(user_id, item_id, rating);
-		retrainUser(user_id);
-		retrainItem(item_id);
-	}
+  /**   */
+  public void addUser(int user_id) {
+    super.addUser(user_id);
+    userFactors.addRows(user_id + 1);
+  }
 
-	/**   */
-	public void addUser(int user_id) {
-		// get rid of null entries in the factor matrix
-		if (user_id > maxUserID) {
-			userFactors.addRows(user_id + 1);
-			for (int u = maxUserID + 1; u <= user_id; u++)
-				MatrixUtils.rowInitNormal(userFactors, initMean, initStdev, u);
-			super.addUser(user_id);
-		}
-	}
+  /**   */
+  public void addItem(int item_id) {
+    super.addItem(item_id);
+    itemFactors.addRows(item_id + 1);
+  }
 
-	/**   */
-	public void addItem(int item_id) {
-		// get rid of null entries in the factor matrix
-		if (item_id > maxItemID) {
-			itemFactors.addRows(item_id + 1);
-			for (int i = maxItemID + 1; i <= item_id; i++)
-				MatrixUtils.rowInitNormal(itemFactors, initMean, initStdev, i);
-			super.addItem(item_id);
-		}
-	}
+  /**   */
+  public void removeUser(int user_id) {
+    super.removeUser(user_id);
 
-	/**   */
-	public void removeUser(int user_id) {
-		super.removeUser(user_id);
+    // set user factors to zero
+    userFactors.setRowToOneValue(user_id, 0.0);
+  }
 
-		// set user factors to zero
-		userFactors.setRowToOneValue(user_id, 0.0D);
-	}
+  /**   */
+  public void removeItem(int item_id) {
+    super.removeItem(item_id);
 
-	/**   */
-	public void removeItem(int item_id) {
-		super.removeItem(item_id);
-
-		// set item factors to zero
-		itemFactors.setRowToOneValue(item_id, 0.0D);
-	}
+    // set item factors to zero
+    itemFactors.setRowToOneValue(item_id, 0.0);
+  }
 
 
-	public void saveModel(String filename)  throws IOException {
-		PrintWriter writer = Recommender.getWriter(filename, this.getClass());
-		writer.println(Double.toString(globalBias));
-		IMatrixUtils.writeMatrix(writer, userFactors);
-		IMatrixUtils.writeMatrix(writer, itemFactors);
-		boolean error = writer.checkError();
-		if(error) System.out.println("Error writing file.");
-		writer.flush();
-		writer.close();
-	}
+  public void saveModel(String filename)  throws IOException {
+    PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    writer.println(Double.toString(globalBias));
+    IMatrixExtensions.writeMatrix(writer, userFactors);
+    IMatrixExtensions.writeMatrix(writer, itemFactors);
+    boolean error = writer.checkError();
+    if(error) System.out.println("Error writing file.");
+    writer.flush();
+    writer.close();
+  }
 
 
-	public void loadModel(String filename) throws IOException  {
-		BufferedReader reader = Recommender.getReader(filename, this.getClass());
-		double bias = Double.parseDouble(reader.readLine());
+  public void loadModel(String filename) throws IOException  {
+    BufferedReader reader = Model.getReader(filename, this.getClass());
+    double bias = Double.parseDouble(reader.readLine());
 
-		Matrix<Double> user_factors = (Matrix<Double>) IMatrixUtils.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
-		Matrix<Double> item_factors = (Matrix<Double>) IMatrixUtils.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
-		reader.close();
+    Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    Matrix<Double> item_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    reader.close();
 
-		// Assign new model
-		this.globalBias = bias;
-		// Assign new model
-		if (this.numFactors != user_factors.getNumberOfColumns()) {
-			System.err.println("Set num_factors to " + user_factors.getNumberOfColumns());
-			this.numFactors = user_factors.getNumberOfColumns();
-		}
-		this.userFactors = user_factors;
-		this.itemFactors = item_factors;
+    if (user_factors.numberOfColumns() != item_factors.numberOfColumns()) {
+      throw new IOException("Number of user and item factors must match: " + user_factors.numberOfColumns() + " != " + item_factors.numberOfColumns());
+    }
+    this.maxUserID = user_factors.numberOfRows() - 1;
+    this.maxItemID = item_factors.numberOfRows() - 1; 
+    
+    // Assign new model
+    this.globalBias = bias;
+    if (this.numFactors != user_factors.numberOfColumns()) {
+      System.err.println("Set num_factors to " + user_factors.numberOfColumns());
+      this.numFactors = user_factors.numberOfColumns();
+    }
+    this.userFactors = user_factors;
+    this.itemFactors = item_factors; 
+  }
 
-		if (user_factors.getNumberOfColumns() != item_factors.getNumberOfColumns()) {
-			throw new IOException("Number of user and item factors must match: " + user_factors.getNumberOfColumns() + " != " + item_factors.getNumberOfColumns());
-		}
-		this.maxUserID = user_factors.getNumberOfRows() - 1;
-		this.maxItemID = item_factors.getNumberOfRows() - 1;  
-	}
+  /**
+   * Compute the regularized loss
+   * @return the regularized loss
+   */
+  public double computeLoss() {
+    double loss = 0;
+    for (int i = 0; i < ratings.size(); i++) {
+      int user_id = ratings.users().get(i);
+      int item_id = ratings.items().get(i);
+      loss += Math.pow(predict(user_id, item_id) - ratings.get(i), 2);
+    }
 
-	/** Compute fit (RMSE) on the training data.
-	 * @return the root mean square error (RMSE) on the training data
-	 */
-	public double computeFit() {
-		double rmse_sum = 0;
-		for (int i = 0; i < ratings.size(); i++) {
-			rmse_sum += Math.pow(predict(ratings.getUsers().get(i), ratings.getItems().get(i)) - ratings.get(i), 2);
-		}
-		double fit = Math.sqrt(rmse_sum / ratings.size());
-		//System.out.println("computeFit: " + fit);
-		return fit;
-	}
+    for (int u = 0; u <= maxUserID; u++) {
+      loss += ratings.countByUser().get(u) * regularization * Math.pow(VectorExtensions.euclideanNorm(userFactors.getRow(u)), 2);
+    }
 
+    for (int i = 0; i <= maxItemID; i++) {
+      loss += ratings.countByUser().get(i) * regularization * Math.pow(VectorExtensions.euclideanNorm(itemFactors.getRow(i)), 2);
+    }
 
-	/**
-	 * Compute the regularized loss
-	 * @return the regularized loss
-	 */
-	public double computeLoss() {
-		double loss = 0;
-		for (int i = 0; i < ratings.size(); i++) {
-			int user_id = ratings.getUsers().get(i);
-			int item_id = ratings.getItems().get(i);
-			loss += Math.pow(predict(user_id, item_id) - ratings.get(i), 2);
-		}
-
-		for (int u = 0; u <= maxUserID; u++) {
-			loss += ratings.getCountByUser().get(u) * regularization * Math.pow(VectorUtils.euclideanNorm(userFactors.getRow(u)), 2);
-		}
-
-		for (int i = 0; i <= maxItemID; i++) {
-			loss += ratings.getCountByUser().get(i) * regularization * Math.pow(VectorUtils.euclideanNorm(itemFactors.getRow(i)), 2);
-		}
-
-		return loss;
-	}
+    return loss;
+  }
 
 
-	public String toString() {
-		return "MatrixFactorization num_factors=" + numFactors + " regularization=" + regularization + " learn_rate=" + learnRate + " num_iter=" + numIter + " init_mean=" + initMean + " init_stdev=" + initStdev;
-	}
+  public String toString() {
+    return 
+        this.getClass().getName()
+        + " numFactors=" + numFactors
+        + " regularization=" + regularization
+        + " learnRate=" + learnRate
+        + " numIter=" + numIter
+        + " initMean=" + initMean
+        + " initStdDev=" + initStdDev;
+  }
 
-	@Override
-	public void setNumIter(int num_iter) {
-		this.numIter = num_iter;
-	}
+  @Override
+  public void setNumIter(int num_iter) {
+    this.numIter = num_iter;
+  }
 
-	@Override
-	public int getNumIter() {
-		return numIter;
-	}
+  @Override
+  public int getNumIter() {
+    return numIter;
+  }
+
 }

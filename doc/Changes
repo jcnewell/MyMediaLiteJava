@@ -1,3 +1,11 @@
+201-02-06 Initial release of 2.03
+- Added all missing packages and classes
+- Added command line programs
+- Replaced IntHashSet with fastutils IntArraySet
+- DenseMatrix support added using Colt
+- Added default constructor for ItemRecommender
+- Added WeightedItemAttributeKNN, Perfect and Worst Item Recommenders
+
 2011-11-??	getting closer to 2.02
  - BPRMF, MatrixFactorization: fix two bugs in incremental updates (zeno)
  - add BiasedMatrixFactroization (zeno, chris)

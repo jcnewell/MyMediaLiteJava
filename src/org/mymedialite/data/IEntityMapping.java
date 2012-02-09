@@ -22,51 +22,46 @@ import java.util.List;
 
 /** 
  * Interface to map external entity IDs to internal ones to ensure that there are no gaps in the numbering.
+ * @version 2.03
  */
 public interface IEntityMapping {
   
   /** 
    * Get all original (external) entity IDs.
    */
-  Collection<Integer> getOriginalIDs();
+  Collection <String> originalIDs();
 
   /** 
    * Get all internal entity IDs.
    */
-  Collection<Integer> getInternalIDs();
+  Collection<Integer> internalIDs();
 
   /** 
    * Get the original (external) ID of a given entity, if the given internal ID is unknown, throw an exception.
    * @param internal_id the internal ID of the entity.
    * @return the original (external) ID of the entity.
    */
-  int toOriginalID(int internal_id);
+  String toOriginalID(int internal_id);
 
   /** 
    * Get internal ID of a given entity. If the given external ID is unknown, create a new internal ID for it and store the mapping.
    * @param original_id the original (external) ID of the entity.
    * @return the internal ID of the entity.
    */
-  int toInternalID(int original_id);
+  Integer toInternalID(String original_id);
 
   /** 
    * Get the original (external) IDs of a list of given entities.
    * @param internal_id_list the list of internal IDs.
    * @return the list of original (external) IDs.
    */
-  List<Integer> toOriginalID(List<Integer> internal_id_list);
+  List<String> toOriginalID(List<Integer> internal_id_list);
 
   /** 
    * Get internal IDs of a list of given entities.
    * @param original_id_list the list of original (external) IDs.
    * @return a list of internal IDs.
    */
-  List<Integer> toInternalID(List<Integer> original_id_list);
+  List<Integer> toInternalID(List<String> original_id_list);
   
-  /**
-   *  Get the size of this entity mapping.
-   *  @return the entity count.
-   */
-  public int size();
-
 }

@@ -1,4 +1,4 @@
-//Copyright (C) 2010, 2011 Zeno Gantner
+// Copyright (C) 2010, 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -17,320 +17,168 @@
 
 package org.mymedialite.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.lang.reflect.Field;
+import org.mymedialite.IItemAttributeAwareRecommender;
+import org.mymedialite.IItemRelationAwareRecommender;
+import org.mymedialite.IRecommender;
+import org.mymedialite.IUserAttributeAwareRecommender;
+import org.mymedialite.IUserRelationAwareRecommender;
+import org.mymedialite.itemrec.ItemRecommender;
+import org.mymedialite.ratingprediction.RatingPredictor;
 
 /**
  * Helper class with utility methods for handling recommenders.
- * Contains methods for storing and loading engine models, and for configuring recommenders.
+ * 
+ * Contains methods for creating and configuring recommender objects, as well as listing recommender classes.
+ * @version 2.03
  */
 public class Recommender {
   
-//  /// <summary>Save the model parameters of a recommender to a file</summary>
-//  /// <remarks>
-//  /// Does not save if file is an empty string
-//  /// </remarks>
-//  /// <param name="recommender">the recommender to store</param>
-//  /// <param name="filename">the filename (may include relative paths)</param>
-//  public static void SaveModel(IRecommender recommender, string filename)
-//  {
-//      if (filename.Equals(string.Empty))
-//          return;
-//
-//      Console.Error.WriteLine("Save model to {0}", filename);
-//      recommender.SaveModel(filename);
-//  }
-//
-//  /// <summary>Save the model parameters of a recommender (in a given iteration of the training) to a file</summary>
-//  /// <param name="recommender">the <see cref="IRecommender"/> to save</param>
-//  /// <param name="filename">the filename template</param>
-//  /// <param name="iteration">the iteration (will be appended to the filename)</param>
-//  public static void SaveModel(IRecommender recommender, string filename, int iteration)
-//  {
-//      if (filename.Equals(string.Empty))
-//          return;
-//
-//      SaveModel(recommender, filename + "-it-" + iteration);
-//  }
-//
-//  /// <summary>Load the model parameters of a recommender (in a given iteration of the training) from a file</summary>
-//  /// <param name="recommender">the <see cref="IRecommender"/> to save</param>
-//  /// <param name="filename">the filename template</param>
-//  public static void LoadModel(IRecommender recommender, string filename)
-//  {
-//      if (filename.Equals(string.Empty))
-//          return;
-//
-//      Console.Error.WriteLine("Load model from {0}", filename);
-//      recommender.LoadModel(filename);
-//  }
-
+  // Prevent instantiation.
+  private Recommender() {}
+  
+  static String normalizeName(String s) {
+    s = s.replaceAll("_", "");
+    return s.toUpperCase();
+  }
+  
+  public interface ErrorHandler {
+    void reportError(String error);
+  }
+  
+  public static class DefaultErrorHandler implements ErrorHandler {
+    public void reportError(String message) {
+      System.err.println(message);
+    }
+  }
+  
   /**
-   * Get a reader object to read in model parameters of a recommender</summary>
-   * @param filename the filename of the model file
-   * @param recommender_type the expected recommender type
-   * @return a BufferedReader
+   * Configure a recommender.
+   * @param recommender the recommender to configure
+   * @param parameters a string containing the parameters as key-value pairs
+   * @param errorHandler interface for error reporting
+   * @return the configured recommender
    */
-  public static BufferedReader getReader(String filename, Class<?> recommender_type) throws IOException {
-    BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));
-    String type_name = reader.readLine();
-    
-    if (type_name == null)  throw new IOException("Unexpected end of file " + filename);
-
-    if(!type_name.equals(recommender_type.getCanonicalName()))
-      System.err.println("WARNING: Incorrect type name: " + type_name + ", expected: " + recommender_type.getCanonicalName());
-    
-    return reader;
+  public static <T> T configure(T recommender, String parameters, ErrorHandler errorHandler)  throws IllegalAccessException {
+    RecommenderParameters parameters_dictionary = new RecommenderParameters(parameters);
+    return configure(recommender, parameters_dictionary, errorHandler);
   }
 
   /**
-   * Get a writer object to save the model parameters of a recommender engine.
-   * @param filename the filename of the model file
-   * @param engine_type the engine type
-   * @return a PrintWriter
+   * Configure a recommender.
+   * @param recommender the recommender to configure
+   * @param parameters a string containing the parameters as key-value pairs
    */
-  public static PrintWriter getWriter(String filename, Class<?> engine_type) throws IOException {
-    PrintWriter writer = new PrintWriter(filename);
-    writer.println(engine_type.getCanonicalName());
-    return writer;
+  public static <T> T configure(T recommender, String parameters)  throws IllegalAccessException {
+    return configure(recommender, parameters, new DefaultErrorHandler());
   }
 
-//  static string NormalizeName(string s)
-//  {
-//      int underscore_position;
-//      while ((underscore_position = s.LastIndexOf('_')) != -1)
-//          s = s.Remove(underscore_position, 1);
-//      return s.ToUpperInvariant();
-//  }
-//
-//  /// <summary>Delegate definition necessary to define ConfigureEngine</summary>
-//  public delegate void takes_string(string s);
-//
-//  // TODO Configure from string
-//  
-//  /// <summary>Configure a recommender engine</summary>
-//  /// <param name="engine">the recommender engine to configure</param>
-//  /// <param name="parameters">a dictionary containing the parameters as key-value pairs</param>
-//  /// <param name="report_error">void function that takes a string for error reporting</param>
-//  /// <returns>the configured recommender engine</returns>
-//  public static T Configure<T>(T engine, Dictionary<string, string> parameters, takes_string report_error)
-//  {
-//      var ni = new NumberFormatInfo();
-//      ni.NumberDecimalDigits = '.';
-//
-//      Type type = engine.GetType();
-//      var property_names = new List<string>();
-//      foreach (var p in type.GetProperties())
-//          property_names.Add(p.Name);
-//      property_names.Sort();
-//
-//      // TODO consider using SetProperty
-//      foreach (var key in new List<string>(parameters.Keys))
-//      {
-//          string param_name = NormalizeName(key);
-//          foreach (string property_name in property_names)
-//          {
-//              if (NormalizeName(property_name).StartsWith(param_name))
-//              {
-//                  var property = type.GetProperty(property_name);
-//
-//                  if (property.GetSetMethod() == null)
-//                      goto NEXT_PROPERTY; // poor man's labeled break ...
-//
-//                  switch (property.PropertyType.ToString())
-//                  {
-//                      case "System.Double":
-//                          property.GetSetMethod().Invoke(engine, new Object[] { double.Parse(parameters[key], ni) });
-//                          break;
-//                      case "System.Single":
-//                          property.GetSetMethod().Invoke(engine, new Object[] { float.Parse(parameters[key], ni) });
-//                          break;
-//                      case "System.Int32":
-//                          if (parameters[key].Equals("inf"))
-//                              property.GetSetMethod().Invoke(engine, new Object[] { int.MaxValue });
-//                          else
-//                              property.GetSetMethod().Invoke(engine, new Object[] { int.Parse(parameters[key]) });
-//                          break;
-//                      case "System.UInt32":
-//                          if (parameters[key].Equals("inf"))
-//                              property.GetSetMethod().Invoke(engine, new Object[] { uint.MaxValue });
-//                          else
-//                              property.GetSetMethod().Invoke(engine, new Object[] { uint.Parse(parameters[key]) });
-//                          break;
-//                      case "System.Boolean":
-//                          property.GetSetMethod().Invoke(engine, new Object[] { bool.Parse(parameters[key]) });
-//                          break;
-//                      case "System.String":
-//                          property.GetSetMethod().Invoke(engine, new Object[] { parameters[key] });
-//                          break;
-//                      default:
-//                          report_error(string.Format("Parameter '{0}' has unknown type '{1}'", key, property.PropertyType));
-//                          break;
-//                  }
-//                  parameters.Remove(key);
-//                  goto NEXT_KEY; // poor man's labeled break ...
-//              }
-//
-//              NEXT_PROPERTY:
-//              Console.Write(string.Empty); // the C# compiler wants some statement here
-//          }
-//
-//          report_error(string.Format("Recommender {0} does not have a parameter named '{1}'.\n{2}", type.ToString(), key, engine));
-//
-//          NEXT_KEY:
-//          Console.Write(string.Empty); // the C# compiler wants some statement here
-//      }
-//
-//      return engine;
-//  }
-//
-//  /// <summary>Sets a property of a MyMediaLite recommender engine</summary>
-//  /// <param name="recommender">An <see cref="IRecommender"/></param>
-//  /// <param name="key">the name of the property (case insensitive)</param>
-//  /// <param name="val">the string representation of the value</param>
-//  public static void SetProperty(IRecommender recommender, string key, string val)
-//  {
-//      var ni = new NumberFormatInfo();
-//      ni.NumberDecimalDigits = '.';
-//
-//      Type type = recommender.GetType();
-//      var property_names = new List<string>();
-//      foreach (var p in type.GetProperties())
-//          property_names.Add(p.Name);
-//      property_names.Sort();
-//
-//      key = NormalizeName(key);
-//      foreach (string property_name in property_names)
-//      {
-//          if (NormalizeName(property_name).StartsWith(key))
-//          {
-//              var property = type.GetProperty(property_name);
-//
-//              if (property.GetSetMethod() == null)
-//                  throw new ArgumentException(string.Format("Parameter '{0}' has no setter", key));
-//
-//              switch (property.PropertyType.ToString())
-//              {
-//                  case "System.Double":
-//                      property.GetSetMethod().Invoke(recommender, new Object[] { double.Parse(val, ni) });
-//                      break;
-//                  case "System.Single":
-//                      property.GetSetMethod().Invoke(recommender, new Object[] { float.Parse(val, ni) });
-//                      break;
-//                  case "System.Int32":
-//                      property.GetSetMethod().Invoke(recommender, new Object[] { int.Parse(val) });
-//                      break;
-//                  case "System.UInt32":
-//                      property.GetSetMethod().Invoke(recommender, new Object[] { uint.Parse(val) });
-//                      break;
-//                  case "System.Boolean":
-//                      property.GetSetMethod().Invoke(recommender, new Object[] { bool.Parse(val) });
-//                      break;
-//                  default:
-//                      throw new ArgumentException(string.Format("Parameter '{0}' has unknown type '{1}'", key, property.PropertyType));
-//              }
-//          }
-//      }
-//  }
-//
-//  /// <summary>Create a rating prediction engine from the type name</summary>
-//  /// <param name="typename">a string containing the type name</param>
-//  /// <returns>a rating recommender object of type typename if the engine type is found, null otherwise</returns>
-//  public static RatingPrediction.RatingPredictor CreateRatingPredictor(string typename)
-//  {
-//      foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-//      {
-//          Type type = assembly.GetType("MyMediaLite.RatingPrediction." + typename, false, true);
-//          if (type != null)
-//              return CreateRatingPredictor(type);
-//      }
-//      return null;
-//  }
-//
-//  /// <summary>Create a rating prediction engine from a type object</summary>
-//  /// <param name="type">the type object</param>
-//  /// <returns>a rating recommender object of type type</returns>
-//  public static RatingPrediction.RatingPredictor CreateRatingPredictor(Type type)
-//  {
-//      if (type.IsAbstract)
-//          return null;
-//
-//      if (type.IsSubclassOf(typeof(RatingPrediction.RatingPredictor)))
-//          return (RatingPrediction.RatingPredictor) type.GetConstructor(new Type[] { } ).Invoke( new object[] { });
-//      else
-//          throw new Exception(type.Name + " is not a subclass of MyMediaLite.RatingPrediction.RatingPredictor");
-//  }
-//
-//  /// <summary>Create an item recommender engine from the type name</summary>
-//  /// <param name="typename">a string containing the type name</param>
-//  /// <returns>an item recommender object of type typename if the engine type is found, null otherwise</returns>
-//  public static ItemRecommendation.ItemRecommender CreateItemRecommender(string typename)
-//  {
-//      foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-//      {
-//          Type type = assembly.GetType("MyMediaLite.ItemRecommendation." + typename, false, true);
-//          if (type != null)
-//              return CreateItemRecommender(type);
-//      }
-//      return null;
-//  }
-//
-//  /// <summary>Create an item recommender engine from a type object</summary>
-//  /// <param name="type">the type object</param>
-//  /// <returns>an item recommender object of type type</returns>
-//  public static ItemRecommendation.ItemRecommender CreateItemRecommender(Type type)
-//  {
-//      if (type.IsAbstract)
-//          return null;
-//
-//      if (type.IsSubclassOf(typeof(ItemRecommendation.ItemRecommender)))
-//          return (ItemRecommendation.ItemRecommender) type.GetConstructor(new Type[] { } ).Invoke( new object[] { });
-//      else
-//          throw new Exception(type.Name + " is not a subclass of MyMediaLite.ItemRecommendation.ItemRecommender");
-//  }
-//
-//  /// <summary>Describes the kind of data needed by this engine</summary>
-//  /// <param name="recommender">a recommender engine</param>
-//  /// <returns>a string containing the additional datafiles needed for training this engine</returns>
-//  public static string Needs(IRecommender recommender)
-//  {
-//      // determine necessary data
-//      var needs = new List<string>();
-//      if (recommender is IUserRelationAwareRecommender)
-//          needs.Add("user_relation=FILE");
-//      if (recommender is IItemRelationAwareRecommender)
-//          needs.Add("item_relation=FILE");
-//      if (recommender is IUserAttributeAwareRecommender)
-//          needs.Add("user_attributes=FILE");
-//      if (recommender is IItemAttributeAwareRecommender)
-//          needs.Add("item_attributes=FILE");
-//
-//      return string.Join(", ", needs.ToArray());
-//  }
-//
-//  /// <summary>List all recommender engines in a given namespace</summary>
-//  /// <param name="prefix">a string representing the namespace</param>
-//  /// <returns>an array of strings containing the engine descriptions</returns>
-//  public static string[] List(string prefix)
-//  {
-//      var result = new List<string>();
-//
-//      foreach (Type type in Utils.GetTypesInNamespace(prefix))
-//          if (!type.IsAbstract && !type.IsInterface && !type.IsEnum)
-//          {
-//              IRecommender recommender = prefix.Equals("MyMediaLite.RatingPrediction") ? (IRecommender) Recommender.CreateRatingPredictor(type) : (IRecommender) Recommender.CreateItemRecommender(type);
-//
-//              string description = recommender.ToString();
-//              string needs = Recommender.Needs(recommender);
-//              if (needs.Length > 0)
-//                  description += " (needs " + needs + ")";
-//              result.Add(description);
-//          }
-//
-//      return result.ToArray();
-//  }
+  /**
+   * Configure a recommender.
+   * @param recommender the recommender to configure
+   * @param parameters a dictionary containing the parameters as key-value pairs
+   * @param errorHandler interface for error reporting
+   * @return the configured recommender
+   */
+  public static <T> T configure(T recommender, HashMap<String, String> parameters, ErrorHandler errorHandler) throws IllegalAccessException {
+
+    for (Entry<String, String> entry : parameters.entrySet()) {
+      String key = normalizeName(entry.getKey()); 
+      for (Field field : recommender.getClass().getFields()) {
+        if (field.getName().equalsIgnoreCase(key)) {
+          if (field.getType().getName() == "double") field.set(recommender, Double.parseDouble(entry.getValue()));
+        } else if (field.getType().getName() == "float") {
+          if (field.getType().getName() == "float") field.set(recommender, Float.parseFloat(entry.getValue()));
+        } else if (field.getType().getName() == "int") {
+          if (field.getType().getName() == "int") field.set(recommender, Integer.parseInt(entry.getValue()));
+        } else if (field.getType().getName() == "boolean") {
+          if (field.getType().getName() == "boolean") field.set(recommender, Boolean.parseBoolean(entry.getValue()));
+        } else {
+          errorHandler.reportError("Parameter " + key + " has unknown type " + field.getType());  
+        }
+      }
+    }
+    return recommender;
+  }
+
+  /**
+   * Sets a property of a MyMediaLite recommender.
+   * @param recommender An <see cref="IRecommender"/>
+   * @param key the name of the property (case insensitive)
+   * @param val the string representation of the value
+   */
+  public static void setProperty(IRecommender recommender, String key, String val) throws IllegalAccessException {
+    key = normalizeName(key); 
+    for (Field field : recommender.getClass().getFields()) {
+      if (field.getName().equalsIgnoreCase(key)) {
+        if (field.getType().getName() == "double") field.set(recommender, Double.parseDouble(val));
+      } else if (field.getType().getName() == "float") {
+        if (field.getType().getName() == "float") field.set(recommender, Float.parseFloat(val));
+      } else if (field.getType().getName() == "int") {
+        if (field.getType().getName() == "int") field.set(recommender, Integer.parseInt(val));
+      } else if (field.getType().getName() == "boolean") {
+        if (field.getType().getName() == "boolean") field.set(recommender, Boolean.parseBoolean(val));
+      } else {
+        throw new IllegalArgumentException("Parameter " + key + " has unknown type " + field.getType());  
+      }
+    }
+  }
+
+  /**
+   * Create a rating predictor from the type name.
+   * @param typename a string containing the type name
+   * @return an item recommender object of type typename if the recommender type is found, null otherwise
+   */
+  public static RatingPredictor createRatingPredictor(String typename) {
+    if (!typename.startsWith("org.mymedialite.ratingprediction.")) typename = "org.mymedialite.ratingprediction." + typename;
+    try {
+      return (RatingPredictor) Class.forName(typename).getConstructor().newInstance();
+    } catch (ClassCastException e) {
+      System.err.println(typename + " is not a subclass of org.mymedialite.ratingprediction.RatingPredictor");
+    } catch (Exception e) {
+      System.err.println("Unable to instantiate " + typename);
+    }
+    return null;
+  }
+
+  /**
+   * Create an item recommender from the type name.
+   * @param typename a string containing the type name
+   * @return an item recommender object of type typename if the recommender type is found, null otherwise
+   */
+  public static ItemRecommender createItemRecommender(String typename) {
+    if (!typename.startsWith("org.mymedialite.itemrec.")) typename = "org.mymedialite.itemrec." + typename;
+    try {
+      return (ItemRecommender) Class.forName(typename).getConstructor().newInstance();
+    } catch (ClassCastException e) {
+      System.err.println(typename + " is not a subclass of org.mymedialite.itemrec.ItemRecommender");
+      return null;
+    } catch (Exception e) {
+      System.err.println("Unable to instantiate " + typename);
+    }
+    return null;
+  }
+
+  /**
+   * Describes the kind of data needed by this recommender.
+   * @param recommender a recommender
+   * @return a string containing the additional datafiles needed for training this recommender
+   */
+  public static String needs(IRecommender recommender) {
+    // determine necessary data
+    String needs = "";
+    if (recommender instanceof IUserRelationAwareRecommender)
+      needs += "--user-relations=FILE, ";
+    if (recommender instanceof IItemRelationAwareRecommender)
+      needs += "--item-relations=FILE, ";
+    if (recommender instanceof IUserAttributeAwareRecommender)
+      needs += "--user-attributes=FILE, ";
+    if (recommender instanceof IItemAttributeAwareRecommender)
+      needs += "--item-attributes=FILE, ";
+
+    return needs.substring(0, Math.max(0, needs.length() - 2));
+  }
 
 }

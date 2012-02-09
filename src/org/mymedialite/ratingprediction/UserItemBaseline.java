@@ -1,5 +1,5 @@
 // Copyright (C) 2010 Zeno Gantner, Andreas Hoffmann
-// Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -19,13 +19,12 @@
 package org.mymedialite.ratingprediction;
 
 import java.util.Arrays;
-
 import org.mymedialite.IIterativeModel;
-import static org.mymedialite.datatype.VectorUtils.euclideanNorm;
+import org.mymedialite.datatype.VectorExtensions;
 import org.mymedialite.eval.Ratings;
 
 /**
- *baseline method for rating prediction
+ * Baseline method for rating prediction
  *
  * Uses the average rating value, plus a regularized user and item bias for prediction.
  *
@@ -38,200 +37,181 @@ import org.mymedialite.eval.Ratings;
  * This recommender supports incremental updates.
  *
  * @author Zeno Gantner, Andreas Hoffmann
+ * @version 2.03
  */
 public class UserItemBaseline extends IncrementalRatingPredictor implements IIterativeModel {
 
-	private double regU = 25;
-	private double regI = 10;
-	private int numIter = 10;
-	private double globalAverage;
-	private double userBiases[];
-	private double itemBiases[];
-	private boolean updateItems;
-	private boolean updateUsers;
+  /**
+   * @return Regularization parameter for the user biases
+   */
+  public double regU = 25;
 
-	/**
-	 * @return Regularization parameter for the user biases
-	 */
-	public double getRegU() {
-		return regU;
-	}
+  /**
+   * Regularization parameter for the item biases
+   */	
+  public double regI = 10;
 
-	/**
-	 * @param regU Regularization parameter for the user biases
-	 */
-	public void setRegU(double regU) {
-		this.regU = regU;
-	}
+  /**
+   * @param numIter The number of iterations
+   */	
+  public int numIter = 10;
 
-	/**
-	 * @return Regularization parameter for the item biases
-	 */
-	public double getRegI() {
-		return regI;
-	}
+  private double globalAverage;
+  private double userBiases[];
+  private double itemBiases[];
 
-	/**
-	 * @param regI Regularization parameter for the item biases
-	 */
-	public void setRegI(double regI) {
-		this.regI = regI;
-	}
+  /**
+   * @return The number of iterations
+   */
+  public int getNumIter() {
+    return numIter;
+  }
 
-	/**
-	 * @return The number of iterations
-	 */
-	public int getNumIter() {
-		return numIter;
-	}
+  /**
+   * @param numIter The number of iterations
+   */
+  public void setNumIter(int numIter) {
+    this.numIter = numIter;
+  }
 
-	/**
-	 * @param numIter The number of iterations
-	 */
-	public void setNumIter(int numIter) {
-		this.numIter = numIter;
-	}
+  protected void retrainUser(int userID) {
+    if (getUpdateUsers()) {
+      for (int index : ratings.byUser().get(userID))
+        userBiases[userID] += ratings.get(index) - globalAverage - itemBiases[ratings.items().get(index)];
+      if (ratings.byUser().get(userID).size() != 0)
+        userBiases[userID] = userBiases[userID] / (regU + ratings.byUser().get(userID).size());
+    }
+  }
 
-	protected void retrainUser(int userID)
-	{
-		if (isUpdateUsers()) {
-			for (int index : ratings.getByUser().get(userID))
-				userBiases[userID] += ratings.get(index) - globalAverage - itemBiases[ratings.getItems().get(index)];
-			if (ratings.getByUser().get(userID).size() != 0)
-				userBiases[userID] = userBiases[userID] / (regU + ratings.getByUser().get(userID).size());
-		}
-	}
+  protected void retrainItem(int itemID) {
+    if (getUpdateItems()) {
+      for (int index : ratings.byItem().get(itemID))
+        itemBiases[itemID] += ratings.get(index) - globalAverage;
+      if (ratings.byItem().get(itemID).size() != 0)
+        itemBiases[itemID] = itemBiases[itemID] / (regI + ratings.byItem().get(itemID).size());
+    }
+  }
 
-	protected void retrainItem(int itemID)
-	{
-		if (isUpdateItems()) {
-			for (int index : ratings.getByItem().get(itemID))
-				itemBiases[itemID] += ratings.get(index) - globalAverage;
-			if (ratings.getByItem().get(itemID).size() != 0)
-				itemBiases[itemID] = itemBiases[itemID] / (regI + ratings.getByItem().get(itemID).size());
-		}
-	}
+  @Override
+  public double predict(int userID, int itemID) {
+    double user_bias = (userID <= maxUserID && userID >= 0) ? userBiases[userID] : 0;
+    double item_bias = (itemID <= maxItemID && itemID >= 0) ? itemBiases[itemID] : 0;
+    double result = globalAverage + user_bias + item_bias;
 
-	@Override
-	public double predict(int userID, int itemID) {
-		double user_bias = (userID <= maxUserID && userID >= 0) ? userBiases[userID] : 0;
-		double item_bias = (itemID <= maxItemID && itemID >= 0) ? itemBiases[itemID] : 0;
-		double result = globalAverage + user_bias + item_bias;
+    if (result > maxRating)
+      result = maxRating;
+    if (result < minRating)
+      result = minRating;
 
-		if (result > maxRating)
-			result = maxRating;
-		if (result < minRating)
-			result = minRating;
+    return result;
+  }
 
-		return result;
-	}
+  public void train()
+  {
+    userBiases = new double[maxUserID + 1];
+    itemBiases = new double[maxItemID + 1];
 
-	public void train()
-	{
-		userBiases = new double[maxUserID + 1];
-		itemBiases = new double[maxItemID + 1];
+    globalAverage = ratings.average();
 
-		globalAverage = ratings.getAverage();
+    for (int i = 0; i < numIter; i++)
+      iterate();
+  }	
 
-		for (int i = 0; i < numIter; i++)
-			iterate();
-	}	
+  public void iterate()
+  {
+    optimizeItemBiases();
+    optimizeUserBiases();
+  }
 
-	public void iterate()
-	{
-		optimizeItemBiases();
-		optimizeUserBiases();
-	}
+  void optimizeUserBiases()
+  {
+    int[] userRatingsCount = new int[maxUserID + 1];
 
-	void optimizeUserBiases()
-	{
-		int[] userRatingsCount = new int[maxUserID + 1];
+    for (int index = 0; index < ratings.size(); index++)
+    {
+      userBiases[ratings.users().get(index)] += ratings.get(index) - globalAverage - itemBiases[ratings.items().get(index)];
+      userRatingsCount[ratings.users().get(index)]++;
+    }
+    for (int u = 0; u < userBiases.length; u++)
+      if (userRatingsCount[u] != 0)
+        userBiases[u] = userBiases[u] / (regU + userRatingsCount[u]);
+  }
 
-		for (int index = 0; index < ratings.size(); index++)
-		{
-			userBiases[ratings.getUsers().get(index)] += ratings.get(index) - globalAverage - itemBiases[ratings.getItems().get(index)];
-			userRatingsCount[ratings.getUsers().get(index)]++;
-		}
-		for (int u = 0; u < userBiases.length; u++)
-			if (userRatingsCount[u] != 0)
-				userBiases[u] = userBiases[u] / (regU + userRatingsCount[u]);
-	}
+  void optimizeItemBiases()
+  {
+    int[] item_ratings_count = new int[maxItemID + 1];
 
-	void optimizeItemBiases()
-	{
-		int[] item_ratings_count = new int[maxItemID + 1];
+    for (int index = 0; index < ratings.size(); index++)
+    {
+      itemBiases[ratings.items().get(index)] += ratings.get(index) - globalAverage - userBiases[ratings.users().get(index)];
+      item_ratings_count[ratings.items().get(index)]++;
+    }
+    for (int i = 0; i < itemBiases.length; i++)
+      if (item_ratings_count[i] != 0)
+        itemBiases[i] = itemBiases[i] / (regI + item_ratings_count[i]);
+  }
 
-		for (int index = 0; index < ratings.size(); index++)
-		{
-			itemBiases[ratings.getItems().get(index)] += ratings.get(index) - globalAverage - userBiases[ratings.getUsers().get(index)];
-			item_ratings_count[ratings.getItems().get(index)]++;
-		}
-		for (int i = 0; i < itemBiases.length; i++)
-			if (item_ratings_count[i] != 0)
-				itemBiases[i] = itemBiases[i] / (regI + item_ratings_count[i]);
-	}
+  @Override
+  public void saveModel(String filename) {
+    // TODO Auto-generated method stub
+  }
 
-	@Override
-	public void saveModel(String filename) {
-		// TODO Auto-generated method stub
-	}
+  @Override
+  public void loadModel(String filename) {
+    // TODO Auto-generated method stub
+  }
 
-	@Override
-	public void loadModel(String filename) {
-		// TODO Auto-generated method stub
-	}
+  @Override
+  public void addRating(int userID, int itemID, double rating) {
 
-	@Override
-	public void addRating(int userID, int itemID, double rating) {
+    super.addRating(userID, itemID, rating);
+    this.retrainItem(itemID);
+    this.retrainUser(userID);
+  }
 
-		super.addRating(userID, itemID, rating);
-		this.retrainItem(itemID);
-		this.retrainUser(userID);
-	}
+  @Override
+  public void updateRating(int userID, int itemID, double rating) {
+    super.updateRating(userID, itemID, rating);
+    this.retrainItem(itemID);
+    this.retrainUser(userID);
+  }
 
-	@Override
-	public void updateRating(int userID, int itemID, double rating) {
-		super.updateRating(userID, itemID, rating);
-		this.retrainItem(itemID);
-		this.retrainUser(userID);
-	}
+  @Override
+  public void removeRating(int userID, int itemID) {
+    super.removeRating(userID, itemID);
+    this.retrainItem(itemID);
+    this.retrainUser(userID);
+  }
 
-	@Override
-	public void removeRating(int userID, int itemID) {
-		super.removeRating(userID, itemID);
-		this.retrainItem(itemID);
-		this.retrainUser(userID);
-	}
+  @Override
+  public void addUser(int userID) {
+    super.addUser(userID);
+    if (userID >= this.userBiases.length) {
+      double[] userBiases = Arrays.copyOf(this.userBiases, this.userBiases.length);
+      this.userBiases = userBiases;
+    }
+  }
 
-	@Override
-	public void addUser(int userID) {
-		super.addUser(userID);
-		if (userID >= this.userBiases.length) {
-			double[] userBiases = Arrays.copyOf(this.userBiases, this.userBiases.length);
-			this.userBiases = userBiases;
-		}
-	}
+  @Override
+  public void addItem(int itemID) {
+    super.addItem(itemID);
+    if (itemID >= this.itemBiases.length) {
+      double[] itemBiases = Arrays.copyOf(this.itemBiases, this.itemBiases.length);
+      this.itemBiases = itemBiases;
 
-	@Override
-	public void addItem(int itemID) {
-		super.addItem(itemID);
-		if (itemID >= this.itemBiases.length) {
-			double[] itemBiases = Arrays.copyOf(this.itemBiases, this.itemBiases.length);
-			this.itemBiases = itemBiases;
+    }
+  }
 
-		}
-	}
+  @Override
+  public double computeLoss() {
+    return
+        Ratings.evaluate(this, ratings).get("RMSE")
+        + regU * Math.pow(VectorExtensions.euclideanNorm(userBiases), 2)
+        + regI * Math.pow(VectorExtensions.euclideanNorm(itemBiases), 2);
+  }
 
-	public double computeFit()
-	{
-		return
-		Ratings.evaluate(this, ratings).get("RMSE")
-		+ regU * Math.pow(euclideanNorm(userBiases), 2)
-		+ regI * Math.pow(euclideanNorm(itemBiases), 2);
-	}
-
-	@Override
-	public String toString() {
-		return String.format("user-item-baseline regU=%f regI=%f numIter=%i", regU, regI, numIter);
-	}
+  @Override
+  public String toString() {
+    return String.format("user-item-baseline regU=%f regI=%f numIter=%i", regU, regI, numIter);
+  }
 }

@@ -1,1 +1,4 @@
 *.class
+
+/bin
+/CSharp_2.03

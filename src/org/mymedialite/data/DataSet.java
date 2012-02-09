@@ -1,15 +1,4 @@
-package org.mymedialite.data;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import org.mymedialite.util.Random;
-
-//Copyright (C) 2011 Zeno Gantner
+//Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -25,141 +14,187 @@ import org.mymedialite.util.Random;
 //
 //  You should have received a copy of the GNU General Public License
 //  along with MyMediaLite.  If not, see <http://www.gnu.org/licenses/>.
-//
+
+package org.mymedialite.data;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.mymedialite.util.Random;
 
 /**
  * Abstract dataset class that implements some common functions.
- * @version 2.02
+ * @version 2.03
  */
-public abstract class DataSet implements IDataSet
-{
-	/**
-	 */
-	public List<Integer> getUsers() {
-		return users;
-	}
-	protected List<Integer> users = new Vector<Integer>();
-	
-	/**
-	 */
-	public List<Integer> getItems() {
-		return items;
-	}
-	protected List<Integer> items = new Vector<Integer>();
-	
-	/**
-	 */
-	public int size() {
-		return users.size();
-	}
+public abstract class DataSet implements IDataSet {
 
-	public int getMaxUserID() {
-		return maxUserID;
-	}
-	protected int maxUserID = -1;
+  protected List<Integer> users = new ArrayList<Integer>();
+  protected List<Integer> items = new ArrayList<Integer>();  
 
-	public int getMaxItemID() {
-		return maxItemID;
-	}
-	protected int maxItemID = -1;
-	
-	/**
-	 */
-	public List<List<Integer>> getByUser() {
-		if (byUser == null)
-			buildUserIndices();
-		return byUser;
+  /**
+   * 
+   */
+  public List<Integer> users() {
+    return users;
+  }
 
-	}
-	/**
-	 * Rating indices organized by user.
-	 */
-	protected List<List<Integer>> byUser;
+  /**
+   * 
+   */
+  public List<Integer> items() {
+    return items;
+  }
 
-	/**
-	 */
-	public List<List<Integer>> getByItem() {
-		if (byItem == null)
-			buildItemIndices();
-		return byItem;
-	}
-	/**
-	 * Rating indices organized by item.
-	 */
-	protected List<List<Integer>> byItem;
+  /**
+   * 
+   */
+  public int size() {
+    return users.size();
+  }
 
-	/**
-	 */
-	public Integer[] getRandomIndex() {
-		if (randomIndex == null || randomIndex.length != size())
-			buildRandomIndex();
+  public int maxUserID() {
+    return maxUserID;
+  }
 
-		return randomIndex;
-	}
-	private Integer[] randomIndex;
+  protected int maxUserID = -1;
 
-	/**
-	 */
-	public Integer[] getAllUsers() {
-		Set<Integer> resultSet = new HashSet<Integer>();
-		for (int index = 0; index < users.size(); index++)
-			resultSet.add(users.get(index));
-		return resultSet.toArray(new Integer[0]);
-	}
+  public int maxItemID() {
+    return maxItemID;
+  }
 
-	/**
-	 */
-	public Integer[] getAllItems() {
-		Set<Integer> resultSet = new HashSet<Integer>();
-		for (int index = 0; index < items.size(); index++)
-			resultSet.add(items.get(index));
-		return resultSet.toArray(new Integer[0]);
-	}
+  protected int maxItemID = -1;
 
-	/**
-	 */
-	public void buildUserIndices()
-	{
-		byUser = new Vector<List<Integer>>();
-		for (int u = 0; u <= maxUserID; u++)
-			byUser.add(new Vector<Integer>());
+  /**
+   * 
+   */
+  public List<List<Integer>> byUser() {
+    if (byUser == null)
+      buildUserIndices();
+    return byUser;
 
-		// one pass over the data
-		for (int index = 0; index < size(); index++)
-			byUser.get(users.get(index)).add(index);
-	}
+  }
 
-	/**
-	 */
-	public void buildItemIndices()
-	{
-		byItem = new Vector<List<Integer>>();
-		for (int i = 0; i <= maxItemID; i++)
-			byItem.add(new Vector<Integer>());
+  /**
+   * Rating indices organized by user.
+   */
+  protected List<List<Integer>> byUser;
 
-		// one pass over the data
-		for (int index = 0; index < size(); index++)
-			byItem.get(items.get(index)).add(index);
-	}
+  /**
+   * 
+   */
+  public List<List<Integer>> byItem() {
+    if (byItem == null)
+      buildItemIndices();
+    return byItem;
+  }
 
-	/**
-	 */
-	public void buildRandomIndex()
-	{
-		if (randomIndex == null || randomIndex.length != size())
-		{
-			randomIndex = new Integer[size()];
-			for (int index = 0; index < size(); index++)
-				randomIndex[index] = index;
-		}
-		Collections.shuffle(Arrays.asList(randomIndex), Random.getInstance());
-	}
+  /**
+   * Rating indices organized by item.
+   */
+  protected List<List<Integer>> byItem;
 
-	/**
-	 */
-	public abstract void removeUser(int user_id);
+  /**
+   * 
+   */
+  public List<Integer> randomIndex() {
 
-	/**
-	 */
-	public abstract void removeItem(int item_id);
+    if (randomIndex == null || randomIndex.size() != size())
+      buildRandomIndex();
+
+    return randomIndex;
+  }
+
+  private List<Integer> randomIndex;
+
+  /**
+   * 
+   */
+  public List<Integer> allUsers() {
+    Set<Integer> resultSet = new HashSet<Integer>();
+    for (int index = 0; index < users.size(); index++)
+      resultSet.add(users.get(index));
+    return new ArrayList<Integer>(resultSet);
+  }
+
+  /**
+   * 
+   */
+  public List<Integer> allItems() {
+    Set<Integer> resultSet = new HashSet<Integer>();
+    for (int index = 0; index < items.size(); index++)
+      resultSet.add(items.get(index));
+    return new ArrayList<Integer>(resultSet);
+  }
+
+  /**
+   * 
+   */
+  public void buildUserIndices() {
+    byUser = new ArrayList<List<Integer>>();
+    for (int u = 0; u <= maxUserID; u++)
+      byUser.add(new ArrayList<Integer>());
+
+    // one pass over the data
+    for (int index = 0; index < size(); index++)
+      byUser.get(users.get(index)).add(index);
+  }
+
+  /**
+   * 
+   */
+  public void buildItemIndices() {
+    byItem = new ArrayList<List<Integer>>();
+    for (int i = 0; i <= maxItemID; i++)
+      byItem.add(new ArrayList<Integer>());
+
+    // One pass over the data
+    for (int index = 0; index < size(); index++)
+      byItem.get(items.get(index)).add(index);
+  }
+
+  /**
+   * 
+   */
+  public void buildRandomIndex() {
+    if (randomIndex == null || randomIndex.size() != size()) {
+      randomIndex = new ArrayList<Integer>(size());
+      for (int index = 0; index < size(); index++)
+        randomIndex.add(index, index);
+    }
+    Collections.shuffle(randomIndex, Random.getInstance());
+  }
+
+  /**
+   * 
+   */
+  public abstract void removeUser(int user_id);
+
+  /**
+   * 
+   */
+  public abstract void removeItem(int item_id);
+
+  /**
+   * 
+   */
+  public Set<Integer> getUsers(List<Integer> indices) {
+    Set<Integer> result_set = new HashSet<Integer>();
+    for (int index : indices)
+      result_set.add(users.get(index));
+    return result_set;
+  }
+
+  /**
+   * 
+   */
+  public Set<Integer> getItems(List<Integer> indices) {
+    Set<Integer> result_set = new HashSet<Integer>();
+    for (int index : indices)
+      result_set.add(items.get(index));
+    return result_set;
+  }
+
 }
