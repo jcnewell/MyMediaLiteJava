@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.mymedialite.data.IRatings;
 import org.mymedialite.data.ISplit;
 import org.mymedialite.data.RatingsSimpleSplit;
@@ -35,7 +34,6 @@ import org.mymedialite.ratingprediction.MatrixFactorization;
 import org.mymedialite.ratingprediction.RatingPredictor;
 import org.mymedialite.ratingprediction.UserItemBaseline;
 import org.mymedialite.util.Recommender;
-
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
@@ -50,9 +48,9 @@ public class NelderMead {
   // Prevent instantiation.
   private NelderMead() {}
   
-  //TODO avoid negative values e.g. for regularization ...
+  // TODO avoid negative values e.g. for regularization ...
 
-  //TODO make configurable
+  // TODO make configurable
   static double alpha = 1.0;
   static double gamma = 2.0;
   static double rho = 0.5;

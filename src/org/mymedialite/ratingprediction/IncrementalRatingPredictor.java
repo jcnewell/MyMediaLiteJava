@@ -1,4 +1,4 @@
-// Copyright (C) 2011 Zeno Gantner
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -22,81 +22,92 @@ package org.mymedialite.ratingprediction;
  * @author Zeno Gantner
  * @version 2.03
  */
-public abstract class IncrementalRatingPredictor extends RatingPredictor implements
-		IIncrementalRatingPredictor {
-		
-    /** {@inheritDoc} */
-	public void addRating(int userId, int itemId, double rating) {
-		if (userId > maxUserID)
-			addUser(userId);
-		if (itemId > maxItemID)
-			addItem(itemId);
+public abstract class IncrementalRatingPredictor extends RatingPredictor implements	IIncrementalRatingPredictor {
 
-		ratings.add(userId, itemId, rating);
-	}
+  protected boolean updateUsers;
 
-	/** {@inheritDoc} */
-	public void updateRating(int userId, int itemId, double rating) throws IllegalArgumentException {
-		Integer index = ratings.tryGetIndex(userId, itemId);
-		if (index != null)
-			ratings.set(index, rating);
-		else
-			throw new IllegalArgumentException(String.format("Cannot update rating for user %i and item %i: No such rating exists.", userId, itemId));
-	}
+  protected boolean updateItems;
+  
+  /** 
+   * Default constructor.
+   */
+  public IncrementalRatingPredictor() {
+      updateUsers = true;
+      updateItems = true;
+  }
+  
+  /** {@inheritDoc} */
+  public void addRating(int userId, int itemId, double rating) {
+    if (userId > maxUserID)
+      addUser(userId);
+    if (itemId > maxItemID)
+      addItem(itemId);
 
-	/** {@inheritDoc} */
-	public void removeRating(int userId, int itemId) {
-		Integer index = ratings.tryGetIndex(userId, itemId);
-		if (index != null)
-			ratings.remove(index);
-	}
+    ratings.add(userId, itemId, rating);
+  }
 
-	/**
-	 * 
-	 */
-	public void addUser(int userId) {
-		maxUserID = Math.max(maxUserID, userId);
-	}
+  /** {@inheritDoc} */
+  public void updateRating(int userId, int itemId, double rating) throws IllegalArgumentException {
+    Integer index = ratings.tryGetIndex(userId, itemId);
+    if (index != null)
+      ratings.set(index, rating);
+    else
+      throw new IllegalArgumentException(String.format("Cannot update rating for user %i and item %i: No such rating exists.", userId, itemId));
+  }
 
-	/**
-	 * 
-	 */
-	public void addItem(int itemId) {
-		maxItemID = Math.max(maxItemID, itemId);
-	}
+  /** {@inheritDoc} */
+  public void removeRating(int userId, int itemId) {
+    Integer index = ratings.tryGetIndex(userId, itemId);
+    if (index != null)
+      ratings.remove(index);
+  }
 
-	/** {@inheritDoc} */
-	public void removeUser(int userId) {
-		if (userId == maxUserID)
-			maxUserID--;
-		ratings.removeUser(userId);
-	}
+  /**
+   * 
+   */
+  public void addUser(int userId) {
+    maxUserID = Math.max(maxUserID, userId);
+  }
 
-	/** {@inheritDoc} */
-	public void removeItem(int itemId) {
-		if (itemId == maxItemID)
-			maxItemID--;
-		ratings.removeItem(itemId);
-	}
-	
-	/** {@inheritDoc} */
-    public boolean getUpdateUsers() {
-        return updateUsers;
-    }
+  /**
+   * 
+   */
+  public void addItem(int itemId) {
+    maxItemID = Math.max(maxItemID, itemId);
+  }
 
-    /** {@inheritDoc} */
-    public void setUpdateUsers(boolean updateUsers) {
-        this.updateUsers = updateUsers;
-    }
-	
-    /** {@inheritDoc} */
-    public boolean getUpdateItems() {
-        return updateItems;
-    }
+  /** {@inheritDoc} */
+  public void removeUser(int userId) {
+    if (userId == maxUserID)
+      maxUserID--;
+    ratings.removeUser(userId);
+  }
 
-    /** {@inheritDoc} */
-    public void setUpdateItems(boolean updateItems) {
-        this.updateItems = updateItems;
-    }
-    
+  /** {@inheritDoc} */
+  public void removeItem(int itemId) {
+    if (itemId == maxItemID)
+      maxItemID--;
+    ratings.removeItem(itemId);
+  }
+
+  /** {@inheritDoc} */
+  public boolean getUpdateUsers() {
+    return updateUsers;
+  }
+
+  /** {@inheritDoc} */
+  public void setUpdateUsers(boolean updateUsers) {
+    this.updateUsers = updateUsers;
+  }
+
+  /** {@inheritDoc} */
+  public boolean getUpdateItems() {
+    return updateItems;
+  }
+
+  /** {@inheritDoc} */
+  public void setUpdateItems(boolean updateItems) {
+    this.updateItems = updateItems;
+  }
+
 }

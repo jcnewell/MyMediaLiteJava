@@ -28,84 +28,95 @@ import org.mymedialite.data.IRatings;
  */
 public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 
-	/** Maximum user ID */
-	public int maxUserID;
+  /** Maximum user ID */
+  public int maxUserID;
 
-	/** Maximum item ID */
-	public int maxItemID;
+  /** Maximum item ID */
+  public int maxItemID;
 
-	/** The maximum rating value */
-	public double maxRating;
+  /** The maximum rating value */
+  public double maxRating;
 
-	/** The minimum rating value */
-	public double minRating;
+  /** The minimum rating value */
+  public double minRating;
 
-	// TODO find clearer name for this
-	/** true if users shall be updated when doing online updates */
-	public boolean updateUsers = true;
+//  // TODO find clearer name for this
+//  /** true if users shall be updated when doing online updates */
+//  public boolean updateUsers = true;
+//
+//  /** true if items shall be updated when doing online updates */
+//  public boolean updateItems = true;
 
-	/** true if items shall be updated when doing online updates */
-	public boolean updateItems = true;
+  /** The rating data */
+  protected IRatings ratings;
 
-	/** The rating data */
-	protected IRatings ratings;
+  @Override
+  public double getMaxRating() {
+    return maxRating;
+  }
 
-	public RatingPredictor clone() throws CloneNotSupportedException {
-		return (RatingPredictor) super.clone();
-	}
+  @Override
+  public void setMaxRating(double max_rating) {
+    this.maxRating = max_rating;
+  }
 
-	public IRatings getRatings() { 
-		return this.ratings;
-	}
+  @Override
+  public double getMinRating() {
+    return minRating;
+  }
 
-	public void setRatings(IRatings ratings) {
-		this.ratings = ratings;
-	}
+  @Override
+  public void setMinRating(double min_rating) {
+    this.minRating = min_rating;
+  }
 
-	@Override
-	public double getMaxRating() {
-		return maxRating;
-	}
+  public IRatings getRatings() { 
+    return this.ratings;
+  }
 
-	@Override
-	public void setMaxRating(double max_rating) {
-		this.maxRating = max_rating;
-	}
+  public void setRatings(IRatings ratings) {
+    this.ratings = ratings;
+    maxUserID = Math.max(ratings.maxUserID(), maxUserID);
+    maxItemID = Math.max(ratings.maxItemID(), maxItemID);
+    minRating = ratings.minRating();
+    maxRating = ratings.maxRating();
+  }
+  
+  public RatingPredictor clone() throws CloneNotSupportedException {
+    return (RatingPredictor) super.clone();
+  }
+  
+  /// <inheritdoc/>
+  public abstract double predict(int user_id, int item_id);
 
-	@Override
-	public double getMinRating() {
-		return minRating;
-	}
+//  /** 
+//   * Initializes the recommender model.
+//   * This method is called by the train() method.
+//   * When overriding, please call super.initModel() to get the functions performed in the base class.
+//   */
+//  protected void initModel() {
+//    maxUserID = ratings.maxUserID();
+//    maxItemID = ratings.maxItemID();
+//  }
 
-	@Override
-	public void setMinRating(double min_rating) {
-		this.minRating = min_rating;
-	}
+  /// <inheritdoc/>
+  public abstract void train();
 
-	/// <inheritdoc/>
-	public abstract double predict(int user_id, int item_id);
+  /// <inheritdoc/>
+  public abstract void saveModel(String filename) throws IOException ;
 
-	/** 
-	 * Initializes the recommender model.
-	 * This method is called by the train() method.
-	 * When overriding, please call super.initModel() to get the functions performed in the base class.
-	 */
-	protected void initModel() {
-		maxUserID = ratings.maxUserID();
-		maxItemID = ratings.maxItemID();
-	}
+  /// <inheritdoc/>
+  public abstract void loadModel(String filename) throws IOException ;    
 
-	/// <inheritdoc/>
-	public abstract void train();
+  /// <inheritdoc/>
+  public boolean canPredict(int user_id, int item_id) {
+    return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
+  }
+  
+  public String toString() {
+    return this.getClass().getName();
 
-	/// <inheritdoc/>
-	public abstract void saveModel(String filename) throws IOException ;
+  }
 
-	/// <inheritdoc/>
-	public abstract void loadModel(String filename) throws IOException ;    
 
-	/// <inheritdoc/>
-	public boolean canPredict(int user_id, int item_id) {
-		return (user_id <= maxUserID && user_id >= 0 && item_id <= maxItemID && item_id >= 0);
-	}
 }

@@ -19,7 +19,6 @@ package org.mymedialite.examples;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.mymedialite.data.EntityMapping;
 import org.mymedialite.data.IEntityMapping;
 import org.mymedialite.data.IRatings;

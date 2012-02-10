@@ -527,7 +527,6 @@ public class RatingPrediction {
           else if (file_format == RatingFileFormat.KDDCUP_2011)
             training_data = org.mymedialite.io.kddcup2011.Ratings.read(Utils.combine(data_dir, training_file));
     }
-    System.out.println("$$$ size: " + training_data.size() + " min: " + training_data.minRating() + " max: " + training_data.maxRating());
     recommender.setRatings(training_data);
 
     // User attributes
