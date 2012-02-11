@@ -1,0 +1,17 @@
+org.mymedialite
+org.mymedialite.correlation
+org.mymedialite.data
+org.mymedialite.datatype
+org.mymedialite.diversification
+org.mymedialite.ensemble
+org.mymedialite.eval
+org.mymedialite.eval.measures
+org.mymedialite.examples
+org.mymedialite.grouprec
+org.mymedialite.hyperparameter
+org.mymedialite.io
+org.mymedialite.io.kddcup2011
+org.mymedialite.itemrec
+org.mymedialite.ratingprediction
+org.mymedialite.taxonomy
+org.mymedialite.util
