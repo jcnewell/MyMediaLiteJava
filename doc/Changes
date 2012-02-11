@@ -5,6 +5,7 @@
 - DenseMatrix support added using Colt
 - Added default constructor for ItemRecommender
 - Added WeightedItemAttributeKNN, Perfect and Worst Item Recommenders
+- Added init method to IMatrix interface - unsupported by SparseMatrices. Required because of type erasure.
 
 2011-11-??	getting closer to 2.02
  - BPRMF, MatrixFactorization: fix two bugs in incremental updates (zeno)

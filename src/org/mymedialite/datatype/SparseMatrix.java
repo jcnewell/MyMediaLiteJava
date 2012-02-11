@@ -29,150 +29,162 @@ import java.util.*;
  */
 public class SparseMatrix<T> implements IMatrix<T> {
 
-	private int numberOfColumns;
+  private int numberOfColumns;
 
-	/**
-	 * List that stores the rows of the matrix.
-	 */
-	protected List<HashMap<Integer, T>> row_list = new ArrayList<HashMap<Integer, T>>();
+  /**
+   * List that stores the rows of the matrix.
+   */
+  protected List<HashMap<Integer, T>> row_list = new ArrayList<HashMap<Integer, T>>();
 
-	/**
-	 * Create a sparse matrix with a given number of rows.
-	 * @param num_rows the number of rows
-	 * @param num_cols the number of columns
-	 */
-	public SparseMatrix(int num_rows, int num_cols) {
-		for (int i = 0; i < num_rows; i++) {
-			row_list.add(new HashMap<Integer, T>());
-		}
-		this.numberOfColumns = num_cols;
-	}
+  /**
+   * Create a sparse matrix with a given number of rows.
+   * @param num_rows the number of rows
+   * @param num_cols the number of columns
+   */
+  public SparseMatrix(int num_rows, int num_cols) {
+    for (int i = 0; i < num_rows; i++) {
+      row_list.add(new HashMap<Integer, T>());
+    }
+    this.numberOfColumns = num_cols;
+  }
 
-	/**
-	 * 
-	 */
-	public IMatrix<T> createMatrix(int num_rows, int num_columns) {
-		return new SparseMatrix<T>(num_rows, num_columns);
-	}
+  /**
+   * 
+   */
+  @Override
+  public IMatrix<T> createMatrix(int num_rows, int num_columns) {
+    return new SparseMatrix<T>(num_rows, num_columns);
+  }
 
-	/**
-	 * 
-	 */
-	public boolean isSymmetric() {
-	  // TODO
-		//    if (getNumberOfRows() != getNumberOfColumns()) return false;
-		//    for (int i = 0; i < row_list.size(); i++)
-		//      for (var j : row_list[i].keys)
-		//      {
-		//        if (i > j)
-		//          continue; // check every pair only once
-		//
-		//        if (! this[i, j].equals(this[j, i]))
-		//          return false;
-		//      }
-		return true;
-	}
+  @Override
+  public void init(T d) {
+    throw new UnsupportedOperationException("SparseMatrices cannot be initialized with default values.");
+  }
 
-	/**
-	 * 
-	 */
-	public int numberOfRows() {
-		return row_list.size();
-	}
+  /**
+   * 
+   */
+  @Override
+  public boolean isSymmetric() {
+    // TODO
+    //    if (getNumberOfRows() != getNumberOfColumns()) return false;
+    //    for (int i = 0; i < row_list.size(); i++)
+    //      for (var j : row_list[i].keys)
+    //      {
+    //        if (i > j)
+    //          continue; // check every pair only once
+    //
+    //        if (! this[i, j].equals(this[j, i]))
+    //          return false;
+    //      }
+    return true;
+  }
 
-	/**
-	 * 
-	 */
-	public int numberOfColumns() {
-		return numberOfColumns;
-	}
+  /**
+   * 
+   */
+  @Override
+  public int numberOfRows() {
+    return row_list.size();
+  }
 
-	/**
-	 * 
-	 */
-	public IMatrix<T> transpose() {
-	  // TODO
-		//    SparseMatrix<T> transpose = new SparseMatrix<T>(NumberOfColumns, NumberOfRows);
-		//    for (Pair<Integer, int> p : NonEmptyEntryIDs) {
-		//      transpose[p.second, p.first] = this[p.first, p.second];
-		//    }
-		//    return transpose;
-		return null;
-	}
+  /**
+   * 
+   */
+  @Override
+  public int numberOfColumns() {
+    return numberOfColumns;
+  }
 
-	/**
-	 * Get a row of the matrix.
-	 * @param x the row ID
-	 */
-	public HashMap<Integer, T> get(int x) {
-		if (x >= row_list.size())
-			return new HashMap<Integer, T>();
-		else 
-			return row_list.get(x);
-	}
+  /**
+   * 
+   */
+  @Override
+  public IMatrix<T> transpose() {
+    // TODO
+    //    SparseMatrix<T> transpose = new SparseMatrix<T>(NumberOfColumns, NumberOfRows);
+    //    for (Pair<Integer, int> p : NonEmptyEntryIDs) {
+    //      transpose[p.second, p.first] = this[p.first, p.second];
+    //    }
+    //    return transpose;
+    return null;
+  }
 
-	/**
-	 * Access the elements of the sparse matrix.
-	 * @param x the row ID
-	 * @param y the column ID
-	 */
-	@SuppressWarnings("unchecked")
-	public T get(int x, int y) {
-		T result;
-		if (x < row_list.size()) {
-			result = row_list.get(x).get(y);
-			if(result != null) {
-				return result;
-			}
-		}
-		return (T)(new Object());
-	}
+  /**
+   * Get a row of the matrix.
+   * @param x the row ID
+   */
+  public HashMap<Integer, T> get(int x) {
+    if (x >= row_list.size())
+      return new HashMap<Integer, T>();
+    else 
+      return row_list.get(x);
+  }
 
-	public void set(int x, int y, T value) {
-		if (x >= row_list.size())
-		  for (int i = row_list.size(); i <= x; i++) row_list.add(new HashMap<Integer, T>());
-		
-		row_list.get(x).put(y, value);
-	}
+  /**
+   * Access the elements of the sparse matrix.
+   * @param x the row ID
+   * @param y the column ID
+   */
+  @Override
+  @SuppressWarnings("unchecked")
+  public T get(int x, int y) {
+    T result;
+    if (x < row_list.size()) {
+      result = row_list.get(x).get(y);
+      if(result != null) {
+        return result;
+      }
+    }
+    return (T)(new Object());
+  }
 
-	/**
-	 * 
-	 * The non-empty rows of the matrix (the ones that contain at least one non-zero entry),
-	 * with their IDs
-	 * .
-	 */
-	public HashMap<Integer, HashMap<Integer, T>> nonEmptyRows() {
-		HashMap<Integer, HashMap<Integer, T>> return_list = new HashMap<Integer, HashMap<Integer, T>>();
-		for(int i=0; i < row_list.size(); i++) {
-			HashMap<Integer, T> row = get(i);
-			if(row.size() > 0)
-				return_list.put(i, row);
-		}
-		return return_list;
-	}
+  @Override
+  public void set(int x, int y, T value) {
+    if (x >= row_list.size())
+      for (int i = row_list.size(); i <= x; i++) row_list.add(new HashMap<Integer, T>());
 
-	/**
-	 * The row and column IDs of non-empty entries in the matrix.
-	 * @return The row and column IDs of non-empty entries in the matrix
-	 */
-	public List<Pair<Integer, Integer>> nonEmptyEntryIDs() {
-		List <Pair<Integer, Integer>> return_list = new ArrayList<Pair<Integer, Integer>>();
-		for (Map.Entry<Integer, HashMap<Integer, T>> id_row : nonEmptyRows().entrySet())
-			for (Integer col_id : id_row.getValue().keySet())
-				return_list.add(new Pair<Integer, Integer>(id_row.getKey(), col_id));
-		return return_list;
-	}
+    row_list.get(x).put(y, value);
+  }
 
-	/**
-	 * The number of non-empty entries in the matrix.
-	 * @return The number of non-empty entries in the matrix
-	 */
-	public int numberOfNonEmptyEntries() {
-		int counter = 0;
-		for (HashMap<Integer, T> row : row_list)
-			counter += row.size();
-		return counter;
-	}
+  /**
+   * 
+   * The non-empty rows of the matrix (the ones that contain at least one non-zero entry),
+   * with their IDs
+   * .
+   */
+  public HashMap<Integer, HashMap<Integer, T>> nonEmptyRows() {
+    HashMap<Integer, HashMap<Integer, T>> return_list = new HashMap<Integer, HashMap<Integer, T>>();
+    for(int i=0; i < row_list.size(); i++) {
+      HashMap<Integer, T> row = get(i);
+      if(row.size() > 0)
+        return_list.put(i, row);
+    }
+    return return_list;
+  }
+
+  /**
+   * The row and column IDs of non-empty entries in the matrix.
+   * @return The row and column IDs of non-empty entries in the matrix
+   */
+  public List<Pair<Integer, Integer>> nonEmptyEntryIDs() {
+    List <Pair<Integer, Integer>> return_list = new ArrayList<Pair<Integer, Integer>>();
+    for (Map.Entry<Integer, HashMap<Integer, T>> id_row : nonEmptyRows().entrySet())
+      for (Integer col_id : id_row.getValue().keySet())
+        return_list.add(new Pair<Integer, Integer>(id_row.getKey(), col_id));
+    return return_list;
+  }
+
+  /**
+   * The number of non-empty entries in the matrix.
+   * @return The number of non-empty entries in the matrix
+   */
+  public int numberOfNonEmptyEntries() {
+    int counter = 0;
+    for (HashMap<Integer, T> row : row_list)
+      counter += row.size();
+    return counter;
+  }
 
 }
 

@@ -32,7 +32,7 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
    * Data array: data is stored in columns..
    */
   protected Object[][] data;
-  
+
   /**
    * Dimension, the number of rows and columns.
    */
@@ -81,6 +81,16 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
   }
 
   /**
+   * Initialize the matrix with a default value
+   * @param d the default value
+   */
+  public void init(T d) {
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j <= i; j++)
+        data[i][j] = d;
+  }
+
+  /**
    * 
    */
   public IMatrix<T> transpose() {
@@ -92,18 +102,18 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
    */
   @SuppressWarnings("unchecked")
   public T get(int i, int j) {
-      if (i >= j)
-        return (T)data[i][j];
-      else
-        return (T)data[j][i];
-    }
-    
-    public void set(int i, int j, T value) {
-      if (i >= j)
-        data[i][j] = value;
-      else
-        data[j][i] = value;
-    }
+    if (i >= j)
+      return (T)data[i][j];
+    else
+      return (T)data[j][i];
+  }
+
+  public void set(int i, int j, T value) {
+    if (i >= j)
+      data[i][j] = value;
+    else
+      data[j][i] = value;
+  }
 
   /**
    * 
@@ -128,5 +138,5 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
       this.data = new_data;
     }
   }
-  
+
 }

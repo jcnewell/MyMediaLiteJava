@@ -72,7 +72,8 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
     IBooleanMatrix transpose = (IBooleanMatrix) entityData.transpose();
 
     SymmetricMatrix<Integer> overlap = new SymmetricMatrix<Integer>(entityData.numberOfRows());
-
+    overlap.init(new Integer(0));
+    
     // Go over all (other) entities
     for (int row_id = 0; row_id < transpose.numberOfRows(); row_id++) {
       IntList row = transpose.getEntriesByRow(row_id);
@@ -99,8 +100,9 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
     IBooleanMatrix transpose = (IBooleanMatrix) entity_data.transpose();
 
     SymmetricMatrix<Short> overlap = new SymmetricMatrix<Short>(entity_data.numberOfRows());
-
-    //go over all (other) entities
+    overlap.init(new Short("0"));
+    
+    // Go over all (other) entities
     for (int row_id = 0; row_id < transpose.numberOfRows(); row_id++) {
       IntList row = transpose.getEntriesByRow(row_id);
       for (int i = 0; i < row.size(); i++) {
@@ -118,8 +120,9 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
 
     // Compute cosine
     for (int x = 0; x < numEntities; x++)
-      for (int y = 0; y < x; y++)
+      for (int y = 0; y < x; y++) {
         set(x, y, (float) (overlap.get(x, y) / Math.sqrt(entity_data.numEntriesByRow(x) * entity_data.numEntriesByRow(y))));
+      }
   }
 
   /**
