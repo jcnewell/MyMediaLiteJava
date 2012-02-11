@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.mymedialite.data.IEntityMapping;
+import org.mymedialite.data.IHierarchicalEntityMapping;
 import org.mymedialite.datatype.SparseBooleanMatrix;
 
 /**
@@ -49,10 +50,10 @@ public class AttributeData {
    * @param mapping the mapping object for the given entity type
    * @return the attribute data
    */
-  public static SparseBooleanMatrix read(String filename, IEntityMapping mapping) throws IOException {
+  public static SparseBooleanMatrix read(String filename, IEntityMapping itemMapping, IEntityMapping attributeMapping) throws IOException {
     try {
       BufferedReader reader = new BufferedReader(new FileReader(filename));
-      return read(reader, mapping);
+      return read(reader, itemMapping, attributeMapping);
     } catch (IOException e) {
       throw new IOException("Unable to read file " + filename + ": " + e.getMessage());
     }
@@ -69,7 +70,7 @@ public class AttributeData {
    * @param mapping the mapping object for the given entity type
    * @return the attribute data
    */
-  public static SparseBooleanMatrix read(BufferedReader reader, IEntityMapping mapping) throws IOException {
+  public static SparseBooleanMatrix read(BufferedReader reader, IEntityMapping itemMapping, IEntityMapping attributeMapping) throws IOException {
     SparseBooleanMatrix matrix = new SparseBooleanMatrix();
 
     String line;
@@ -81,35 +82,13 @@ public class AttributeData {
 
       if (tokens.length != 2) throw new IOException("Expected exactly 2 columns: " + line);
 
-      int entity_id = mapping.toInternalID(tokens[0]);
-      int attr_id   = Integer.parseInt(tokens[1]);
+      int entity_id = itemMapping.toInternalID(tokens[0]);
+      int attr_id   = attributeMapping.toInternalID(tokens[1]);
 
       matrix.set(entity_id, attr_id, true);
     }
 
     return matrix;
   }
-
-//  /**
-//   * Read binary attribute data from an IDataReader, e.g. a database via DbDataReader.
-//   * @param reader an IDataReader to be read from
-//   * @param mapping the mapping object for the given entity type
-//   * @return the attribute data
-//   */
-//  public static SparseBooleanMatrix Read(IDataReader reader, IEntityMapping mapping) {
-//    if (reader.FieldCount < 2)
-//      throw new Exception("Expected at least 2 columns.");
-//
-//    var matrix = new SparseBooleanMatrix();
-//
-//    while (!reader.Read()) {
-//      int entity_id = mapping.ToInternalID(reader.GetInt32(0));
-//      int attr_id   = reader.GetInt32(1);
-//
-//      matrix[entity_id, attr_id] = true;
-//    }
-//
-//    return matrix;
-//  }
 
 }

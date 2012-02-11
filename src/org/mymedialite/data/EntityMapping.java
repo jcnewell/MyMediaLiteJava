@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 /**
- * Class to map integer external entity IDs to internal ones to ensure that there are no gaps in the numbering
+ * Class to map String external entity IDs to internal ones to ensure that there are no gaps in the numbering
  * @version 2.03
  */
 public class EntityMapping implements IEntityMapping {

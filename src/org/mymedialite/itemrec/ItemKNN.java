@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.mymedialite.IItemSimilarityProvider;
 import org.mymedialite.correlation.BinaryCosine;
+import org.mymedialite.correlation.Jaccard;
 
 /**
  * Unweighted k-nearest neighbor item-based collaborative filtering using cosine similarity.
@@ -35,9 +36,8 @@ public class ItemKNN extends KNN implements IItemSimilarityProvider {
    * 
    */
   public void train() {
-    
     correlation = BinaryCosine.create(feedback.itemMatrix());
-
+    
     int num_items = maxItemID + 1;
     this.nearest_neighbors = new int[num_items][];
     for (int i = 0; i < num_items; i++)
@@ -54,10 +54,10 @@ public class ItemKNN extends KNN implements IItemSimilarityProvider {
       return 0;
 
     int count = 0;
-    for (int neighbor : nearest_neighbors[item_id])
-      if (feedback.userMatrix().get(neighbor, user_id))
+    for (int neighbor : nearest_neighbors[item_id]) {
+      if (feedback.itemMatrix().get(neighbor, user_id))
         count++;
-
+    }
     return (double) count / k;
   }
 

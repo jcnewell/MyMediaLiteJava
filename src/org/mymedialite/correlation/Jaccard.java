@@ -65,7 +65,8 @@ public final class Jaccard extends BinaryDataCorrelationMatrix {
   public void computeCorrelations(IBooleanMatrix entityData) {
     IBooleanMatrix transpose = (IBooleanMatrix)entityData.transpose();
     IMatrix<Integer> overlap = new SymmetricMatrix<Integer>(entityData.numberOfRows());
-
+    overlap.init(new Integer(0));
+    
     // Go over all (other) entities
     for (int row_id = 0; row_id < transpose.numberOfRows(); row_id++) {
       IntList row = transpose.getEntriesByRow(row_id);
@@ -85,7 +86,7 @@ public final class Jaccard extends BinaryDataCorrelationMatrix {
     // Compute the Jaccard index
     for (int x = 0; x < numEntities; x++)
       for (int y = 0; y < x; y++)
-        set(x, y,  (float)(overlap.get(x, y) / (entityData.numEntriesByRow(x) + entityData.numEntriesByRow(y) - overlap.get(x, y))));
+        set(x, y, (float)(overlap.get(x, y)) / (entityData.numEntriesByRow(x) + entityData.numEntriesByRow(y) - overlap.get(x, y)));
   }
 
   /**

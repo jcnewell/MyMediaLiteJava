@@ -81,8 +81,9 @@ public class RatingPrediction {
   static RatingPredictor recommender = null;
 
   // ID mapping objects
-  static IEntityMapping user_mapping = new EntityMapping();
-  static IEntityMapping item_mapping = new EntityMapping();
+  static IEntityMapping user_mapping      = new EntityMapping();
+  static IEntityMapping item_mapping      = new EntityMapping();
+  static IEntityMapping attribute_mapping = new EntityMapping();
 
   // User and item attributes
   static SparseBooleanMatrix user_attributes;
@@ -531,14 +532,14 @@ public class RatingPrediction {
 
     // User attributes
     if (user_attributes_file != null)
-      user_attributes = AttributeData.read(Utils.combine(data_dir, user_attributes_file), user_mapping);
+      user_attributes = AttributeData.read(Utils.combine(data_dir, user_attributes_file), user_mapping, attribute_mapping);
 
     if (recommender instanceof IUserAttributeAwareRecommender)
       ((IUserAttributeAwareRecommender)recommender).setUserAttributes(user_attributes);
 
     // Item attributes
     if (item_attributes_file != null)
-      item_attributes = AttributeData.read(Utils.combine(data_dir, item_attributes_file), item_mapping);
+      item_attributes = AttributeData.read(Utils.combine(data_dir, item_attributes_file), item_mapping, attribute_mapping);
 
     if (recommender instanceof IItemAttributeAwareRecommender)
       ((IItemAttributeAwareRecommender)recommender).setItemAttributes(item_attributes);

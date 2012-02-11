@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.mymedialite.datatype.Matrix;
+import org.mymedialite.datatype.SymmetricMatrix;
 
 /**
  * Class for computing and storing correlations and similarities.
@@ -202,17 +203,17 @@ public class CorrelationMatrix extends Matrix<Float> {
       }
     }
     Collections.sort(entities);    
-    int[]  ids = new int[k];
+    int[] ids = new int[k];
     for(int i = 0; i < k; i++) {
       ids[i] = entities.get(entities.size() - 1 - i).id;
     }
     return ids;
   }
-  
+
   final class Neighbor implements Comparable<Neighbor> {
     int id;
     Float value;
- 
+
     Neighbor(int id, Float value) {
       this.id = id;
       this.value = value;
@@ -223,7 +224,7 @@ public class CorrelationMatrix extends Matrix<Float> {
       return value.compareTo(o.value);
     }
   }
-  
+
 }
 
 

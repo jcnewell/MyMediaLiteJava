@@ -24,6 +24,7 @@ import java.util.HashSet;
 
 import org.mymedialite.datatype.IBooleanMatrix;
 import org.mymedialite.datatype.SymmetricMatrix;
+import org.mymedialite.util.Memory;
 
 /**
  * Class for storing cosine similarities.
@@ -98,7 +99,7 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
 
   void computeCorrelationsUShortOverlap(IBooleanMatrix entity_data) {
     IBooleanMatrix transpose = (IBooleanMatrix) entity_data.transpose();
-
+    
     SymmetricMatrix<Short> overlap = new SymmetricMatrix<Short>(entity_data.numberOfRows());
     overlap.init(new Short("0"));
     
@@ -120,9 +121,8 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
 
     // Compute cosine
     for (int x = 0; x < numEntities; x++)
-      for (int y = 0; y < x; y++) {
+      for (int y = 0; y < x; y++)
         set(x, y, (float) (overlap.get(x, y) / Math.sqrt(entity_data.numEntriesByRow(x) * entity_data.numEntriesByRow(y))));
-      }
   }
 
   /**
