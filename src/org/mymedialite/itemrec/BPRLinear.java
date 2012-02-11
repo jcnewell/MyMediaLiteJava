@@ -159,6 +159,7 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
     }
 
     itemAttributeWeightByUser = new Matrix<Double>(maxUserID + 1, numItemAttributes());
+    itemAttributeWeightByUser.init(0.0);
     for (int i = 0; i < numIter; i++)
       iterate();
   }
