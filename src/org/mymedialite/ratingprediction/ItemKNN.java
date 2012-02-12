@@ -46,7 +46,7 @@ public abstract class ItemKNN extends KNN implements IItemSimilarityProvider {
    * 
    */
   public void setRatings(IRatings ratings) {
-    super.ratings = ratings;
+    super.setRatings(ratings);
 
     data_item = new SparseBooleanMatrix();
     for (int index = 0; index < ratings.size(); index++)

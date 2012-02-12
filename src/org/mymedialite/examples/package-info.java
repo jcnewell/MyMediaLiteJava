@@ -1,0 +1,4 @@
+/**
+ * 
+ */
+package org.mymedialite.examples;

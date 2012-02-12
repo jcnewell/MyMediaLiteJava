@@ -41,7 +41,7 @@ public class Memoizer<A, R> {
    * Create a Memoizer
    * 
    * @param object the object on which to invoke the method
-   * @param method the method to call
+   * @param methodName the method to call
    * @param argType the single argument type
    * @throws NoSuchMethodException
    */
