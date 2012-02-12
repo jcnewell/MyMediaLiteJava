@@ -273,111 +273,57 @@ public class Ratings extends DataSet implements IRatings {
 	public boolean remove(double item) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean add(Double arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean add(Double arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public void add(int arg0, Double arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void add(int arg0, Double arg1) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean addAll(Collection<? extends Double> arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean addAll(Collection<? extends Double> arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean addAll(int arg0, Collection<? extends Double> arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean addAll(int arg0, Collection<? extends Double> arg1){ throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean contains(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean contains(Object arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean containsAll(Collection<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean containsAll(Collection<?> arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public int indexOf(Object arg0) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public int indexOf(Object arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean isEmpty() { throw new UnsupportedOperationException(); }
 
 	@Override
-	public Iterator<Double> iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Iterator<Double> iterator() { throw new UnsupportedOperationException(); }
 
 	@Override
-	public int lastIndexOf(Object arg0) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public int lastIndexOf(Object arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public ListIterator<Double> listIterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public ListIterator<Double> listIterator() { throw new UnsupportedOperationException(); }
 
 	@Override
-	public ListIterator<Double> listIterator(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public ListIterator<Double> listIterator(int arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean remove(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean remove(Object arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean removeAll(Collection<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean removeAll(Collection<?> arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public boolean retainAll(Collection<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean retainAll(Collection<?> arg0) { throw new UnsupportedOperationException(); }
 
 	@Override
-	public List<Double> subList(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public List<Double> subList(int arg0, int arg1){ throw new UnsupportedOperationException(); }
 
 	@Override
-	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Object[] toArray() { throw new UnsupportedOperationException(); }
 
 	@Override
-	public <T> T[] toArray(T[] arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public <T> T[] toArray(T[] arg0) { throw new UnsupportedOperationException(); }
 
 }

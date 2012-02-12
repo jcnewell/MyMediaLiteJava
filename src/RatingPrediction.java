@@ -113,7 +113,7 @@ public class RatingPrediction {
   static double test_ratio;
   static String chronological_split = null;
   static double chronological_split_ratio = -1;
-  static Date chronological_split_time; // TODO = Date.MinValue;
+  static Date chronological_split_time = new Date(0);
   static int find_iter;
   static boolean online_eval = false;
 

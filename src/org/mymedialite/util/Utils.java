@@ -37,40 +37,25 @@ public class Utils {
   // Prevent instantiation.
   private Utils() {}
   
-  // TODO
-//  /**
-//   * Shuffle a list in-place.
-//   * 
-//   * Fisher-Yates shuffle, see
-//   * http://en.wikipedia.org/wiki/Fisher–Yates_shuffle
-//   * 
-//   */
-//  public static void shuffle(List<Object> list) {
-//    Random random = org.mymedialite.util.Random.getInstance();
-//    for (int i = list.size() - 1; i >= 0; i--) {
-//      int r = random.nextInt(i + 1);
-//
-//      // swap position i with position r
-//      Object tmp = list.get(i);
-//      list.set(i, list.get(r));
-//      list.set(r, tmp);
-//    }
-//  }
 
-  // TODO
-//  /**
-//   * Get all types of a namespace.
-//   * @param name_space a string describing the namespace
-//   * @return an array of Type objects
-//   */
-//  public static Type[] getTypesInNamespace(String name_space) {
-//    var types = new Vector<Type>();
-//
-//    for (Assembly assembly : AppDomain.CurrentDomain.GetAssemblies())
-//      types.AddRange( assembly.GetTypes().Where(t => String.Equals(t.Namespace, name_space, StringComparison.Ordinal)) );
-//
-//    return types.ToArray();
-//  }
+  /**
+   * Shuffle a list in-place.
+   * 
+   * Fisher-Yates shuffle, see
+   * http://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+   * 
+   */
+  public static void shuffle(List<Object> list) {
+    Random random = org.mymedialite.util.Random.getInstance();
+    for (int i = list.size() - 1; i >= 0; i--) {
+      int r = random.nextInt(i + 1);
+
+      // Swap position i with position r
+      Object tmp = list.get(i);
+      list.set(i, list.get(r));
+      list.set(r, tmp);
+    }
+  }
 
   /**
    * Display dataset statistics.

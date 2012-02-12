@@ -62,13 +62,19 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
   /**
    * Initializes a new instance of the SymmetricMatrix class.
    * @param dim the number of rows and columns
+   * @param d the default value for elements, or null
    */
-  public SymmetricMatrix(int dim) {
+  public SymmetricMatrix(int dim,  T d) {
     if (dim < 0) throw new IllegalArgumentException("dim must be at least 0");
     this.dim = dim;
     this.data = new Object[dim][];
     for (int i = 0; i < dim; i++)
       data[i] = new Object[i + 1];
+    
+    if(d != null)
+      for (int i = 0; i < dim; i++)
+        for (int j = 0; j <= i; j++)
+          data[i][j] = d;
   }
 
   /**
@@ -77,7 +83,7 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
   public IMatrix<T> createMatrix(int num_rows, int num_columns) {
     if (num_rows != num_columns)
       throw new IllegalArgumentException("num_rows must equal num_columns for symmetric matrices");
-    return new SymmetricMatrix<T>(num_rows);
+    return new SymmetricMatrix<T>(num_rows, null);
   }
 
   /**

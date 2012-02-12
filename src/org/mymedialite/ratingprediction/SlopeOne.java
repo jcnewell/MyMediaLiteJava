@@ -86,7 +86,7 @@ public class SlopeOne extends RatingPredictor {
 
   public void initModel() {
     diff_matrix = new SkewSymmetricSparseMatrix(maxItemID + 1);
-    freq_matrix = new SymmetricSparseMatrix<Integer>(maxItemID + 1);
+    freq_matrix = new SymmetricSparseMatrix<Integer>(maxItemID + 1, 0);
   }
 
   /**

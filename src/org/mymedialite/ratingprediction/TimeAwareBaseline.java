@@ -215,7 +215,7 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
   /**
    * Given a Date object, return the day relative to the first rating day in the dataset.
    * @return the day relative to the first rating day in the dataset
-   * @param datetime the date/time of the rating event
+   * @param date the date/time of the rating event
    */
   protected int relativeDay(Date date) {
    return (int)((date.getTime() - timed_ratings.earliestTime().getTime()) / 3600000);
@@ -236,9 +236,9 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
     item_bias = new ArrayList<Double>(maxItemID + 1);
     alpha = new ArrayList<Double>(maxUserID + 1);
     item_bias_by_time_bin = new Matrix<Double>(maxItemID + 1, number_of_bins);
-    user_bias_by_day = new SparseMatrix<Double>(maxUserID + 1, number_of_days);
+    user_bias_by_day = new SparseMatrix<Double>(maxUserID + 1, number_of_days, 0.0);
     user_scaling = new ArrayList<Double>(maxUserID + 1);
-    user_scaling_by_day = new SparseMatrix<Double>(maxUserID + 1, number_of_days);
+    user_scaling_by_day = new SparseMatrix<Double>(maxUserID + 1, number_of_days, 0.0);
   }
 
   /**

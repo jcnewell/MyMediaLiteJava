@@ -44,6 +44,16 @@ public class Matrix<T> implements IMatrix<T>  {
    * @param dim2 the number of columns
    */
   public Matrix(int dim1, int dim2) {
+    this(dim1, dim2, null); 
+  }
+  
+  /**
+   * Initializes a new instance of the Matrix class
+   * @param dim1 the number of rows
+   * @param dim2 the number of columns
+   * @param d the default value for the elements
+   */
+  public Matrix(int dim1, int dim2, T d) {
     if (dim1 < 0)
       throw new IllegalArgumentException("dim1 must be at least 0");
     if (dim2 < 0)
@@ -52,6 +62,10 @@ public class Matrix<T> implements IMatrix<T>  {
     this.dim1 = dim1;
     this.dim2 = dim2;
     this.data = new Object[dim1 * dim2];
+    
+    if(d != null) 
+      for (int i = 0; i < dim1 * dim2; i++)
+        data[i] = d;
   }
 
   /**
@@ -78,11 +92,11 @@ public class Matrix<T> implements IMatrix<T>  {
   }
 
   public IMatrix<T> createMatrix(int num_rows, int num_columns) {
-    return new Matrix<T>(num_rows, num_columns);
+    return new Matrix<T>(num_rows, num_columns, null);
   }
 
   public IMatrix<T> transpose() {
-    Matrix<T> transpose = new Matrix<T>(dim2, dim1);
+    Matrix<T> transpose = new Matrix<T>(dim2, dim1, null);
     for (int i = 0; i < dim1; i++)
       for (int j = 0; j < dim2; j++)
         transpose.data[j * dim1 + i] = data[i * dim2 + j];
@@ -162,15 +176,6 @@ public class Matrix<T> implements IMatrix<T>  {
       throw new IllegalArgumentException("Array length " + column.size() + " must equal number of rows " + this.dim1);
     for (int i = 0; i < this.dim1; i++)
       set(i, j, column.get(i));
-  }
-
-  /**
-   * Initialize the matrix with a default value
-   * @param d the default value
-   */
-  public void init(T d) {
-    for (int i = 0; i < dim1 * dim2; i++)
-      data[i] = d;
   }
 
   /**

@@ -31,7 +31,7 @@ public interface IBooleanMatrix extends IMatrix<Boolean> {
    * Get a row of the matrix.
    * @param x the row ID
    */
-  IntCollection get(int i);
+  IntCollection get(int x);
 
   /**
    * The number of (true) entries.

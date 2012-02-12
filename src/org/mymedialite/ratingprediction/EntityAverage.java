@@ -56,8 +56,8 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
 
   /**
    * Train the recommender according to the given entity type
-   * @param entity_ids">list of the relevant entity IDs in the training data
-   * @param max_entity_id">the maximum entity ID
+   * @param entity_ids a list of the relevant entity IDs in the training data
+   * @param max_entity_id the maximum entity ID
    */
   protected void train(List<Integer> entity_ids, int max_entity_id) {
     List<Integer> rating_counts = new ArrayList<Integer>();
@@ -104,7 +104,7 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
       entity_averages.set(entity_id, global_average);
   }
 
-  /** @override */
+  @Override
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     writer.println(entity_averages.size());
@@ -116,7 +116,7 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
     writer.close();
   }
 
-  /** @override */ 
+  @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
     int size = Integer.parseInt(reader.readLine());

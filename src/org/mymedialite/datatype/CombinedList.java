@@ -150,10 +150,7 @@ public class CombinedList<T> implements List<T> {
   }
 
   @Override
-  public Iterator<T> iterator() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public Iterator<T> iterator() { throw new UnsupportedOperationException(); }
 
   @Override
   public int lastIndexOf(Object o) {

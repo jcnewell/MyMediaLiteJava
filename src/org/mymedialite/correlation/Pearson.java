@@ -142,12 +142,12 @@ public class Pearson extends RatingCorrelationMatrix {
 
 		List<List<Integer>> ratings_by_other_entity = (entityType == EntityType.USER) ? ratings.byItem() : ratings.byUser();
 
-		SparseMatrix<Integer> freqs  = new SparseMatrix<Integer>(numEntities, numEntities);
-		SparseMatrix<Double> i_sums  = new SparseMatrix<Double>(numEntities, numEntities);
-		SparseMatrix<Double> j_sums  = new SparseMatrix<Double>(numEntities, numEntities);
-		SparseMatrix<Double> ij_sums = new SparseMatrix<Double>(numEntities, numEntities);
-		SparseMatrix<Double> ii_sums = new SparseMatrix<Double>(numEntities, numEntities);
-		SparseMatrix<Double> jj_sums = new SparseMatrix<Double>(numEntities, numEntities);
+		SparseMatrix<Integer> freqs  = new SparseMatrix<Integer>(numEntities, numEntities, 0);
+		SparseMatrix<Double> i_sums  = new SparseMatrix<Double>(numEntities, numEntities, 0.0);
+		SparseMatrix<Double> j_sums  = new SparseMatrix<Double>(numEntities, numEntities, 0.0);
+		SparseMatrix<Double> ij_sums = new SparseMatrix<Double>(numEntities, numEntities, 0.0);
+		SparseMatrix<Double> ii_sums = new SparseMatrix<Double>(numEntities, numEntities, 0.0);
+		SparseMatrix<Double> jj_sums = new SparseMatrix<Double>(numEntities, numEntities, 0.0);
 
 		for (List<Integer> other_entity_ratings : ratings_by_other_entity) {
 			for (int i = 0; i < other_entity_ratings.size(); i++) {

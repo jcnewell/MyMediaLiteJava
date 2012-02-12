@@ -72,7 +72,7 @@ public final class WeightedBinaryCosine extends BinaryDataCorrelationMatrix {
       other_entity_weights[row_id] = 1f / (float) (Math.log(3 + freq) / Math.log(2));   ; // TODO make configurable
     }
 
-    IMatrix<Float> weighted_overlap = new SymmetricMatrix<Float>(entity_data.numberOfRows());
+    IMatrix<Float> weighted_overlap = new SymmetricMatrix<Float>(entity_data.numberOfRows(), 0.0F);
     float[] entity_weights = new float[entity_data.numberOfRows()];
 
     // Go over all (other) entities

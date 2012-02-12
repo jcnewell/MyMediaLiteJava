@@ -98,7 +98,7 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * Try to get the index for given user and item.
 	 * @param user_id the user ID
 	 * @param item_id the item ID
-	 * @return true if an index was found for the user and item
+     * @return the index of the rating that matches the user ID and item ID or null, if not found
 	 */
 	Integer tryGetIndex(int user_id, int item_id);
 
@@ -107,8 +107,7 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * @param user_id the user ID
 	 * @param item_id the item ID
 	 * @param indexes the indexes to look at
-	 * @param index will contain the index of the first rating encountered that matches the user ID and item ID
-	 * @return true if an index was found for the user and item
+	 * @return the index of the first rating encountered that matches the user ID and item ID or null, if none is found
 	 */
 	Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes);	
 	
@@ -116,8 +115,7 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * Try to retrieve a rating for a given user-item combination.
 	 * @param user_id the user ID
 	 * @param item_id the item ID
-	 * @return will contain the first rating encountered that matches the user ID and item ID, null if none is found
-	 * @return true if a rating was found for the user and item   - RETURNS NULL INSTEAD
+	 * @return the first rating encountered that matches the user ID and item ID, or null if none is found
 	 */
 	Double tryGet(int user_id, int item_id);
 
@@ -126,8 +124,7 @@ public interface IRatings extends List<Double>, IDataSet {
 	 * @param user_id the user ID
 	 * @param item_id the item ID
 	 * @param indexes the indexes to look at
-	 * @param rating will contain the first rating encountered that matches the user ID and item ID
-	 * @return true if a rating was found for the user and item
+	 * @return the first rating encountered that matches the user ID and item ID, or null if none found
 	 */
 	Double tryGet(int user_id, int item_id, Collection<Integer> indexes);
 	// TODO name 'tryGet' makes no sense here

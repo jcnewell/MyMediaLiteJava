@@ -103,11 +103,6 @@ public class SparseBooleanMatrixStatic implements IBooleanMatrix {
   public IMatrix<Boolean> createMatrix(int x, int y) {
     return new SparseBooleanMatrixStatic();
   }
-  
-  @Override
-  public void init(Boolean d) {
-    throw new UnsupportedOperationException("SparseMatrices cannot be initialized with default values.");
-  }
 
   /**
    * 

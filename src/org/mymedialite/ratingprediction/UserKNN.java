@@ -33,12 +33,11 @@ public abstract class UserKNN extends KNN implements IUserSimilarityProvider {
    * boolean matrix indicating which user rated which item.
    */
   protected SparseBooleanMatrix data_user;
-  protected IRatings ratings;
 
   /**
    */
   public void setRatings(IRatings ratings) {
-    super.ratings = ratings;
+    super.setRatings(ratings);
     data_user = new SparseBooleanMatrix();
     for (int index = 0; index < ratings.size(); index++)
       data_user.set(ratings.users().get(index), ratings.items().get(index), true);
@@ -65,6 +64,7 @@ public abstract class UserKNN extends KNN implements IUserSimilarityProvider {
     int neighbors = k;
     for (int user_id2 : relevant_users) {
       if (data_user.get(user_id2, item_id)) {
+        
         double rating = ratings.get(user_id2, item_id, ratings.byUser().get(user_id2));
 
         double weight = correlation.get(user_id, user_id2);

@@ -17,6 +17,11 @@
 
 package org.mymedialite.ratingprediction;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -53,16 +58,16 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
    */
   org.mymedialite.util.Random random;
 
-  List<Integer> user_clustering;
-  List<Integer> item_clustering;
+  IntList user_clustering;
+  IntList item_clustering;
 
-  List<Double> user_averages;
-  List<Double> item_averages;
-  List<Integer> user_counts;
-  List<Integer> item_counts;
+  DoubleList user_averages;
+  DoubleList item_averages;
+  IntList user_counts;
+  IntList item_counts;
 
-  List<Double> user_cluster_averages;
-  List<Double> item_cluster_averages;
+  DoubleList user_cluster_averages;
+  DoubleList item_cluster_averages;
   IMatrix<Double> cocluster_averages;
 
   double global_average;
@@ -103,12 +108,16 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
   }
   
   public void initModel() {
-    this.user_clustering = new ArrayList<Integer>(maxUserID + 1);
-    this.item_clustering = new ArrayList<Integer>(maxItemID + 1);
+    this.user_clustering = new IntArrayList();
+    user_clustering.size(maxUserID + 1);
+    this.item_clustering = new IntArrayList();
+    item_clustering.size(maxItemID + 1);
 
-    this.user_cluster_averages = new ArrayList<Double>(numUserClusters);
-    this.item_cluster_averages = new ArrayList<Double>(numItemClusters);
-    this.cocluster_averages    = new Matrix<Double>(numUserClusters, numItemClusters);
+    this.user_cluster_averages = new DoubleArrayList();
+    user_cluster_averages.size(numUserClusters);
+    this.item_cluster_averages = new DoubleArrayList();
+    item_cluster_averages.size(numItemClusters);
+    this.cocluster_averages    = new Matrix<Double>(numUserClusters, numItemClusters, 0.0);
   }
 
   boolean iterateCheckModified() {
@@ -184,13 +193,14 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
   boolean findOptimalUserClustering(int user_id) {
     boolean modified = false;
 
-    List<Double> errors = new ArrayList<Double>(numUserClusters);
+    double[] errors = new double[numUserClusters];
+    
     for (int uc = 0; uc < numUserClusters; uc++)
       for (int index : ratings.byUser().get(user_id)) {
         int item_id   = ratings.items().get(index);
         double rating = ratings.get(index);
 
-        errors.set(uc, errors.get(uc) + Math.pow(rating - predict(user_id, item_id, uc, item_clustering.get(item_id)), 2));
+        errors[uc] += Math.pow(rating - predict(user_id, item_id, uc, item_clustering.get(item_id)), 2);
       }
 
     int minimum_index = getMinimumIndex(errors, user_clustering.get(user_id));
@@ -205,13 +215,13 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
   boolean findOptimalItemClustering(int item_id) {
     boolean modified = false;
 
-    List<Double> errors = new ArrayList<Double>(numItemClusters);
+    double[] errors = new double[numItemClusters];
     for (int ic = 0; ic < numItemClusters; ic++)
       for (int index : ratings.byItem().get(item_id)) {
         int user_id = ratings.users().get(index);
         double rating = ratings.get(index);
 
-        errors.set(ic, errors.get(ic) + Math.pow(rating - predict(user_id, item_id, user_clustering.get(user_id), ic), 2));
+        errors[ic] += Math.pow(rating - predict(user_id, item_id, user_clustering.get(user_id), ic), 2);
       }
 
     int minimum_index = getMinimumIndex(errors, item_clustering.get(item_id));
@@ -228,9 +238,11 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
     double[] item_sums = new double[maxItemID + 1];
     double sum = 0;
 
-    this.user_counts = new ArrayList<Integer>(maxUserID + 1);
-    this.item_counts = new ArrayList<Integer>(maxItemID + 1);
-
+    this.user_counts = new IntArrayList();
+    user_counts.size(maxUserID + 1);
+    
+    this.item_counts = new IntArrayList();
+    item_counts.size(maxItemID + 1);
 
     for (int i = 0; i < ratings.size(); i++) {
       int user_id   = ratings.users().get(i);
@@ -247,14 +259,17 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
 
     this.global_average = sum / ratings.size();
 
-    this.user_averages = new ArrayList<Double>(maxUserID + 1);
+    this.user_averages = new DoubleArrayList();
+    user_averages.size(maxUserID + 1);
+
     for (int u = 0; u <= maxUserID; u++)
       if (user_counts.get(u) > 0)
         user_averages.set(u, user_sums[u] / user_counts.get(u));
       else
         user_averages.set(u, global_average);
 
-    this.item_averages = new ArrayList<Double>(maxItemID + 1);
+    this.item_averages = new DoubleArrayList();
+    item_averages.size(maxItemID + 1);
     for (int i = 0; i <= maxItemID; i++)
       if (item_counts.get(i) > 0)
         item_averages.set(i, item_sums[i] / item_counts.get(i));
@@ -272,8 +287,8 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
       int item_id = ratings.items().get(i);
       double rating = ratings.get(i);
 
-      user_cluster_averages.set(user_clustering.get(user_id), user_cluster_averages.get(user_clustering.get(user_id)) + rating);
-      item_cluster_averages.set(item_clustering.get(item_id), item_cluster_averages.get(item_clustering.get(item_id)) + rating);
+      user_cluster_averages.set(user_clustering.getInt(user_id), user_cluster_averages.getDouble(user_clustering.get(user_id)) + rating);
+      item_cluster_averages.set(item_clustering.getInt(item_id), item_cluster_averages.getDouble(item_clustering.get(item_id)) + rating);
       cocluster_averages.set(user_clustering.get(user_id), item_clustering.get(item_id), cocluster_averages.get(user_clustering.get(user_id), item_clustering.get(item_id))  + rating);
 
       user_cluster_counts[user_clustering.get(user_id)]++;
@@ -301,11 +316,11 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
           cocluster_averages.set(i, j, global_average);
   }
 
-  int getMinimumIndex(List<Double> array, int default_index) {
+  int getMinimumIndex(double[] array, int default_index) {
     int minimumIndex = default_index;
 
-    for (int i = 0; i < array.size(); i++)
-      if (array.get(i) < array.get(minimumIndex))
+    for (int i = 0; i < array.length; i++)
+      if (array[i] < array[minimumIndex])
         minimumIndex = i;
 
     return minimumIndex;
@@ -330,13 +345,13 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
    */
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
-    List<Integer> user_clustering = VectorExtensions.readIntVector(reader);
-    List<Integer> item_clustering = VectorExtensions.readIntVector(reader);
+    IntList user_clustering = VectorExtensions.readIntVector(reader);
+    IntList item_clustering = VectorExtensions.readIntVector(reader);
     double global_average = Double.parseDouble(reader.readLine());
-    List<Double> user_averages = VectorExtensions.readVector(reader);
-    List<Double> item_averages = VectorExtensions.readVector(reader);
-    List<Double> user_cluster_averages = VectorExtensions.readVector(reader);
-    List<Double> item_cluster_averages = VectorExtensions.readVector(reader);
+    DoubleList user_averages = VectorExtensions.readVector(reader);
+    DoubleList item_averages = VectorExtensions.readVector(reader);
+    DoubleList user_cluster_averages = VectorExtensions.readVector(reader);
+    DoubleList item_cluster_averages = VectorExtensions.readVector(reader);
     IMatrix<Double> cocluster_averages = IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
 
     int num_user_clusters = user_cluster_averages.size();

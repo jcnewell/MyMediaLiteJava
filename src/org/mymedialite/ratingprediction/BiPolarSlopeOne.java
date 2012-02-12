@@ -56,7 +56,7 @@ public class BiPolarSlopeOne extends RatingPredictor {
   /**
    * 
    */
-  public boolean CanPredict(int user_id, int item_id) {
+  public boolean canPredict(int user_id, int item_id) {
     if (user_id > maxUserID || item_id > maxItemID)
       return false;
 
@@ -132,6 +132,7 @@ public class BiPolarSlopeOne extends RatingPredictor {
             freq_matrix_like.set(ratings.items().get(index), ratings.items().get(index2), freq_matrix_like.get(ratings.items().get(index), ratings.items().get(index2)) + 1);
             diff_matrix_like.set(ratings.items().get(index), ratings.items().get(index2), diff_matrix_like.get(ratings.items().get(index), ratings.items().get(index2)) + (float) (ratings.get(index) - ratings.get(index2)));
           } else if (ratings.get(index) < user_avg && ratings.get(index2) < user_avg) {
+            
             freq_matrix_dislike.set(ratings.items().get(index), ratings.items().get(index2), freq_matrix_dislike.get(ratings.items().get(index), ratings.items().get(index2)) + 1);
             diff_matrix_dislike.set(ratings.items().get(index), ratings.items().get(index2), diff_matrix_dislike.get(ratings.items().get(index), ratings.items().get(index2)) + (float) (ratings.get(index) - ratings.get(index2)));
           }
@@ -155,10 +156,11 @@ public class BiPolarSlopeOne extends RatingPredictor {
   public void initModel() {
     // Create data structure
     diff_matrix_like = new SkewSymmetricSparseMatrix(maxItemID + 1);
-    freq_matrix_like = new SymmetricSparseMatrix<Integer>(maxItemID + 1);
+    freq_matrix_like = new SymmetricSparseMatrix<Integer>(maxItemID + 1, 0);
     diff_matrix_dislike = new SkewSymmetricSparseMatrix(maxItemID + 1);
-    freq_matrix_dislike = new SymmetricSparseMatrix<Integer>(maxItemID + 1);
+    freq_matrix_dislike = new SymmetricSparseMatrix<Integer>(maxItemID + 1, 0);
     user_average = new ArrayList<Double>(maxUserID + 1);
+    for(int i=0; i < maxUserID + 1; i++) user_average.add(null);
   }
 
   /**

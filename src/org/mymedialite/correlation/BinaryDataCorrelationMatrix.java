@@ -27,7 +27,7 @@ public class BinaryDataCorrelationMatrix extends CorrelationMatrix {
 
   /**
    * Constructor.
-   * @param num_entities the number of entities
+   * @param numEntities the number of entities
    */
   public BinaryDataCorrelationMatrix(int numEntities) { 
     super(numEntities);

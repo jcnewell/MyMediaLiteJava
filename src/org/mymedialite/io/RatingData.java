@@ -37,31 +37,29 @@ public class RatingData {
   /** 
    * Read in rating data from a file.
    * @param filename the name of the file to read from
-   * @param user_mapping mapping object for user IDs
-   * @param item_mapping mapping object for item IDs
-   * @param ignore_first_line if true, ignore the first line
+   * @param userMapping mapping object for user IDs
+   * @param itemMapping mapping object for item IDs
+   * @param ignoreFirstLine if true, ignore the first line
    * @return the rating data 
    */
-  public static IRatings read(String filename, IEntityMapping user_mapping, IEntityMapping item_mapping, boolean ignore_first_line) throws IOException, NumberFormatException {
-    return read(new BufferedReader(new FileReader(filename)), user_mapping, item_mapping, ignore_first_line);
+  public static IRatings read(String filename, IEntityMapping userMapping, IEntityMapping itemMapping, boolean ignoreFirstLine) throws IOException, NumberFormatException {
+    return read(new BufferedReader(new FileReader(filename)), userMapping, itemMapping, ignoreFirstLine);
   }
 
   /** 
    * Read in rating data from a BufferedReader
    * @param reader the BufferedReader to read from
-   * @param min_rating the lowest possible rating value, warn on out of range ratings
-   * @param max_rating the highest possible rating value, warn on out of range ratings
-   * @param user_mapping mapping object for user IDs
-   * @param item_mapping mapping object for item IDs
-   * @param ignore_first_line if true, ignore the first line
+   * @param userMapping mapping object for user IDs
+   * @param itemMapping mapping object for item IDs
+   * @param ignoreFirstLine if true, ignore the first line
    * @return the rating data 
    */
-  public static IRatings read(BufferedReader reader, IEntityMapping user_mapping, IEntityMapping item_mapping, boolean ignore_first_line) throws IOException, NumberFormatException {
-    if (user_mapping == null)
-      user_mapping = new IdentityMapping();
-    if (item_mapping == null)
-      item_mapping = new IdentityMapping();
-    if (ignore_first_line)
+  public static IRatings read(BufferedReader reader, IEntityMapping userMapping, IEntityMapping itemMapping, boolean ignoreFirstLine) throws IOException, NumberFormatException {
+    if (userMapping == null)
+      userMapping = new IdentityMapping();
+    if (itemMapping == null)
+      itemMapping = new IdentityMapping();
+    if (ignoreFirstLine)
       reader.readLine();
     
     IRatings ratings = new Ratings();
@@ -73,8 +71,8 @@ public class RatingData {
       String[] tokens = pattern.split(line);
       if(tokens.length < 3)
         throw new IOException("Expected at least three columns: " + line);
-      int user_id = user_mapping.toInternalID(tokens[0]);
-      int item_id = item_mapping.toInternalID(tokens[1]);
+      int user_id = userMapping.toInternalID(tokens[0]);
+      int item_id = itemMapping.toInternalID(tokens[1]);
       double rating = Double.parseDouble(tokens[2]);
       ratings.add(user_id, item_id, rating);
     }

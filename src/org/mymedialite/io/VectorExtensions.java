@@ -17,6 +17,11 @@
 
 package org.mymedialite.io;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -64,9 +69,9 @@ public class VectorExtensions {
    * @param reader the <see cref="TextReader"/> to read from      
    * @return a collection of double values
    */
-  static public List<Double> readVector(BufferedReader reader) throws IOException {
+  static public DoubleList readVector(BufferedReader reader) throws IOException {
     int dim = Integer.parseInt(reader.readLine());
-    ArrayList<Double> vector = new ArrayList<Double>(dim);
+    DoubleList vector = new DoubleArrayList(dim);
     for (int i = 0; i < dim; i++) {
       double v = Double.parseDouble(reader.readLine());
       vector.add(v);
@@ -96,10 +101,10 @@ public class VectorExtensions {
    * @throws IOException 
    * @throws NumberFormatException 
    */
-  public static List<Integer> readIntVector(BufferedReader reader) throws IOException {
+  public static IntList readIntVector(BufferedReader reader) throws IOException {
     int dim = Integer.parseInt(reader.readLine());
 
-    List<Integer> vector = new ArrayList<Integer>(dim);
+    IntList vector = new IntArrayList(dim);
 
     for (int i = 0; i < vector.size(); i++)
       vector.set(i, Integer.parseInt(reader.readLine()));

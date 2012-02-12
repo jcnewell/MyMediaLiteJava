@@ -37,15 +37,31 @@ public class SparseMatrix<T> implements IMatrix<T> {
   protected List<HashMap<Integer, T>> row_list = new ArrayList<HashMap<Integer, T>>();
 
   /**
+   * The default values for elements.
+   */
+  private T d = null;
+
+  /**
    * Create a sparse matrix with a given number of rows.
    * @param num_rows the number of rows
    * @param num_cols the number of columns
    */
   public SparseMatrix(int num_rows, int num_cols) {
+    this(num_rows, num_cols, null);
+  }
+
+  /**
+   * Create a sparse matrix with a given number of rows.
+   * @param num_rows the number of rows
+   * @param num_cols the number of columns
+   * @param d the default value for elements
+   */
+  public SparseMatrix(int num_rows, int num_cols, T d) {
     for (int i = 0; i < num_rows; i++) {
       row_list.add(new HashMap<Integer, T>());
     }
     this.numberOfColumns = num_cols;
+    this.d = d;
   }
 
   /**
@@ -53,12 +69,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
    */
   @Override
   public IMatrix<T> createMatrix(int num_rows, int num_columns) {
-    return new SparseMatrix<T>(num_rows, num_columns);
-  }
-
-  @Override
-  public void init(T d) {
-    throw new UnsupportedOperationException("SparseMatrices cannot be initialized with default values.");
+    return new SparseMatrix<T>(num_rows, num_columns, null);
   }
 
   /**
@@ -66,17 +77,15 @@ public class SparseMatrix<T> implements IMatrix<T> {
    */
   @Override
   public boolean isSymmetric() {
-    // TODO
-    //    if (getNumberOfRows() != getNumberOfColumns()) return false;
-    //    for (int i = 0; i < row_list.size(); i++)
-    //      for (var j : row_list[i].keys)
-    //      {
-    //        if (i > j)
-    //          continue; // check every pair only once
-    //
-    //        if (! this[i, j].equals(this[j, i]))
-    //          return false;
-    //      }
+    if (numberOfRows() != numberOfColumns()) return false;
+    for (int i = 0; i < row_list.size(); i++)
+      for (int j : row_list.get(i).keySet()) {
+        if (i > j)
+          continue; // check every pair only once
+
+        if (! get(i, j).equals(get(j, i)))
+          return false;
+      }
     return true;
   }
 
@@ -101,13 +110,11 @@ public class SparseMatrix<T> implements IMatrix<T> {
    */
   @Override
   public IMatrix<T> transpose() {
-    // TODO
-    //    SparseMatrix<T> transpose = new SparseMatrix<T>(NumberOfColumns, NumberOfRows);
-    //    for (Pair<Integer, int> p : NonEmptyEntryIDs) {
-    //      transpose[p.second, p.first] = this[p.first, p.second];
-    //    }
-    //    return transpose;
-    return null;
+    SparseMatrix<T> transpose = new SparseMatrix<T>(numberOfColumns(), numberOfRows());
+    for (Pair<Integer, Integer> p : nonEmptyEntryIDs()) {
+      transpose.set(p.second, p.first, get(p.first, p.second));
+    }
+    return transpose;
   }
 
   /**
@@ -127,7 +134,6 @@ public class SparseMatrix<T> implements IMatrix<T> {
    * @param y the column ID
    */
   @Override
-  @SuppressWarnings("unchecked")
   public T get(int x, int y) {
     T result;
     if (x < row_list.size()) {
@@ -136,7 +142,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
         return result;
       }
     }
-    return (T)(new Object());
+    return d;
   }
 
   @Override

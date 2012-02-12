@@ -47,7 +47,7 @@ public abstract class KNN extends IncrementalRatingPredictor {
 
   private static final String VERSION = "2.03";
   protected IRatings ratings;
-  protected UserItemBaseline baseline_predictor = new UserItemBaseline();;  
+  protected UserItemBaseline baseline_predictor = new UserItemBaseline();
   
   /**
    * Number of neighbors to take into account for predictions.

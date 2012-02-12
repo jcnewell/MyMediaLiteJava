@@ -158,8 +158,8 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
       }
     }
 
-    itemAttributeWeightByUser = new Matrix<Double>(maxUserID + 1, numItemAttributes());
-    itemAttributeWeightByUser.init(0.0);
+    itemAttributeWeightByUser = new Matrix<Double>(maxUserID + 1, numItemAttributes(), 0.0);
+    //itemAttributeWeightByUser.init(0.0);
     for (int i = 0; i < numIter; i++)
       iterate();
   }
@@ -188,9 +188,7 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
 
   /**
    * Sample a pair of items, given a user.
-   * @param u the user ID
-   * @param i the ID of the first item
-   * @param j the ID of the second item
+   * @param t a SampleTriple specifying a user ID
    */
   protected  void sampleItemPair(SampleTriple t) {
     if (fastSampling) {
@@ -222,9 +220,7 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
 
   /**
    * Sample a triple for BPR learning.
-   * @param u the user ID
-   * @param i the ID of the first item
-   * @param j the ID of the second item
+   * @param t the SampleTriple to configure
    */
   protected void sampleTriple(SampleTriple t) {
     t.u = sampleUser();
@@ -233,6 +229,7 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
 
   /**
    * Modified feature update method that exploits attribute sparsity.
+   * @param t a SampleTriple specifying the user ID and the first and second item IDs
    */
   protected void updateFeatures(SampleTriple t) {
     double x_uij = predict(t.u, t.i) - predict(t.u, t.j);
@@ -296,7 +293,7 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
   }
 
   /**
-   *  { @inheritDoc } 
+   * 
    */
   @Override
   public void loadModel(String filename) throws IOException {
@@ -306,11 +303,11 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
   }
 
   /** 
-   * { @inheritDoc } 
+   *
    */
   @Override
   public void loadModel(BufferedReader reader) throws IOException {
-    this.itemAttributeWeightByUser = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    this.itemAttributeWeightByUser = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0, 0.0));
   }
 
   /**

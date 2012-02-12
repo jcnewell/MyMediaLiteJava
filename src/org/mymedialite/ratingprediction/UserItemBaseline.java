@@ -42,7 +42,7 @@ import org.mymedialite.eval.Ratings;
 public class UserItemBaseline extends IncrementalRatingPredictor implements IIterativeModel {
 
   /**
-   * @return Regularization parameter for the user biases
+   * Regularization parameter for the user biases
    */
   public double regU = 25;
 
@@ -52,7 +52,7 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
   public double regI = 10;
 
   /**
-   * @param numIter The number of iterations
+   * The number of iterations
    */	
   public int numIter = 10;
 
@@ -106,29 +106,25 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
     return result;
   }
 
-  public void train()
-  {
+  public void train() {
     userBiases = new double[maxUserID + 1];
     itemBiases = new double[maxItemID + 1];
-
+    
     globalAverage = ratings.average();
 
     for (int i = 0; i < numIter; i++)
       iterate();
   }	
 
-  public void iterate()
-  {
+  public void iterate() {
     optimizeItemBiases();
     optimizeUserBiases();
   }
 
-  void optimizeUserBiases()
-  {
+  void optimizeUserBiases() {
     int[] userRatingsCount = new int[maxUserID + 1];
 
-    for (int index = 0; index < ratings.size(); index++)
-    {
+    for (int index = 0; index < ratings.size(); index++) {
       userBiases[ratings.users().get(index)] += ratings.get(index) - globalAverage - itemBiases[ratings.items().get(index)];
       userRatingsCount[ratings.users().get(index)]++;
     }
@@ -137,12 +133,10 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
         userBiases[u] = userBiases[u] / (regU + userRatingsCount[u]);
   }
 
-  void optimizeItemBiases()
-  {
+  void optimizeItemBiases() {
     int[] item_ratings_count = new int[maxItemID + 1];
 
-    for (int index = 0; index < ratings.size(); index++)
-    {
+    for (int index = 0; index < ratings.size(); index++) {
       itemBiases[ratings.items().get(index)] += ratings.get(index) - globalAverage - userBiases[ratings.users().get(index)];
       item_ratings_count[ratings.items().get(index)]++;
     }

@@ -45,7 +45,7 @@ public class SequentialDiversification {
 
   /**
    * Constructor.
-   * @param item_correlation the similarity measure to use for diversification
+   * @param itemCorrelation the similarity measure to use for diversification
    */
   public SequentialDiversification(CorrelationMatrix itemCorrelation) {
     itemCorrelations = itemCorrelation;
@@ -54,10 +54,10 @@ public class SequentialDiversification {
   /**
    * Diversify an item list.
    * @param item_list a list of items
-   * @param diversification_parameter the diversification parameter (higher means more diverse)
+   * @param diversificationParameter the diversification parameter (higher means more diverse)
    * @return a list re-ordered to ensure maximum diversity at the top of the list
    */
-  public List<Integer> diversifySequential(List<Integer> item_list, double diversification_parameter) {
+  public List<Integer> diversifySequential(List<Integer> item_list, double diversificationParameter) {
     if(item_list.size() == 0) throw new IllegalArgumentException();
 
     Map<Integer, Integer> item_rank_by_rating = new HashMap<Integer, Integer>();
@@ -84,7 +84,7 @@ public class SequentialDiversification {
         int item_id = items_by_diversity.get(i).item_id;
         // i is the dissimilarity rank
         // TODO adjust for ties
-        double score = item_rank_by_rating.get(item_id) * (1 - diversification_parameter) + i * diversification_parameter;
+        double score = item_rank_by_rating.get(item_id) * (1 - diversificationParameter) + i * diversificationParameter;
 
         items_by_merged_rank.add(new WeightedItem(item_id, score));
       }

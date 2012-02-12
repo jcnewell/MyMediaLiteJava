@@ -47,7 +47,8 @@ public class AttributeData {
    * for the relations that hold.
    * 
    * @param filename the name of the file to be read from
-   * @param mapping the mapping object for the given entity type
+   * @param itemMapping the mapping object for the given entity type
+   * @param attributeMapping the mapping object for the attributes
    * @return the attribute data
    */
   public static SparseBooleanMatrix read(String filename, IEntityMapping itemMapping, IEntityMapping attributeMapping) throws IOException {
@@ -67,7 +68,8 @@ public class AttributeData {
    * for the relations that hold.
    * 
    * @param reader a BufferedReader to be read from
-   * @param mapping the mapping object for the given entity type
+   * @param itemMapping the mapping object for the given entity type
+   * @param attributeMapping the mapping object for the attributes
    * @return the attribute data
    */
   public static SparseBooleanMatrix read(BufferedReader reader, IEntityMapping itemMapping, IEntityMapping attributeMapping) throws IOException {

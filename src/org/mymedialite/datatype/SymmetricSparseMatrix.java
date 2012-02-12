@@ -30,12 +30,16 @@ import java.util.List;
  */
 public class SymmetricSparseMatrix<T> extends SparseMatrix<T> {
 
+  private T d;
+  
   /**
    * Create a symmetric sparse matrix with a given dimension.
    * @param dimension the dimension (number of rows/columns)
+   * @param d the default value for elements, or null
    */
-  public SymmetricSparseMatrix(int dimension) {
-    super(dimension, dimension);
+  public SymmetricSparseMatrix(int dimension, T d) {
+    super(dimension, dimension, null);
+    this.d = d;
   }
 
   /**
@@ -50,12 +54,15 @@ public class SymmetricSparseMatrix<T> extends SparseMatrix<T> {
       x = y;
       y = tmp;
     }
-
-    // TODO check everything that calls this method is happy to get null rather the new T()
-    if (x < row_list.size())
-      return row_list.get(x).get(y);
-    else
-      return null;
+    
+    T result;
+    if (x < row_list.size()) {
+      result = row_list.get(x).get(y);
+      if(result != null) {
+        return result;
+      }
+    }
+    return d;
   }
 
   public void set(int x, int y, T value) {
@@ -87,7 +94,7 @@ public class SymmetricSparseMatrix<T> extends SparseMatrix<T> {
   public IMatrix<T> createMatrix(int num_rows, int num_columns) {
     if (num_rows != num_columns)
       throw new IllegalArgumentException("Symmetric matrices must have the same number of rows and columns.");
-    return new SymmetricSparseMatrix<T>(num_rows);
+    return new SymmetricSparseMatrix<T>(num_rows, null);
   }
 
   /**

@@ -40,27 +40,27 @@ public class Extensions {
    * @param recommender rating predictor
    * @param ratings test cases
    * @param writer the TextWriter to write the predictions to
-   * @param user_mapping an <see cref="EntityMapping"/> object for the user IDs
-   * @param item_mapping an <see cref="EntityMapping"/> object for the item IDs
-   * @param line_format a format string specifying the line format; {0} is the user ID, {1} the item ID, {2} the rating
+   * @param userMapping an EntityMapping object for the user IDs
+   * @param itemMapping an EntityMapping object for the item IDs
+   * @param separator the field separator to use
    */
   public static void writePredictions(
       IRecommender recommender,
       IRatings ratings,
       PrintWriter writer,
-      IEntityMapping user_mapping,
-      IEntityMapping item_mapping,
+      IEntityMapping userMapping,
+      IEntityMapping itemMapping,
       String separator) {
     
-    if (user_mapping == null)
-      user_mapping = new IdentityMapping();
-    if (item_mapping == null)
-      item_mapping = new IdentityMapping();
+    if (userMapping == null)
+      userMapping = new IdentityMapping();
+    if (itemMapping == null)
+      itemMapping = new IdentityMapping();
     if (separator== null)
       separator = "\t";
     
     for (int index = 0; index < ratings.size(); index++) {
-      writer.println(user_mapping.toOriginalID(ratings.users().get(index)) + separator + item_mapping.toOriginalID(ratings.items().get(index)) +
+      writer.println(userMapping.toOriginalID(ratings.users().get(index)) + separator + itemMapping.toOriginalID(ratings.items().get(index)) +
         separator + recommender.predict(ratings.users().get(index), ratings.items().get(index)));
     }
   }
@@ -70,19 +70,19 @@ public class Extensions {
    * @param recommender rating predictor
    * @param ratings test cases
    * @param filename the name of the file to write the predictions to
-   * @param user_mapping an <see cref="EntityMapping"/> object for the user IDs
-   * @param item_mapping an <see cref="EntityMapping"/> object for the item IDs
-   * @param line_format a format string specifying the line format; {0} is the user ID, {1} the item ID, {2} the rating
+   * @param userMapping an EntityMapping object for the user IDs
+   * @param itemMapping an EntityMapping object for the item IDs
+   * @param separator the field separator to use
    */
   public static void writePredictions(
       IRecommender recommender,
       IRatings ratings,
       String filename,
-      IEntityMapping user_mapping,
-      IEntityMapping item_mapping,
+      IEntityMapping userMapping,
+      IEntityMapping itemMapping,
       String separator) throws IOException {
     
     PrintWriter writer = new PrintWriter(filename);
-    writePredictions(recommender, ratings, writer, user_mapping, item_mapping, separator);
+    writePredictions(recommender, ratings, writer, userMapping, itemMapping, separator);
   }
 }

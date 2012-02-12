@@ -97,15 +97,15 @@ public class Model {
   /**
    * Get a reader object to read in model parameters of a recommender</summary>
    * @param filename the filename of the model file
-   * @param recommender_type the expected recommender type
+   * @param recommenderType the expected recommender type
    * @return a BufferedReader
    */
-  public static BufferedReader getReader(String filename, Class<?> recommender_type) throws IOException {
+  public static BufferedReader getReader(String filename, Class<?> recommenderType) throws IOException {
     BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));
     String type_name = reader.readLine();
     if (type_name == null)  throw new IOException("Unexpected end of file " + filename);
-    if(!type_name.equals(recommender_type.getCanonicalName()))
-      System.err.println("WARNING: Incorrect type name: " + type_name + ", expected: " + recommender_type.getCanonicalName());
+    if(!type_name.equals(recommenderType.getCanonicalName()))
+      System.err.println("WARNING: Incorrect type name: " + type_name + ", expected: " + recommenderType.getCanonicalName());
 
     reader.readLine(); // read version line, and ignore it for now
     return reader;
@@ -114,13 +114,13 @@ public class Model {
   /**
    * Get a writer object to save the model parameters of a recommender engine.
    * @param filename the filename of the model file
-   * @param engine_type the engine type
+   * @param recommenderType the engine type
    * @param version the version string (for backwards compatibility)
    * @return a PrintWriter
    */
-  public static PrintWriter getWriter(String filename, Class<?> recommender_type, String version) throws IOException {
+  public static PrintWriter getWriter(String filename, Class<?> recommenderType, String version) throws IOException {
     PrintWriter writer = new PrintWriter(filename);
-    writer.println(recommender_type.getCanonicalName());
+    writer.println(recommenderType.getCanonicalName());
     writer.println(version);
     return writer;
   }

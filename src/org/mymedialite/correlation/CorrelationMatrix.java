@@ -71,7 +71,7 @@ public class CorrelationMatrix extends Matrix<Float> {
    * @param numEntities number of entities
    */
   public CorrelationMatrix(int numEntities) {
-    super(numEntities, numEntities);
+    super(numEntities, numEntities, 0.0F);
     this.numEntities = numEntities;
   }
 

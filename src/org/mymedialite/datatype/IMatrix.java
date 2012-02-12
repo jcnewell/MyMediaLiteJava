@@ -70,11 +70,5 @@ public interface IMatrix<T> {
    * @return a matrix with num_rows rows and num_column columns
    */
   IMatrix<T> createMatrix(int num_rows, int num_columns);
-  
-  /**
-   * Initialize the matrix with a default value
-   * @param d the default value
-   */
-  void init(T d);
-  
+
 }

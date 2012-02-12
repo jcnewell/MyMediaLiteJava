@@ -321,19 +321,17 @@ public class BPRMF extends MF {
 
   /**
    * Update features according to the stochastic gradient descent update rule.
-   * @param u the user ID
-   * @param i the ID of the first item
-   * @param j the ID of the second item
-   * @param update_u if true, update the user features
-   * @param update_i if true, update the features of the first item
+   * @param t a SampleTriple specifying the user ID and the first and second itemIDs
+   * @param updateU if true, update the user features
+   * @param updateI if true, update the features of the first item
    * @param updateJ if true, update the features of the second item
    */
-  protected void updateFactors(SampleTriple t, boolean update_u, boolean update_i, boolean updateJ) {
+  protected void updateFactors(SampleTriple t, boolean updateU, boolean updateI, boolean updateJ) {
     double x_uij = itemBias[t.i] - itemBias[t.j] + MatrixExtensions.rowScalarProductWithRowDifference(userFactors, t.u, itemFactors,t.i, itemFactors, t.j);
     double one_over_one_plus_ex = 1 / (1 + Math.exp(x_uij));
 
     // Adjust bias terms.
-    if (update_i) {
+    if (updateI) {
       double bias_update = one_over_one_plus_ex - biasReg * itemBias[t.i];
       itemBias[t.i] += learnRate * bias_update;
     }
@@ -349,12 +347,12 @@ public class BPRMF extends MF {
       double h_if = itemFactors.get(t.i, f);
       double h_jf = itemFactors.get(t.j, f);
 
-      if (update_u) {
+      if (updateU) {
         double uf_update = (h_if - h_jf) * one_over_one_plus_ex - regU * w_uf;
         userFactors.set(t.u, f, w_uf + learnRate * uf_update);
       }
 
-      if (update_i) {
+      if (updateI) {
         double if_update = w_uf * one_over_one_plus_ex - regI * h_if;
         itemFactors.set(t.i, f, h_if + learnRate * if_update);
       }
@@ -597,9 +595,9 @@ public class BPRMF extends MF {
 
   /** { @inheritDoc } */
   public void loadModel(BufferedReader reader) throws IOException {
-    Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0, null));
     double[] item_bias = org.mymedialite.io.VectorExtensions.readVectorArray(reader);
-    Matrix<Double> item_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
+    Matrix<Double> item_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0, null));
 
     if (user_factors.numberOfColumns() != item_factors.numberOfColumns())
       throw new IOException("Number of user and item factors must match: " + user_factors.numberOfColumns() + " != " + item_factors.numberOfColumns());

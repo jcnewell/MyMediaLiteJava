@@ -35,7 +35,7 @@ public class SkewSymmetricSparseMatrix extends SymmetricSparseMatrix<Float> {
    * @param dimension the dimension (number of rows/columns)
    */
   public SkewSymmetricSparseMatrix(int dimension) {
-    super(dimension);
+    super(dimension, null);
   }
   
   /**

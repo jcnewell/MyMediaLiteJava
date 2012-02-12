@@ -102,7 +102,7 @@ public class TimeAwareBaselineWithFrequencies extends TimeAwareBaseline {
     int number_of_days = (int)((timed_ratings.latestTime().getTime() - timed_ratings.earliestTime().getTime()) / 3600000);
 
     // Compute log rating frequencies
-    log_frequency_by_day = new SparseMatrix<Integer>(maxUserID + 1, number_of_days);
+    log_frequency_by_day = new SparseMatrix<Integer>(maxUserID + 1, number_of_days, 0);
 
     // First count the frequencies ...
     for (int i = 0; i < timed_ratings.size(); i++) {
@@ -122,7 +122,7 @@ public class TimeAwareBaselineWithFrequencies extends TimeAwareBaseline {
    */
   protected void initModel() {
     super.initModel();
-    item_bias_at_frequency = new SparseMatrix<Double>(maxItemID + 1, SparseMatrixExtensions.maxInteger(log_frequency_by_day));
+    item_bias_at_frequency = new SparseMatrix<Double>(maxItemID + 1, SparseMatrixExtensions.maxInteger(log_frequency_by_day), 0.0);
   }
 
   /**

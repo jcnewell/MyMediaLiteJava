@@ -72,7 +72,7 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
   void computeCorrelationsUIntOverlap(IBooleanMatrix entityData) {
     IBooleanMatrix transpose = (IBooleanMatrix) entityData.transpose();
 
-    SymmetricMatrix<Integer> overlap = new SymmetricMatrix<Integer>(entityData.numberOfRows());
+    SymmetricMatrix<Integer> overlap = new SymmetricMatrix<Integer>(entityData.numberOfRows(), 0);
     overlap.init(new Integer(0));
     
     // Go over all (other) entities
@@ -100,7 +100,7 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
   void computeCorrelationsUShortOverlap(IBooleanMatrix entity_data) {
     IBooleanMatrix transpose = (IBooleanMatrix) entity_data.transpose();
     
-    SymmetricMatrix<Short> overlap = new SymmetricMatrix<Short>(entity_data.numberOfRows());
+    SymmetricMatrix<Short> overlap = new SymmetricMatrix<Short>(entity_data.numberOfRows(), new Short("0"));
     overlap.init(new Short("0"));
     
     // Go over all (other) entities

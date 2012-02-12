@@ -37,7 +37,7 @@ public interface IItemSimilarityProvider {
    * Get the most similar items.
    * @return the items most similar to a given item
    * @param item_id the ID of the item
-   * @paramvn the number of similar items to return
+   * @param n the number of similar items to return
    */
   int[] getMostSimilarItems(int item_id, int n);
 

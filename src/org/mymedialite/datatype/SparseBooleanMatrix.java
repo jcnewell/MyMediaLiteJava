@@ -87,11 +87,6 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
     return new SparseBooleanMatrix();
   }
 
-  @Override
-  public void init(Boolean d) {
-    throw new UnsupportedOperationException("SparseMatrices cannot be initialized with default values.");
-  }
-
   public IntList getEntriesByRow(int row_id) {
     return new IntArrayList(row_list.get(row_id));
   }

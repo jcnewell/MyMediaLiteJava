@@ -156,7 +156,7 @@ public class MatrixExtensions {
    * @param matrix the matrix
    * @param i the row ID
    * @param vector the numeric vector
-   * @returns the scalar product of row i and the vector
+   * @return the scalar product of row i and the vector
    */
   public static double rowScalarProduct(Matrix<Double> matrix, int i, List<Double> vector) {
     if (i >= matrix.dim1)
