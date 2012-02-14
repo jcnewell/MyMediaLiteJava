@@ -37,13 +37,18 @@ public class Handlers implements UncaughtExceptionHandler {
    * @param unhandledException the unhandled exception
    */
   @Override
-  public void uncaughtException(Thread sender, Throwable unhandledException) { // unhandledException) {
+  public void uncaughtException(Thread sender, Throwable unhandledException) {
 
     try {   
       if (unhandledException instanceof IOException) {
         System.err.println(unhandledException.getMessage());
         System.exit(-1);
+      } else if(unhandledException instanceof OutOfMemoryError) {
+        System.err.println("Out of memory!");
+        System.err.println(unhandledException.getMessage());
+        System.exit(-1);        
       }
+      
       System.err.println();
       System.err.println("******************************************************************************");
       System.err.println("*** An uncaught exception occured. Please report the issue with details to ***");

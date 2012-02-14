@@ -34,7 +34,7 @@ public interface ITimedRatings extends IRatings, ITimedDataSet {
    * @param user_id the user ID
    * @param item_id the item ID
    * @param rating the rating value
-   * @param time a {@link java.util.Date} specifying the time of the rating event
+   * @param time a Date specifying the time of the rating event
    */
   void add(int user_id, int item_id, double rating, Date time);
 

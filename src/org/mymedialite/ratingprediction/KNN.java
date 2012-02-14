@@ -46,7 +46,6 @@ import org.mymedialite.io.Model;
 public abstract class KNN extends IncrementalRatingPredictor {
 
   private static final String VERSION = "2.03";
-  protected IRatings ratings;
   protected UserItemBaseline baseline_predictor = new UserItemBaseline();
   
   /**
@@ -67,7 +66,7 @@ public abstract class KNN extends IncrementalRatingPredictor {
    */
   @Override
   public void setRatings(IRatings ratings) {
-    this.ratings = ratings;
+    super.setRatings(ratings);
     baseline_predictor.setRatings(ratings);
   }
 

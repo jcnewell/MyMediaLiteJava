@@ -42,17 +42,17 @@ public class ItemRecommendationEvaluationResults extends HashMap<String, Double>
    * @return a string containing the results
    */
   public String toString() {
-    return "AUC "           + decimalFormat.format(get("AUC"))
-        + " prec@5 "    + decimalFormat.format(get("prec@5"))
-        + " prec@10 "   + decimalFormat.format(get("prec@10"))
-        + " MAP "       + decimalFormat.format(get("MAP"))
-        + " recall@5 "  + decimalFormat.format(get("recall@5"))
-        + " recall@10 " + decimalFormat.format(get("recall@10"))
-        + " NDCG "      + decimalFormat.format(get("NDCG"))
-        + " MRR "       + decimalFormat.format(get("MRR"))
-        + " num_users " + integerFormat.format(get("num_users"))
-        + " num_items " + integerFormat.format(get("num_items"))
-        + " num_lists " + integerFormat.format(get("num_lists"));
+    return "AUC="       + decimalFormat.format(get("AUC"))
+        + " prec@5="    + decimalFormat.format(get("prec@5"))
+        + " prec@10="   + decimalFormat.format(get("prec@10"))
+        + " MAP="       + decimalFormat.format(get("MAP"))
+        + " recall@5="  + decimalFormat.format(get("recall@5"))
+        + " recall@10=" + decimalFormat.format(get("recall@10"))
+        + " NDCG="      + decimalFormat.format(get("NDCG"))
+        + " MRR="       + decimalFormat.format(get("MRR"))
+        + " num_users=" + integerFormat.format(get("num_users"))
+        + " num_items=" + integerFormat.format(get("num_items"))
+        + " num_lists=" + integerFormat.format(get("num_lists"));
   }
 }
 

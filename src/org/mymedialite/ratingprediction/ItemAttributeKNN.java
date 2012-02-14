@@ -71,7 +71,7 @@ public class ItemAttributeKNN extends ItemKNN implements IItemAttributeAwareReco
   /**
    */
   public String toString() {
-    return "ItemAttributeKNN + k=" + (k == Integer.MAX_VALUE ? "inf" : k) + " reg_u=" + getRegU() + " reg_i=" + getRegI();
+    return "ItemAttributeKNN k=" + (k == Integer.MAX_VALUE ? "inf" : k) + " reg_u=" + getRegU() + " reg_i=" + getRegI();
   }
   
 }

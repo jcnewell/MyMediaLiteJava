@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class RatingPredictionEvaluationResults extends HashMap<String, Double> {
 
   private static DecimalFormat decimalFormat = new DecimalFormat("0.00000");
-  
+
   /**
    * Format rating prediction results.
    * 
@@ -37,16 +37,19 @@ public class RatingPredictionEvaluationResults extends HashMap<String, Double> {
    * 
    * @return a string containing the results
    */
+  @Override
   public String toString() {
-    String s = "RMSE "  + decimalFormat.format(get("RMSE"))
-    		 + " MAE "  + decimalFormat.format(get("MAE"))
-    		 + " NMAE " + decimalFormat.format(get("NMAE"))
-    		 + " CBD "  + decimalFormat.format(get("CBD"));
-    		
-    if (this.containsKey("fit"))
-      s += " fit " + decimalFormat.format(get("fit"));
+    String s = "RMSE="  + decimalFormat.format(get("RMSE"))
+        + " MAE="  + decimalFormat.format(get("MAE"))
+        + " NMAE=" + decimalFormat.format(get("NMAE"));
 
-      return s;
+    if (this.containsKey("CBD"))
+      s+= " CBD="  + decimalFormat.format(get("CBD"));
+
+    if (this.containsKey("fit"))
+      s += " fit=" + decimalFormat.format(get("fit"));
+
+    return s;
   }
 
 }

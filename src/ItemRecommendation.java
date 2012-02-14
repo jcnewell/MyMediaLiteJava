@@ -230,6 +230,7 @@ public class ItemRecommendation {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
+        // Display stats if forced to exit
         displayStats();
       }
     });
@@ -350,17 +351,9 @@ public class ItemRecommendation {
     try {
       loadData();
     } catch (Exception e) {
-      System.out.println("Unable to load data: " + e.getMessage());
+      System.err.println("Unable to load data: " + e.getMessage());
     }
     Utils.displayDataStats(training_data, test_data, user_attributes, item_attributes);
-
-    // Display stats if forced to exit
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      @Override
-      public void run() {   
-        displayStats();
-      }
-    });
 
     // Evaluation
     try {
@@ -369,7 +362,7 @@ public class ItemRecommendation {
           usage("Only iterative recommenders (interface IIterativeModel) support --find-iter=N.");
 
         IIterativeModel iterative_recommender = (IIterativeModel) recommender;
-        System.out.println(recommender);
+        System.out.println("Recommender: " + recommender);
 
         if (cross_validation > 1) {
           ItemsCrossValidation.doIterativeCrossValidation(recommender, cross_validation, test_users, candidate_items, eval_item_mode, repeat_eval, max_iter, find_iter);
@@ -378,7 +371,7 @@ public class ItemRecommendation {
             recommender.train();
           
           if (compute_fit)
-            System.out.println("fit: " + computeFit() + " iteration " + iterative_recommender.getNumIter());
+            System.out.println("Fit: " + computeFit() + " iteration " + iterative_recommender.getNumIter());
 
           ItemRecommendationEvaluationResults results = evaluate();
           System.out.println(results + " iteration " + iterative_recommender.getNumIter());
@@ -392,9 +385,9 @@ public class ItemRecommendation {
               if (compute_fit) {
                 start = Calendar.getInstance().getTimeInMillis();
                 try {
-                  System.out.println("fit: " + computeFit() + " iteration " + it);
+                  System.out.println("Fit: " + computeFit() + " iteration " + it);
                 } catch (Exception e) {
-                  System.out.println("Exception at line 387: " + e.getMessage());
+                  System.err.println("Exception at line 390: " + e.getMessage());
                 }
                 fit_time_stats.add((double)(Calendar.getInstance().getTimeInMillis() - start) / 1000);
               }
@@ -412,15 +405,15 @@ public class ItemRecommendation {
               predict(prediction_file, test_users_file, it);
 
               if (results.get("AUC") < auc_cutoff || results.get("prec@5") < prec5_cutoff) {
-                System.err.println("Reached cutoff after " + it + " iterations.");
-                System.err.println("DONE");
+                System.out.println("Reached cutoff after " + it + " iterations");
+                System.out.println("DONE");
                 break;
               }
             }
           } // for
         }
       } else {
-        System.out.println(recommender + " ");
+        System.out.println("Recommender: " + recommender);
 
         if (load_model_file == null) {
           if (cross_validation > 1) {
@@ -430,12 +423,12 @@ public class ItemRecommendation {
           } else {
             long start = Calendar.getInstance().getTimeInMillis(); 
             recommender.train();
-            System.out.println("training_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+            System.out.println("Training time " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000 + " seconds");
           }
         }
 
         if (compute_fit)
-          System.out.println("fit: " + computeFit());
+          System.out.println("Fit: " + computeFit());
 
         if (prediction_file != null) {
           predict(prediction_file, test_users_file);
@@ -446,7 +439,7 @@ public class ItemRecommendation {
           } else if (group_method != null) {
             GroupRecommender group_recommender = null;
 
-            System.out.println("group recommendation strategy: " + group_method);
+            System.out.println("Group recommendation strategy: " + group_method);
             // TODO GroupUtils.CreateGroupRecommender(group_method, recommender);
             if (group_method == "Average")
               group_recommender = new Average(recommender);
@@ -462,10 +455,9 @@ public class ItemRecommendation {
           } else {
             long start = Calendar.getInstance().getTimeInMillis(); 
             System.out.println(evaluate());
-            System.out.println("testing_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+            System.out.println("Testing time " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000 + " seconds");
           }
         }
-        System.out.println();
       }
       try {
         Model.save(recommender, save_model_file);
@@ -570,13 +562,13 @@ public class ItemRecommendation {
         // User relation
         if (recommender instanceof IUserRelationAwareRecommender) {
           ((IUserRelationAwareRecommender)recommender).setUserRelation(RelationData.read(Utils.combine(data_dir, user_relations_file), user_mapping));
-          System.out.println("relation over " + ((IUserRelationAwareRecommender)recommender).numUsers() + " users");
+          System.out.println("Relation over " + ((IUserRelationAwareRecommender)recommender).numUsers() + " users");
         }
 
         // Item relation
         if (recommender instanceof IItemRelationAwareRecommender) {
           ((IItemRelationAwareRecommender)recommender).setItemRelation(RelationData.read(Utils.combine(data_dir, item_relations_file), item_mapping));
-          System.out.println("relation over " + ((IItemRelationAwareRecommender)recommender).numItems() + " items");
+          System.out.println("Relation over " + ((IItemRelationAwareRecommender)recommender).numItems() + " items");
         }
 
         // User groups
@@ -607,7 +599,7 @@ public class ItemRecommendation {
         }
 
         if (group_method == "GroupsAsUsers") {
-          System.out.println("group recommendation strategy: " + group_method);
+          System.out.println("Group recommendation strategy: " + group_method);
           // TODO verify what is going on here
 
           //var training_data_group = new PosOnlyFeedback<SparseBooleanMatrix>();
@@ -618,6 +610,7 @@ public class ItemRecommendation {
                 training_data.add(group_id, item_id);
           // Add the users that do not belong to groups
 
+          // TODO Check this.
           //training_data = training_data_group;
 
           // Transform groups to users
@@ -695,8 +688,8 @@ public class ItemRecommendation {
         else
           eval_item_mode = CandidateItems.UNION;
 
-        System.out.println("loading_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
-        System.out.println("memory " + Memory.getUsage() + " MB");
+        System.out.println("Loading time: " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000 + " seconds");
+        System.out.println("Memory usage: " + Memory.getUsage() + " MB");
   }
 
   static ItemRecommendationEvaluationResults computeFit() throws Exception {
@@ -735,7 +728,7 @@ public class ItemRecommendation {
         user_mapping, item_mapping);
     System.err.println("Wrote predictions to " + prediction_file);
 
-    System.out.println(" prediction_time " + (Calendar.getInstance().getTimeInMillis() - start));
+    System.out.println("Prediction_time " + (Calendar.getInstance().getTimeInMillis() - start) + " milliseconds");
   }
 
   static void displayStats() {
@@ -743,24 +736,24 @@ public class ItemRecommendation {
       double max = Collections.max(training_time_stats);
       double min = Collections.min(training_time_stats);
       double avg = Utils.average(training_time_stats);
-      System.err.println("iteration_time: min=" + min + ", max=" + max + ", avg=" + avg);
+      System.out.println("Iteration time: min=" + min + ", max=" + max + ", avg=" + avg + " seconds");
     }
 
     if (eval_time_stats.size() > 0) {
       double max = Collections.max(eval_time_stats);
       double min = Collections.min(eval_time_stats);
       double avg = Utils.average(eval_time_stats);
-      System.err.println("eval_time: min=" + min + ", max=" + max + ", avg=" + avg);
+      System.out.println("Evaluation time: min=" + min + ", max=" + max + ", avg=" + avg + " seconds");
     }
 
     if (compute_fit && fit_time_stats.size() > 0) {
       double max = Collections.max(fit_time_stats);
       double min = Collections.min(fit_time_stats);
       double avg = Utils.average(fit_time_stats);
-      System.err.println("fit_time: min=" + min + ", max=" + max + ", avg=" + avg);
+      System.out.println("Fit time: min=" + min + ", max=" + max + ", avg=" + avg + " seconds");
     }
 
-    System.out.println("Memory: " + Memory.getUsage() + " MB");
+    System.out.println("Memory usage: " + Memory.getUsage() + " MB");
   }
 
 }

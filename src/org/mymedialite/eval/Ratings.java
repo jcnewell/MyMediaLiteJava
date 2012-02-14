@@ -69,7 +69,7 @@ public class Ratings {
    * @param ratings Test cases
    * @return a Dictionary containing the evaluation results
    */
-  public static HashMap<String, Double> evaluate(IRatingPredictor recommender, IRatings ratings) {
+  public static RatingPredictionEvaluationResults evaluate(IRatingPredictor recommender, IRatings ratings) {
     double rmse = 0;
     double mae  = 0;
 
@@ -85,7 +85,7 @@ public class Ratings {
     mae  = mae / ratings.size();
     rmse = Math.sqrt(rmse / ratings.size());
 
-    HashMap<String, Double> result = new HashMap<String, Double>();
+    RatingPredictionEvaluationResults result = new RatingPredictionEvaluationResults();
     result.put("RMSE", rmse);
     result.put("MAE",  mae);
     result.put("NMAE", mae / (recommender.getMaxRating() - recommender.getMinRating()));
@@ -99,7 +99,7 @@ public class Ratings {
    * @param ratings Test cases
    * @return a Dictionary containing the evaluation results
    */
-  public static HashMap<String, Double> evaluateOnline(IIncrementalRatingPredictor recommender, IRatings ratings) throws IllegalArgumentException {
+  public static RatingPredictionEvaluationResults evaluateOnline(IIncrementalRatingPredictor recommender, IRatings ratings) throws IllegalArgumentException {
     double rmse = 0;
     double mae  = 0;
 
@@ -118,7 +118,7 @@ public class Ratings {
     mae  = mae / ratings.size();
     rmse = Math.sqrt(rmse / ratings.size());
 
-    HashMap<String, Double> result = new HashMap<String, Double>();
+    RatingPredictionEvaluationResults result = new RatingPredictionEvaluationResults();
     result.put("RMSE", rmse);
     result.put("MAE", mae);
     result.put("NMAE", mae / (recommender.getMaxRating() - recommender.getMinRating()));
@@ -131,7 +131,7 @@ public class Ratings {
    * @param split a rating dataset split
    * @return a dictionary containing the average results over the different folds of the split
    */
-  public static HashMap<String, Double> evaluateOnSplit(RatingPredictor recommender, ISplit<IRatings> split) {
+  public static RatingPredictionEvaluationResults evaluateOnSplit(RatingPredictor recommender, ISplit<IRatings> split) {
     return evaluateOnSplit(recommender, split, false);
   }
 
@@ -142,19 +142,19 @@ public class Ratings {
    * @param show_results set to true to print results to STDERR
    * @return a dictionary containing the average results over the different folds of the split
    */
-  public static HashMap<String, Double> evaluateOnSplit(
+  public static RatingPredictionEvaluationResults evaluateOnSplit(
       RatingPredictor recommender,
       ISplit<IRatings> split,
       boolean show_results) {
 
-    HashMap<String, Double> avg_results = new HashMap<String, Double>();
+    RatingPredictionEvaluationResults avg_results = new RatingPredictionEvaluationResults();
 
     for (int i = 0; i < split.numberOfFolds(); i++)
       try {
         RatingPredictor split_recommender = recommender.clone(); // to avoid changes : recommender
         split_recommender.setRatings(split.train().get(i));
         split_recommender.train();
-        HashMap<String, Double> fold_results = evaluate(split_recommender, split.test().get(i));
+        RatingPredictionEvaluationResults fold_results = evaluate(split_recommender, split.test().get(i));
 
         for (String key : fold_results.keySet()) {
           if (avg_results.containsKey(key)) {

@@ -115,7 +115,7 @@ public class MostPopular extends ItemRecommender {
   }
 
   public String toString() {
-      return "MostPopular";
+      return this.getClass().getName();
   }
 
 }

@@ -56,11 +56,11 @@ public class Extensions {
     long matrix_size = (long) num_users * num_items;
     long empty_size  = matrix_size - train.size();
     double sparsity = (double) 100L * empty_size / matrix_size;
-    String s = "training data: " + num_users + " users, " + num_items + " items, " + train.size() + " ratings, sparsity " + sparsity + "\n";
+    String s = "Training data: " + num_users + " users, " + num_items + " items, " + train.size() + " ratings, sparsity " + sparsity + "\n";
     
     if (train instanceof ITimedRatings) {
       ITimedRatings time_train = (ITimedRatings)train;
-      s += "rating period: " + time_train.earliestTime() + " to " + time_train.latestTime() + "\n";
+      s += "Rating period: " + time_train.earliestTime() + " to " + time_train.latestTime() + "\n";
     }
 
     // Test data stats
@@ -71,10 +71,10 @@ public class Extensions {
       empty_size  = matrix_size - test.size(); // TODO depends on the eval scheme whether this instanceof correct
       sparsity = (double) 100L * empty_size / matrix_size;
       // TODO floating point format for sparsity
-      s += "test data: " + num_users + " users, " + num_items + " items, " + test.size() + " ratings, sparsity " + sparsity + "\n";
+      s += "Test data: " + num_users + " users, " + num_items + " items, " + test.size() + " ratings, sparsity " + sparsity + "\n";
       if (test instanceof ITimedRatings) {
         ITimedRatings time_test = (ITimedRatings)test;
-        s += "rating period: " + time_test.earliestTime() + " to " + time_test.latestTime() + "\n";
+        s += "Rating period: " + time_test.earliestTime() + " to " + time_test.latestTime() + "\n";
       }
     }
 
@@ -119,7 +119,7 @@ public class Extensions {
     long matrix_size = (long) num_users * num_items;
     long empty_size  = matrix_size - training_data.size();
     double sparsity = (double) 100L * empty_size / matrix_size;
-    String s = "training data: " + num_users + " users, " + num_items + " items, " + training_data.size() + " events, sparsity " + sparsity;
+    String s = "Training data: " + num_users + " users, " + num_items + " items, " + training_data.size() + " events, sparsity " + sparsity;
 
     // Test data stats
     if (test_data != null) {
@@ -128,7 +128,7 @@ public class Extensions {
       matrix_size = (long) num_users * num_items;
       empty_size  = matrix_size - test_data.size();
       sparsity = (double) 100L * empty_size / matrix_size; // TODO depends on the eval scheme whether this instanceof correct
-      s += "test data:     " + num_users + " users, " + num_items + " items, " + test_data.size() + " events, sparsity " + sparsity + "\n";
+      s += "Test data: " + num_users + " users, " + num_items + " items, " + test_data.size() + " events, sparsity " + sparsity + "\n";
     }
 
     return s + statistics(user_attributes, item_attributes);
@@ -141,6 +141,7 @@ public class Extensions {
    */
   public static String statistics(SparseBooleanMatrix user_attributes, SparseBooleanMatrix item_attributes) {
     String s = "";
+    if (user_attributes != null || item_attributes != null) s += "Attribute data: ";
     if (user_attributes != null) {
       s += user_attributes.numberOfColumns()       + " user attributes for " + 
            user_attributes.numberOfRows()          + " users, " +

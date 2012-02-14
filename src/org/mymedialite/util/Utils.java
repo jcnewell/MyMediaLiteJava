@@ -70,33 +70,33 @@ public class Utils {
       SparseBooleanMatrix user_attributes, SparseBooleanMatrix item_attributes,
       boolean display_overlap) {
 
-    // training data stats
+    // Training data stats
     int num_users = train.allUsers().size();
     int num_items = train.allItems().size();
     long matrix_size = (long) num_users * num_items;
     long empty_size  = matrix_size - train.size();
     double sparsity = (double) 100L * empty_size / matrix_size;
-    System.out.println("training data: " + num_users + " users, " + num_items + " items, " + train.size() + " ratings, sparsity " + sparsity);
+    System.out.println("Training data: " + num_users + " users, " + num_items + " items, " + train.size() + " ratings, sparsity " + sparsity);
     if (train instanceof ITimedRatings) {
       ITimedRatings time_train = (ITimedRatings)train;
-      System.out.println("rating period: " + time_train.earliestTime() + " to " + time_train.latestTime());
+      System.out.println("Rating period: " + time_train.earliestTime() + " to " + time_train.latestTime());
     }
 
-    // test data stats
+    // Test data stats
     if (test != null) {
       num_users = test.allUsers().size();
       num_items = test.allItems().size();
       matrix_size = (long) num_users * num_items;
       empty_size  = matrix_size - test.size(); // TODO depends on the eval scheme whether this is correct
       sparsity = (double) 100L * empty_size / matrix_size;
-      System.out.println("test data: " + num_users + " users, " + num_items + " items, " + test.size() + " ratings, sparsity " + sparsity);
+      System.out.println("Test data: " + num_users + " users, " + num_items + " items, " + test.size() + " ratings, sparsity " + sparsity);
       if (test instanceof ITimedRatings) {
         ITimedRatings time_test = (ITimedRatings)test;
         System.out.println("rating period: " + time_test.earliestTime() + " to " + time_test.latestTime());
       }
     }
 
-    // count and display the overlap between train and test
+    // Count and display the overlap between train and test
     if (display_overlap && test != null) {
       int num_new_users = 0;
       int num_new_items = 0;
@@ -131,7 +131,7 @@ public class Utils {
     long matrix_size = (long) num_users * num_items;
     long empty_size  = matrix_size - training_data.size();
     double sparsity = (double) 100L * empty_size / matrix_size;
-    System.out.println("training data: " + num_users + " users, " + num_items + " items, " + training_data.size() + " events, sparsity " + sparsity);
+    System.out.println("Training data: " + num_users + " users, " + num_items + " items, " + training_data.size() + " events, sparsity " + sparsity);
 
     // test data stats
     if (test_data != null) {
@@ -140,7 +140,7 @@ public class Utils {
       matrix_size = (long) num_users * num_items;
       empty_size  = matrix_size - test_data.size();
       sparsity = (double) 100L * empty_size / matrix_size; // TODO depends on the eval scheme whether this is correct
-      System.out.println("test data: " + num_users + " users, " + num_items + " items, " + test_data.size() + " events, sparsity " + sparsity);
+      System.out.println("Test data: " + num_users + " users, " + num_items + " items, " + test_data.size() + " events, sparsity " + sparsity);
     }
 
     displayAttributeStats(user_attributes, item_attributes);
@@ -152,6 +152,9 @@ public class Utils {
    * @param item_attributes the item attributes
    */
   public static void displayAttributeStats(SparseBooleanMatrix user_attributes, SparseBooleanMatrix item_attributes) {
+
+    if(user_attributes != null || item_attributes != null) System.out.print("Attribute data: ");
+    
     if (user_attributes != null) {
       System.out.println(
           user_attributes.numberOfColumns()       + " user attributes for " +

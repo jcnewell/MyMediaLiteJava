@@ -193,7 +193,7 @@ public class RatingPrediction {
   }
 
   public static void main(String[] args) throws Exception {
-    
+
     // Handlers for uncaught exceptions and interrupts
     Thread.setDefaultUncaughtExceptionHandler(new Handlers());
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -313,7 +313,7 @@ public class RatingPrediction {
     // Load all the data
     loadData(data_dir, user_attributes_file, item_attributes_file, user_relations_file, item_relations_file, !online_eval);
 
-    System.out.println("ratings range: " + recommender.getMinRating() + ", " + recommender.getMaxRating());
+    System.out.println("Ratings range: " + recommender.getMinRating() + ", " + recommender.getMaxRating());
 
     if (test_ratio > 0) {
       RatingsSimpleSplit split = new RatingsSimpleSplit(training_data, test_ratio);
@@ -322,7 +322,7 @@ public class RatingPrediction {
       recommender.setRatings(training_data);
       // TODO check
       test_data = split.test().get(0);
-      System.out.println("test ratio " + test_ratio);
+      System.out.println("Test ratio: " + test_ratio);
     }
 
     if (chronological_split != null) {
@@ -333,9 +333,9 @@ public class RatingPrediction {
           recommender.setRatings(training_data); 
           test_data = split.test().get(0);
           if (test_ratio != -1)
-            System.out.println("test ratio (chronological) " + chronological_split_ratio);
+            System.out.println("Test ratio (chronological): " + chronological_split_ratio);
           else
-            System.out.println("split time {0}" + chronological_split_time);
+            System.out.println("Split time:" + chronological_split_time);
     }
 
     System.out.print(Extensions.statistics(training_data, test_data, user_attributes, item_attributes, false));
@@ -344,7 +344,7 @@ public class RatingPrediction {
       if (!(recommender instanceof IIterativeModel) )
         usage("Only iterative recommenders (interface IIterativeModel) support --find-iter=N.");
 
-      System.out.println(recommender.toString());
+      System.out.println("Recommender: " + recommender.toString());
 
       if (cross_validation > 1) {
         RatingsCrossValidation.doIterativeCrossValidation(recommender, cross_validation, max_iter, find_iter);
@@ -355,7 +355,7 @@ public class RatingPrediction {
           recommender.train();
 
         if (compute_fit)
-          System.out.println("fit " + Ratings.evaluate(recommender, training_data) + " iteration " + iterative_recommender.getNumIter());
+          System.out.println("Fit " + Ratings.evaluate(recommender, training_data) + " iteration " + iterative_recommender.getNumIter());
 
         System.out.println(Ratings.evaluate(recommender, test_data) + " iteration " + iterative_recommender.getNumIter());
 
@@ -367,7 +367,7 @@ public class RatingPrediction {
           if (it % find_iter == 0) {
             if (compute_fit) {
               start = Calendar.getInstance().getTimeInMillis();
-              System.out.println("fit " + Ratings.evaluate(recommender, training_data) + " iteration " + it);
+              System.out.println("Fit " + Ratings.evaluate(recommender, training_data) + " iteration " + it);
               fit_time_stats.add((double)(Calendar.getInstance().getTimeInMillis() - start) / 1000);
             }
 
@@ -397,48 +397,48 @@ public class RatingPrediction {
     } else {
       long start = Calendar.getInstance().getTimeInMillis();
 
-      System.out.print(recommender + " ");
+      System.out.println("Recommender: " + recommender);
 
       if (load_model_file == null) {
         if (cross_validation > 1) {
-          System.out.println();
           RatingPredictionEvaluationResults results = RatingsCrossValidation.doCrossValidation(recommender, cross_validation, compute_fit, show_fold_results);
-          System.out.print(results);
+          System.out.println(results);
           no_eval = true;
         } else {
           if (search_hp) {
             double result = NelderMead.findMinimum("RMSE", recommender);
-            System.out.println("Estimated quality (on split) " + result);
+            System.out.println("Estimated quality (on split): " + result);
           }
 
           recommender.train();
-          System.out.print(" training_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000 + " ");
+          System.out.println("Training time: " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000 + " seconds");
         }
       }
 
       if (!no_eval) {
         start = Calendar.getInstance().getTimeInMillis();
         if (online_eval)
-          System.out.print(RatingsOnline.evaluateOnline(recommender, test_data));
+          System.out.println(RatingsOnline.evaluateOnline(recommender, test_data));
         else
-          System.out.print(Ratings.evaluate(recommender, test_data));
-        System.out.print(" testing_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+          System.out.println(Ratings.evaluate(recommender, test_data));
+
+        System.out.println("Testing time: " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000 + " seconds");
 
         if (compute_fit) {
-          System.out.print("\nfit ");
+          System.out.print("Fit:");
           start = Calendar.getInstance().getTimeInMillis();    
           System.out.print(Ratings.evaluate(recommender, training_data));
-          System.out.print(" fit_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+          System.out.println(" fit time: " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000);
         }
 
         if (prediction_file != null) {
-          System.out.println();
+          System.out.print("Predict:");
           start = Calendar.getInstance().getTimeInMillis();
           org.mymedialite.ratingprediction.Extensions.writePredictions(recommender, test_data, prediction_file, user_mapping, item_mapping, prediction_line);
-          System.out.print("prediction_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
+          System.out.println(" prediction time " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000);
         }
       }
-      System.out.println();
+      //System.out.println();
     }
     Model.save(recommender, save_model_file);
     //displayStats();
@@ -568,22 +568,22 @@ public class RatingPrediction {
         test_data = StaticRatingData.read(Utils.combine(data_dir, test_file), user_mapping, item_mapping, rating_type, file_format == RatingFileFormat.IGNORE_FIRST_LINE);
     }
 
-    System.out.println("loading_time " + (Calendar.getInstance().getTimeInMillis() - start) / 1000);
-    System.out.println("memory " +  Memory.getUsage() + " MB");
+    System.out.println("Loading time: " + (double)(Calendar.getInstance().getTimeInMillis() - start) / 1000 + " seconds");
+    System.out.println("Memory: " +  Memory.getUsage() + " MB");
   }
 
   static void displayStats() {
     if (training_time_stats.size() > 0)
       // TODO format floating point
-      System.out.println("iteration_time: min=" + Collections.min(training_time_stats) + ", max=" + Collections.max(training_time_stats) + ", avg=" + Utils.average(training_time_stats));
+      System.out.println("Iteration time: min=" + Collections.min(training_time_stats) + ", max=" + Collections.max(training_time_stats) + ", avg=" + Utils.average(training_time_stats) + " seconds");
 
     if (eval_time_stats.size() > 0)
-      System.out.println("eval_time: min=" + Collections.min(eval_time_stats) + ", max=" + Collections.max(eval_time_stats) + ", avg=" + Utils.average(eval_time_stats));
+      System.out.println("Evaluation time: min=" + Collections.min(eval_time_stats) + ", max=" + Collections.max(eval_time_stats) + ", avg=" + Utils.average(eval_time_stats) + " seconds");
 
     if (compute_fit && fit_time_stats.size() > 0)
-      System.out.println("fit_time: min=" + Collections.min(fit_time_stats) + ", max=" + Collections.max(fit_time_stats) + ", avg=" + Utils.average(fit_time_stats));
-    
-    System.out.println("memory " + Memory.getUsage() + " MB");
+      System.out.println("fit_time: min=" + Collections.min(fit_time_stats) + ", max=" + Collections.max(fit_time_stats) + ", avg=" + Utils.average(fit_time_stats) + " seconds");
+
+    System.out.println("Memory: " + Memory.getUsage() + " MB");
   }
 
 }

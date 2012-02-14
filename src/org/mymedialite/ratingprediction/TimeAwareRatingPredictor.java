@@ -45,8 +45,8 @@ public abstract class TimeAwareRatingPredictor extends RatingPredictor implement
   }
 
   public void setTimedRatings(ITimedRatings timedRatings) {
+    this.setRatings(timedRatings);
     this.timed_ratings = timedRatings;
-    this.ratings = timedRatings;
   }
 
   /**

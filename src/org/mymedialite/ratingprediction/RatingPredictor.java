@@ -76,10 +76,10 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
 
   public void setRatings(IRatings ratings) {
     this.ratings = ratings;
-    maxUserID = Math.max(ratings.maxUserID(), maxUserID);
-    maxItemID = Math.max(ratings.maxItemID(), maxItemID);
-    minRating = ratings.minRating();
-    maxRating = ratings.maxRating();
+    this.maxUserID = Math.max(ratings.maxUserID(), maxUserID);
+    this.maxItemID = Math.max(ratings.maxItemID(), maxItemID);
+    this.minRating = ratings.minRating();
+    this.maxRating = ratings.maxRating();
   }
   
   public RatingPredictor clone() throws CloneNotSupportedException {
@@ -117,6 +117,5 @@ public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
     return this.getClass().getName();
 
   }
-
 
 }
