@@ -33,15 +33,21 @@ import org.mymedialite.datatype.SparseBooleanMatrix;
  * Class that contains static methods for reading in implicit feedback data for ItemRecommenders.
  * @version 2.03
  */
-public class ItemData	{
+public class ItemData {
 
   /**
    * Read in implicit feedback data from a file.
+   * 
+   * Each line must consist of at least two fields, the first being a user identifier, the second
+   * being an item identifier. Additional fields and empty lines are ignored.
+   * 
+   * See Constants.SPLIT_CHARS for details of the permissible field separators.
+   *
    * @param filename the name of the file to be read from or "-" if STDIN
-   * @param user_mapping a user { @link org.mymedialite.data.IEntityMapping IEntityMapping } object
-   * @param item_mapping an item { @link org.mymedialite.data.IEntityMapping IEntityMapping } object
+   * @param user_mapping a user IEntityMapping object
+   * @param item_mapping an item IEntityMapping object
    * @param ignore_first_line if true, ignore the first line
-   * @return a { @link org.mymedialite.data.PosOnlyFeedback PosOnlyFeedback } object with the user-wise collaborative data
+   * @return a IPosOnlyFeedback object with the user-wise collaborative data
    */
   static public <T> IPosOnlyFeedback read(String filename, IEntityMapping user_mapping, IEntityMapping item_mapping, boolean ignore_first_line) throws Exception {
     BufferedReader reader;
@@ -55,11 +61,17 @@ public class ItemData	{
 
   /**
    * Read in implicit feedback data from a TextReader.
+   * 
+   * Each line must consist of at least two fields, the first being a user identifier, the second
+   * being an item identifier. Additional fields and empty lines are ignored.
+   * 
+   * See Constants.SPLIT_CHARS for details of the permissible field separators.
+   * 
    * @param reader the TextReader to be read from
-   * @param user_mapping a user { @link org.mymedialite.data.IEntityMapping IEntityMapping } object
-   * @param item_mapping an item { @link org.mymedialite.data.IEntityMapping IEntityMapping } object
+   * @param user_mapping a user IEntityMapping object
+   * @param item_mapping an item IEntityMapping object
    * @param ignore_first_line if true, ignore the first line
-   * @return a { @link org.mymedialite.data.PosOnlyFeedback PosOnlyFeedback } object with the user-wise collaborative data
+   * @return a PosOnlyFeedback object with the user-wise collaborative data
    */
   static public <T> IPosOnlyFeedback read(BufferedReader reader, IEntityMapping user_mapping, IEntityMapping item_mapping, boolean ignore_first_line) throws Exception {
 
@@ -68,13 +80,14 @@ public class ItemData	{
     if (ignore_first_line) reader.readLine();
 
     PosOnlyFeedback<SparseBooleanMatrix> feedback = new PosOnlyFeedback<SparseBooleanMatrix>(SparseBooleanMatrix.class);
-    Pattern pattern = Pattern.compile("[,\\s]+");
     String line;
 
     while ((line = reader.readLine()) != null ) {
-      if(line.trim().length() == 0) continue;
-      String[] tokens = pattern.split(line);
+      line = line.trim();
+      if(line.length() == 0) continue;
+      String[] tokens = line.split(Constants.SPLIT_CHARS, 0);
       if(tokens.length < 2) throw new IOException("Expected at least two columns: " + line);
+      
       int user_id = user_mapping.toInternalID((tokens[0]));      
       int item_id = item_mapping.toInternalID((tokens[1]));
       feedback.add(user_id, item_id);
@@ -82,28 +95,5 @@ public class ItemData	{
 
     return feedback;
   }
-
-  //  /// <summary>Read in implicit feedback data from an IDataReader, e.g. a database via DbDataReader</summary>
-  //  /// <param name="reader">the IDataReader to be read from</param>
-  //  /// <param name="user_mapping">user <see cref="IEntityMapping"/> object</param>
-  //  /// <param name="item_mapping">item <see cref="IEntityMapping"/> object</param>
-  //  /// <returns>a <see cref="IPosOnlyFeedback"/> object with the user-wise collaborative data</returns>
-  //  static public IPosOnlyFeedback Read(IDataReader reader, IEntityMapping user_mapping, IEntityMapping item_mapping)
-  //  {
-  //      var feedback = new PosOnlyFeedback<SparseBooleanMatrix>();
-  //
-  //      if (reader.FieldCount < 2)
-  //          throw new IOException("Expected at least two columns.");
-  //
-  //      while (reader.Read())
-  //      {
-  //          int user_id = user_mapping.ToInternalID(reader.GetInt32(0));
-  //          int item_id = item_mapping.ToInternalID(reader.GetInt32(1));
-  //
-  //          feedback.Add(user_id, item_id);
-  //      }
-  //
-  //      return feedback;
-  //  }
 
 }

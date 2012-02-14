@@ -36,6 +36,12 @@ public class RatingData {
 
   /** 
    * Read in rating data from a file.
+   * 
+   * Each line must consist of at least three fields, the first being a user identifier, the second being
+   * an item identifier and the third being a rating value. Additional fields and empty lines are ignored.
+   * 
+   * See Constants.SPLIT_CHARS for details of the permissible field separators.
+   * 
    * @param filename the name of the file to read from
    * @param userMapping mapping object for user IDs
    * @param itemMapping mapping object for item IDs
@@ -48,6 +54,12 @@ public class RatingData {
 
   /** 
    * Read in rating data from a BufferedReader
+   * 
+   * Each line must consist of at least three fields, the first being a user identifier, the second being
+   * an item identifier and the third being a rating value. Additional fields and empty lines are ignored.
+   * 
+   * See Constants.SPLIT_CHARS for details of the permissible field separators.
+   * 
    * @param reader the BufferedReader to read from
    * @param userMapping mapping object for user IDs
    * @param itemMapping mapping object for item IDs
@@ -63,14 +75,12 @@ public class RatingData {
       reader.readLine();
     
     IRatings ratings = new Ratings();
-    Pattern pattern = Pattern.compile("[,\\s]+");
     String line;
     while ((line = reader.readLine()) != null ) {
-      if(line.trim().length() == 0)
-        continue;
-      String[] tokens = pattern.split(line);
-      if(tokens.length < 3)
-        throw new IOException("Expected at least three columns: " + line);
+      line = line.trim();
+      if(line.length() == 0) continue;
+      String[] tokens  = line.split(Constants.SPLIT_CHARS, 0);
+      if(tokens.length < 3) throw new IOException("Expected at least three columns: " + line);
       int user_id = userMapping.toInternalID(tokens[0]);
       int item_id = itemMapping.toInternalID(tokens[1]);
       double rating = Double.parseDouble(tokens[2]);

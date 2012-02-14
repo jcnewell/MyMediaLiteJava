@@ -42,9 +42,10 @@ public class AttributeData {
   /**
    * Read binary attribute data from a file.
    * 
-   * The expected (sparse) line format is:
-   * ENTITY_ID whitespace/comma ATTRIBUTE_ID
-   * for the relations that hold.
+   * Each line must consist of an item identifier followed by one or more attribute identifiers.
+   * There can be one or more lines per item. Empty lines are ignored.
+   * 
+   * See Constants.SPLIT_CHARS for details of the permissible field separators.
    * 
    * @param filename the name of the file to be read from
    * @param itemMapping the mapping object for the given entity type
@@ -63,9 +64,10 @@ public class AttributeData {
   /**
    * Read binary attribute data from a BufferedReader.
    * 
-   * The expected (sparse) line format is:
-   * ENTITY_ID whitespace/comma ATTRIBUTE_ID
-   * for the relations that hold.
+   * Each line must consist of an item identifier followed by one or more attribute identifiers.
+   * There can be one or more lines per item. Empty lines are ignored.
+   * 
+   * See Constants.SPLIT_CHARS for details of the permissible field separators.
    * 
    * @param reader a BufferedReader to be read from
    * @param itemMapping the mapping object for the given entity type
@@ -77,17 +79,16 @@ public class AttributeData {
 
     String line;
     while ((line = reader.readLine()) != null) {
-      // Ignore empty lines
+      line = line.trim();
       if (line.length() == 0) continue;
-
-      String[] tokens = line.split(Constants.SPLIT_CHARS);
-
-      if (tokens.length != 2) throw new IOException("Expected exactly 2 columns: " + line);
+      String[] tokens = line.split(Constants.SPLIT_CHARS, 0);
+      if (tokens.length < 2) throw new IOException("Expected at least 2 columns: " + line);
 
       int entity_id = itemMapping.toInternalID(tokens[0]);
-      int attr_id   = attributeMapping.toInternalID(tokens[1]);
-
-      matrix.set(entity_id, attr_id, true);
+      for(int i = 1; i < tokens.length; i++) {
+        int attr_id   = attributeMapping.toInternalID(tokens[i]);
+        matrix.set(entity_id, attr_id, true);
+      }
     }
 
     return matrix;

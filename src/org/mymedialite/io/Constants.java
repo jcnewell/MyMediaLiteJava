@@ -22,13 +22,21 @@ package org.mymedialite.io;
  * @version 2.03
  */
 public class Constants {
-  
+
   // Prevent instantiation.
   private Constants() {}
 
   /**
-   * Characters used for splitting tab/whitespace/comma separated lines.
+   * Regular expression used for splitting tab/whitespace/comma separated fields.
+   * 
+   * The fields can be divided by either:
+   *   - a tab
+   *   - a space
+   *   - a comma
+   *   - a semicolon
+   *   
+   * with zero or more additional spaces on either side. 
    */
-  public static final String SPLIT_CHARS = "[\t ,]";
+  public static final String SPLIT_CHARS = "\\s*(\t|\\s|,|;)\\s*";  // "\t|\\s+|\\s*,\\s*||\\s*;\\s*";
 
 }
