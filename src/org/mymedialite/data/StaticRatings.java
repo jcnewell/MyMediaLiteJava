@@ -17,6 +17,8 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
 
 /**
@@ -54,9 +56,9 @@ public class StaticRatings extends Ratings {
    */
   public StaticRatings(int size) { 
     this.size = size;
-    users  = new ArrayList<Integer>(size);
-    items  = new ArrayList<Integer>(size);
-    values = new ArrayList<Double>(size);
+    users  = new IntArrayList(size);
+    items  = new IntArrayList(size);
+    values = new DoubleArrayList(size);
   }
 
   /**

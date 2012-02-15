@@ -17,6 +17,11 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.floats.FloatList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -30,56 +35,45 @@ import java.util.Collection;
  */
 public class StaticFloatRatings extends StaticRatings {
 
-  ArrayList<Float> float_values;
-
-  /**
-   * 
-   */
-  public Double get(int index) {
-    return new Double(float_values.get(index));
+  FloatList float_values;
+  
+  @Override
+  public double get(int index) {
+    return float_values.getFloat(index);
   }
 
-  public Double set(int index, Double rating) {
+  @Override
+  public double set(int index, double rating) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * 
-   */
-  public Double get(int user_id, int item_id) {
+  @Override
+  public double get(int user_id, int item_id) {
     //TODO speed up
     for (int index = 0; index < pos; index++)
-      if (users.get(index) == user_id && items.get(index) == item_id)
-        return new Double(float_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return float_values.getFloat(index);
 
     throw new IndexOutOfBoundsException("rating " + user_id + ". " + item_id + " not found.");
   }
-
-  /**
-   * 
-   */
+  
   public StaticFloatRatings(int size) {
-    users = new ArrayList<Integer>(size);
-    items = new ArrayList<Integer>(size);
-    float_values = new ArrayList<Float>(size);
+    users = new IntArrayList(size);
+    items = new IntArrayList(size);
+    float_values = new FloatArrayList(size);
   }
 
-  /**
-   */
+  @Override
   public void add(int user_id, int item_id, double rating) {
-    add(user_id, item_id, (float) rating);
+    add(user_id, item_id, rating);
   }
 
-  /**
-   * 
-   */
+  @Override
   public void add(int user_id, int item_id, byte rating) {
-    add(user_id, item_id, (float) rating);
+    add(user_id, item_id, rating);
   }
 
-  /**
-   * 
-   */
+  @Override
   public void add(int user_id, int item_id, float rating) {
     if (pos == float_values.size())
       throw new RuntimeException("Ratings storage instanceof full, only space for " + size() + " ratings");
@@ -101,27 +95,21 @@ public class StaticFloatRatings extends StaticRatings {
     pos++;
   }
 
-  /**
-   * 
-   */
   public Double tryGet(int user_id, int item_id, double rating) {
     //TODO does anything rely on rating being marked out.
     //rating = Double.NEGATIVE_INFINITY;
     //TODO speed up
     for (int index = 0; index < pos; index++)
-      if (users.get(index) == user_id && items.get(index) == item_id)
-        return new Double(float_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return new Double(float_values.getFloat(index));
         
     return null;
   }
 
-  /**
-   * 
-   */
-  public Double get(int user_id, int item_id, Collection<Integer> indexes) {
+  public double get(int user_id, int item_id, IntCollection indexes) {
     for (int index : indexes)
-      if (users.get(index) == user_id && items.get(index) == item_id)
-        return (double) float_values.get(index);
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return float_values.getFloat(index);
 
     throw new IndexOutOfBoundsException("rating " + user_id + ", " + item_id + " not found.");
   }
@@ -129,12 +117,12 @@ public class StaticFloatRatings extends StaticRatings {
   /**
    * 
    */
-  public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
+  public Double tryGet(int user_id, int item_id, IntCollection indexes) {
     //TODO does anything rely on rating being marked out.
     //rating = Double.NEGATIVE_INFINITY;
     for (int index : indexes)
-      if (users.get(index) == user_id && items.get(index) == item_id)
-        return new Double(float_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return new Double(float_values.getFloat(index));
 
     return null;
   }

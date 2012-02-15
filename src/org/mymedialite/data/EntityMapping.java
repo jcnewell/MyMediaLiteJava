@@ -17,6 +17,9 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -103,7 +106,7 @@ public class EntityMapping implements IEntityMapping {
    * @return the list of original (external) IDs
    */
   @Override
-  public List<String> toOriginalID(List<Integer> internal_id_list) {
+  public List<String> toOriginalID(IntList internal_id_list) {
     ArrayList<String> result = new ArrayList<String>(internal_id_list.size());
     for (Integer id : internal_id_list) {
       result.add(toOriginalID(id));
@@ -117,8 +120,8 @@ public class EntityMapping implements IEntityMapping {
    *  @return a list of internal IDs
    */
   @Override
-  public List<Integer> toInternalID(List<String> original_id_list) {
-    ArrayList<Integer> result = new ArrayList<Integer>(original_id_list.size());
+  public IntList toInternalID(List<String> original_id_list) {
+    IntList result = new IntArrayList(original_id_list.size());
     for (String id : original_id_list) {
       result.add(toInternalID(id));
     }

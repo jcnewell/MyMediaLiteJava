@@ -22,6 +22,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.ArrayList;
@@ -174,7 +175,7 @@ public class SparseBooleanMatrixBinarySearch implements IBooleanMatrix {
    */
   @Override
   public IntCollection nonEmptyColumnIDs() {
-    IntSet col_ids = new IntArraySet();
+    IntSet col_ids = new IntOpenHashSet();
     // Iterate over the complete data structure to find column IDs
     for (int i = 0; i < row_list.size(); i++)
       for (int id : row_list.get(i))

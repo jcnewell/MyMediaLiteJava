@@ -17,6 +17,9 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +74,7 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
     try {
       matrix = c.newInstance();
       for (int index = 0; index < size(); index++)
-        matrix.set(users.get(index), items.get(index), true);
+        matrix.set(users.getInt(index), items.getInt(index), true);
     } catch (Exception e) { }
     return matrix;
   }
@@ -82,7 +85,7 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
     try {
       matrix = c.newInstance();
       for (int index = 0; index < size(); index++)
-        matrix.set(items.get(index), users.get(index), true);
+        matrix.set(items.getInt(index), users.getInt(index), true);
     } catch (Exception e) { }
     return matrix;
   }
@@ -122,8 +125,8 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
    * @param index the index of the event to be removed
    */
   public void remove(int index) {
-    int user_id = users.get(index);
-    int item_id = items.get(index);
+    int user_id = users.getInt(index);
+    int item_id = items.getInt(index);
     users.remove(index);
     items.remove(index);
 
@@ -138,20 +141,20 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
    * @param user_id the user ID
    */
   public void removeUser(int user_id) {
-    List<Integer> indices = new ArrayList<Integer>();
+    IntList indices = new IntArrayList();
     if (byUser != null)
       indices = byUser().get(user_id);
     else if (userMatrix != null)
-      indices = new ArrayList<Integer>(userMatrix.get(user_id));
+      indices = new IntArrayList(userMatrix.get(user_id));
     else
       for (int index = 0; index < size(); index++)
-        if (users.get(index) == user_id)
+        if (users.getInt(index) == user_id)
           indices.add(index);
 
     // assumption: indices is sorted
     for (int i = indices.size() - 1; i >= 0; i--) {
-      users.remove(indices.get(i));
-      items.remove(indices.get(i));
+      users.remove(indices.getInt(i));
+      items.remove(indices.getInt(i));
     }
 
     if (userMatrix != null)
@@ -166,20 +169,20 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
    * @param item_id the item ID
    */
   public void removeItem(int item_id) {
-    List<Integer> indices = new ArrayList<Integer>();
+    IntList indices = new IntArrayList();
     if (byItem != null)
       indices = byItem().get(item_id);
     else if (itemMatrix != null)
-      indices = new ArrayList<Integer>(itemMatrix.get(item_id));
+      indices = new IntArrayList(itemMatrix.get(item_id));
     else
       for (int index = 0; index < size(); index++)
-        if (items.get(index) == item_id)
+        if (items.getInt(index) == item_id)
           indices.add(index);
 
     // assumption: indices is sorted
     for (int i = indices.size() - 1; i >= 0; i--) {
-      users.remove(indices.get(i));
-      items.remove(indices.get(i));
+      users.remove(indices.getInt(i));
+      items.remove(indices.getInt(i));
     }
 
     if (userMatrix != null)
@@ -195,8 +198,8 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
     PosOnlyFeedback<T> transpose = null;
     try {
       transpose = new PosOnlyFeedback<T>(c);
-      transpose.users = new ArrayList<Integer>(this.items);
-      transpose.items = new ArrayList<Integer>(this.users);
+      transpose.users = new IntArrayList(this.items);
+      transpose.items = new IntArrayList(this.users);
     } catch (Exception e) { }
     return transpose;
   }
@@ -209,7 +212,7 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
    */
   public int tryGetIndex(int user_id, int item_id) {
     for (int i = 0; i < size(); i++) {
-      if (users.get(i) == user_id && items.get(i) == item_id) return i;
+      if (users.getInt(i) == user_id && items.getInt(i) == item_id) return i;
     }
     return -1;
   }

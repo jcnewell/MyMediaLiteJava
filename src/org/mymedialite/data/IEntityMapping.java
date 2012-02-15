@@ -17,6 +17,9 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +32,7 @@ public interface IEntityMapping {
   /** 
    * Get all original (external) entity IDs.
    */
-  Collection <String> originalIDs();
+  Collection<String> originalIDs();
 
   /** 
    * Get all internal entity IDs.
@@ -55,13 +58,13 @@ public interface IEntityMapping {
    * @param internal_id_list the list of internal IDs.
    * @return the list of original (external) IDs.
    */
-  List<String> toOriginalID(List<Integer> internal_id_list);
+  List<String> toOriginalID(IntList internal_id_list);
 
   /** 
    * Get internal IDs of a list of given entities.
    * @param original_id_list the list of original (external) IDs.
    * @return a list of internal IDs.
    */
-  List<Integer> toInternalID(List<String> original_id_list);
+  IntList toInternalID(List<String> original_id_list);
   
 }

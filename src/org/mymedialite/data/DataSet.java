@@ -17,13 +17,19 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.mymedialite.util.Random;
+
 
 /**
  * Abstract dataset class that implements some common functions.
@@ -31,20 +37,20 @@ import org.mymedialite.util.Random;
  */
 public abstract class DataSet implements IDataSet {
 
-  protected List<Integer> users = new ArrayList<Integer>();
-  protected List<Integer> items = new ArrayList<Integer>();  
+  protected IntList users = new IntArrayList();
+  protected IntList items = new IntArrayList();  
 
   /**
    * 
    */
-  public List<Integer> users() {
+  public IntList users() {
     return users;
   }
 
   /**
    * 
    */
-  public List<Integer> items() {
+  public IntList items() {
     return items;
   }
 
@@ -70,7 +76,7 @@ public abstract class DataSet implements IDataSet {
   /**
    * 
    */
-  public List<List<Integer>> byUser() {
+  public List<IntList> byUser() {
     if (byUser == null)
       buildUserIndices();
     return byUser;
@@ -80,12 +86,12 @@ public abstract class DataSet implements IDataSet {
   /**
    * Rating indices organized by user.
    */
-  protected List<List<Integer>> byUser;
+  protected List<IntList> byUser;
 
   /**
    * 
    */
-  public List<List<Integer>> byItem() {
+  public List<IntList> byItem() {
     if (byItem == null)
       buildItemIndices();
     return byItem;
@@ -94,12 +100,12 @@ public abstract class DataSet implements IDataSet {
   /**
    * Rating indices organized by item.
    */
-  protected List<List<Integer>> byItem;
+  protected List<IntList> byItem;
 
   /**
    * 
    */
-  public List<Integer> randomIndex() {
+  public IntList randomIndex() {
 
     if (randomIndex == null || randomIndex.size() != size())
       buildRandomIndex();
@@ -107,52 +113,52 @@ public abstract class DataSet implements IDataSet {
     return randomIndex;
   }
 
-  private List<Integer> randomIndex;
+  private IntList randomIndex;
 
   /**
    * 
    */
-  public List<Integer> allUsers() {
-    Set<Integer> resultSet = new HashSet<Integer>();
+  public IntList allUsers() {
+    IntSet resultSet = new IntOpenHashSet();
     for (int index = 0; index < users.size(); index++)
-      resultSet.add(users.get(index));
-    return new ArrayList<Integer>(resultSet);
+      resultSet.add(users.getInt(index));
+    return new IntArrayList(resultSet);
   }
 
   /**
    * 
    */
-  public List<Integer> allItems() {
-    Set<Integer> resultSet = new HashSet<Integer>();
+  public IntList allItems() {
+    IntSet resultSet = new IntOpenHashSet();
     for (int index = 0; index < items.size(); index++)
-      resultSet.add(items.get(index));
-    return new ArrayList<Integer>(resultSet);
+      resultSet.add(items.getInt(index));
+    return new IntArrayList(resultSet);
   }
 
   /**
    * 
    */
   public void buildUserIndices() {
-    byUser = new ArrayList<List<Integer>>();
+    byUser = new ArrayList<IntList>();
     for (int u = 0; u <= maxUserID; u++)
-      byUser.add(new ArrayList<Integer>());
+      byUser.add(new IntArrayList());
 
     // one pass over the data
     for (int index = 0; index < size(); index++)
-      byUser.get(users.get(index)).add(index);
+      byUser.get(users.getInt(index)).add(index);
   }
 
   /**
    * 
    */
   public void buildItemIndices() {
-    byItem = new ArrayList<List<Integer>>();
+    byItem = new ArrayList<IntList>();
     for (int i = 0; i <= maxItemID; i++)
-      byItem.add(new ArrayList<Integer>());
+      byItem.add(new IntArrayList());
 
     // One pass over the data
     for (int index = 0; index < size(); index++)
-      byItem.get(items.get(index)).add(index);
+      byItem.get(items.getInt(index)).add(index);
   }
 
   /**
@@ -160,7 +166,7 @@ public abstract class DataSet implements IDataSet {
    */
   public void buildRandomIndex() {
     if (randomIndex == null || randomIndex.size() != size()) {
-      randomIndex = new ArrayList<Integer>(size());
+      randomIndex = new IntArrayList(size());
       for (int index = 0; index < size(); index++)
         randomIndex.add(index, index);
     }
@@ -180,20 +186,20 @@ public abstract class DataSet implements IDataSet {
   /**
    * 
    */
-  public Set<Integer> getUsers(List<Integer> indices) {
-    Set<Integer> result_set = new HashSet<Integer>();
+  public IntSet getUsers(IntList indices) {
+    IntSet result_set = new IntArraySet();
     for (int index : indices)
-      result_set.add(users.get(index));
+      result_set.add(users.getInt(index));
     return result_set;
   }
 
   /**
    * 
    */
-  public Set<Integer> getItems(List<Integer> indices) {
-    Set<Integer> result_set = new HashSet<Integer>();
+  public IntSet getItems(IntList indices) {
+    IntSet result_set = new IntArraySet();
     for (int index : indices)
-      result_set.add(items.get(index));
+      result_set.add(items.getInt(index));
     return result_set;
   }
 

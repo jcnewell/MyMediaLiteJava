@@ -17,7 +17,11 @@
 
 package org.mymedialite.data;
 
+import java.util.List;
+
 import org.mymedialite.datatype.CombinedList;
+import org.mymedialite.datatype.DoubleCombinedList;
+import org.mymedialite.datatype.IntCombinedList;
 
 /**
  * Combine two IRatings objects.
@@ -32,9 +36,9 @@ public class CombinedRatings extends Ratings {
    */
   public CombinedRatings(IRatings ratings1, IRatings ratings2) {
 
-    users = new CombinedList<Integer>(ratings1.users(), ratings2.users());
-    items = new CombinedList<Integer>(ratings1.items(), ratings2.items());
-    values = new CombinedList<Double>(ratings1, ratings2);
+    users = new IntCombinedList(ratings1.users(), ratings2.users());
+    items = new IntCombinedList(ratings1.items(), ratings2.items());
+    values = new DoubleCombinedList(ratings1.values(), ratings2.values());
 
     maxUserID = Math.max(ratings1.maxUserID(), ratings2.maxUserID());
     maxItemID = Math.max(ratings1.maxItemID(), ratings2.maxItemID());

@@ -17,6 +17,9 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -75,10 +78,10 @@ public final class IdentityMapping implements IEntityMapping {
   /**
    * 
    */
-  public List<String> toOriginalID(List<Integer> internal_id_list) {
+  public List<String> toOriginalID(IntList internal_id_list) {
     List<String> original_ids = new ArrayList<String>(internal_id_list.size());
     for (int i = 0; i < internal_id_list.size(); i++) {
-      int internal_id = internal_id_list.get(i);
+      int internal_id = internal_id_list.getInt(i);
       maxEntityID = Math.max(maxEntityID, internal_id);
       original_ids.add(Integer.toString(internal_id));
     }
@@ -88,8 +91,8 @@ public final class IdentityMapping implements IEntityMapping {
   /**
    * 
    */
-  public List<Integer> toInternalID(List<String> original_id_list) {
-    List<Integer> internal_ids = new ArrayList<Integer>(original_id_list.size());
+  public IntList toInternalID(List<String> original_id_list) {
+    IntList internal_ids = new IntArrayList(original_id_list.size());
     for (int i = 0; i < original_id_list.size(); i++) {
       String original_id = original_id_list.get(i);
       try{ 

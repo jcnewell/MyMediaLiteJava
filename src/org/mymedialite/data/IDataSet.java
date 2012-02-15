@@ -18,6 +18,8 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.util.List;
 
 /**
@@ -46,12 +48,12 @@ public interface IDataSet {
   /**
    * @return the user entries.
    */
-  List<Integer> users();
+  IntList users();
 
   /**
    * @return the item entries.
    */
-  List<Integer> items();
+  IntList items();
 
   /**
    * @return the maximum user ID in the dataset.
@@ -66,30 +68,30 @@ public interface IDataSet {
   /**
    * @return all user IDs in the dataset.
    */
-  List<Integer> allUsers();
+  IntList allUsers();
 
   /**
    * @return all item IDs in the dataset.
    */
-  List<Integer> allItems();
+  IntList allItems();
 
   /**
    * indices by user.
    * Should be implemented as a lazy data structure
    */
-  List<List<Integer>> byUser();
+  List<IntList> byUser();
 
   /**
    * indices by item.
    * Should be implemented as a lazy data structure
    */
-  List<List<Integer>> byItem();
+  List<IntList> byItem();
 
   /**
    * get a randomly ordered list of all indices.
    * Should be implemented as a lazy data structure
    */
-  List<Integer> randomIndex();
+  IntList randomIndex();
 
   /** Build the user indices. */
   void buildUserIndices();

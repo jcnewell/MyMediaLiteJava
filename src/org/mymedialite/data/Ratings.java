@@ -17,7 +17,16 @@
 
 package org.mymedialite.data;
 
-import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleCollection;
+import it.unimi.dsi.fastutil.doubles.DoubleIterator;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,295 +44,490 @@ import javax.management.openmbean.InvalidKeyException;
  */
 public class Ratings extends DataSet implements IRatings {
 
-	protected List<Double> values = new ArrayList<Double>();
+  protected DoubleList values = new DoubleArrayList();
+  protected double minRating = Double.MAX_VALUE;
+  protected double maxRating = Double.MIN_NORMAL;
+  private IntList countByUser;
+  private IntArrayList countByItem;
 
-	public Double get(int index) {
-		return values.get(index);
-	}
 
-	public Double set(int index, Double rating) {
-		return values.set(index, rating);
-	}	
+  public DoubleList values() {
+    return values;
+  }
+  
+  @Override
+  public double get(int index) {
+    return values.getDouble(index);
+  }
 
-	public void setMinRating(double value) {
-		minRating = value;    
-	}
-	public double minRating() {
-		return minRating;    
-	}	
-	double minRating = Double.MAX_VALUE;
-	
-	public void setMaxRating(double value) {
-		maxRating = value;
-	}
-	public double maxRating() {
-		return maxRating;
-	}
-	double maxRating = Double.MIN_NORMAL;
+  @Override
+  public double set(int index, double rating) {
+    return values.set(index, rating);
+  }	
 
-	private ArrayList<Integer> countByUser;
-	public List<Integer> countByUser() {
-		if (countByUser == null)
-			buildByUserCounts();
-		return countByUser;
-	}
-	public void buildByUserCounts() {
-		countByUser = new ArrayList<Integer>(maxUserID + 1);
-		for (int index = 0; index < size(); index++) {
-			int userId = users.get(index);
-			Integer count = countByUser.get(userId);
-			if (count != null)
-				countByUser.set(userId, count + 1);
-			else
-				countByUser.set(userId, 1);
-		}
-	}       
+  public void setMinRating(double value) {
+    minRating = value;    
+  }
+  
+  public double minRating() {
+    return minRating;    
+  }
 
-	private ArrayList<Integer> countByItem;
-	
-	public List<Integer> countByItem() {
-		if (countByItem == null || countByItem.size() < maxItemID + 1)
-			buildByItemCounts();
-		return countByItem;
-	}
-	public void buildByItemCounts() {
-		countByItem = new ArrayList<Integer>(maxItemID + 1);
-		for (int index = 0; index < size(); index++) {
-			int itemId = items.get(index);
-			Integer count = countByItem.get(itemId);
-			if (count != null)
-				countByItem.set(itemId, count + 1);
-			else
-				countByItem.set(itemId, 1);
-		}
-	}       
+  public void setMaxRating(double value) {
+    maxRating = value;
+  }
+  
+  public double maxRating() {
+    return maxRating;
+  }
 
-	public double average() {
-		double sum = 0;
-		for (int index = 0; index < size(); index++)
-			sum += get(index);
-		double average = sum / size();
-		return average;
-	}
+  @Override
+  public IntList countByUser() {
+    if (countByUser == null)
+      buildByUserCounts();
+    return countByUser;
+  }
 
-	
-	public Set<Integer> getUsers(List<Integer> indices) {
-		IntArraySet result_set = new IntArraySet();
-		for (int index : indices)
-			result_set.add(users.get(index));
-		return result_set;
-	}
+  public void buildByUserCounts() {
+    countByUser = new IntArrayList(maxUserID + 1);
+    for (int index = 0; index < size(); index++) {
+      int userId = users.getInt(index);
+      Integer count = countByUser.get(userId);
+      if (count != null)
+        countByUser.set(userId, count + 1);
+      else
+        countByUser.set(userId, 1);
+    }
+  }
 
-	public Set<Integer> getItems(List<Integer> indices) {
-		IntArraySet result_set = new IntArraySet();
-		for (int index : indices)
-			result_set.add(items.get(index));
-		return result_set;
-	}
+  @Override
+  public IntList countByItem() {
+    if (countByItem == null || countByItem.size() < maxItemID + 1)
+      buildByItemCounts();
+    return countByItem;
+  }
 
-	public Double get(int user_id, int item_id) {
-		for (int index = 0; index < values.size(); index++)
-			if (users.get(index) == user_id && items.get(index) == item_id)
-				return values.get(index);
-		throw new InvalidKeyException("rating " + user_id +  ", " + item_id + " not found.");
-	}
+  public void buildByItemCounts() {
+    countByItem = new IntArrayList(maxItemID + 1);
+    for (int index = 0; index < size(); index++) {
+      int itemId = items.getInt(index);
+      Integer count = countByItem.get(itemId);
+      if (count != null)
+        countByItem.set(itemId, count + 1);
+      else
+        countByItem.set(itemId, 1);
+    }
+  }       
 
-	public Double tryGet(int user_id, int item_id) {
-		for (int index = 0; index < values.size(); index++)
-			if (users.get(index) == user_id && items.get(index) == item_id)
-				return values.get(index);
-		return null;
-	}
+  @Override
+  public double average() {
+    double sum = 0;
+    for (int index = 0; index < size(); index++)
+      sum += get(index);
+    double average = sum / size();
+    return average;
+  }
 
-	public Double get(int user_id, int item_id, Collection<Integer> indexes) {
-		for (int index : indexes)
-			if (users.get(index) == user_id && items.get(index) == item_id)
-				return values.get(index);
-		throw new InvalidKeyException("rating " + user_id + ", " + item_id +  " not found.");
-	}
+  @Override
+  public IntSet getUsers(IntList indices) {
+    IntSet result_set = new IntOpenHashSet();
+    for (int index : indices)
+      result_set.add(users.getInt(index));
+    return result_set;
+  }
 
-	public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
-		for (int index : indexes)
-			if (users.get(index) == user_id && items.get(index) == item_id)
-				return values.get(index);
-		return null;
-	}
+  @Override
+  public IntSet getItems(IntList indices) {
+    IntSet result_set = new IntOpenHashSet();
+    for (int index : indices)
+      result_set.add(items.getInt(index));
+    return result_set;
+  }
+  
+  @Override
+  public double get(int user_id, int item_id) {
+    for (int index = 0; index < values.size(); index++)
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return values.getDouble(index);
+    throw new InvalidKeyException("rating " + user_id +  ", " + item_id + " not found.");
+  }
+  
+  @Override
+  public Double tryGet(int user_id, int item_id) {
+    for (int index = 0; index < values.size(); index++)
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return values.get(index);
+    return null;
+  }
 
-	public Integer tryGetIndex(int user_id, int item_id) {
-		for (int i = 0; i < size(); i++)
-			if (users.get(i) == user_id && items.get(i) == item_id)
-				return i;
-		return null;
-	}
+  @Override
+  public double get(int user_id, int item_id, Collection<Integer> indexes) {
+    for (int index : indexes)
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return values.getDouble(index);
+    throw new InvalidKeyException("rating " + user_id + ", " + item_id +  " not found.");
+  }
 
-	public Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes) {
-		for (int i : indexes)
-			if (users.get(i) == user_id && items.get(i) == item_id)
-				return i;
-		return null;
-	}
+  @Override
+  public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
+    for (int index : indexes)
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return values.get(index);
+    return null;
+  }
 
-	public int getIndex(int user_id, int item_id) {
-		for (int i = 0; i < size(); i++)
-			if (users.get(i) == user_id && items.get(i) == item_id)
-				return i;
-		throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
-	}
+  @Override
+  public Integer tryGetIndex(int user_id, int item_id) {
+    for (int i = 0; i < size(); i++)
+      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
+        return i;
+    return null;
+  }
 
-	public int getIndex(int user_id, int item_id, Collection<Integer> indexes) {
-		for (int i : indexes)
-			if (users.get(i) == user_id && items.get(i) == item_id)
-				return i;
-		throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
-	}
+  @Override
+  public Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes) {
+    for (int i : indexes)
+      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
+        return i;
+    return null;
+  }
 
-	public void add(int user_id, int item_id, float rating) {
-		add(user_id, item_id, (double) rating);
-		byUser = null;
-	}       
+  @Override
+  public int getIndex(int user_id, int item_id) {
+    for (int i = 0; i < size(); i++)
+      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
+        return i;
+    throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
+  }
 
-	public void add(int user_id, int item_id, byte rating) {
-		add(user_id, item_id, (double) rating);
-		byUser = null;
-	}
+  @Override
+  public int getIndex(int user_id, int item_id, IntCollection indexes) {
+    for (int i : indexes)
+      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
+        return i;
+    throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
+  }
 
-	public void add(int user_id, int item_id, double rating) {
-		users.add(user_id);
-		items.add(item_id);
-		values.add(rating);
+  @Override
+  public void add(int user_id, int item_id, float rating) {
+    add(user_id, item_id, (double) rating);
+    byUser = null;
+  }       
 
-		int pos = users.size() - 1;
+  @Override
+  public void add(int user_id, int item_id, byte rating) {
+    add(user_id, item_id, (double) rating);
+    byUser = null;
+  }
 
-		if (user_id > maxUserID)
-			maxUserID = user_id;
-		if (item_id > maxItemID)
-			maxItemID = item_id;
-		if (rating < minRating)
-			minRating = rating;
-		if (rating > maxRating)
-			maxRating = rating;
+  @Override
+  public void add(int user_id, int item_id, double rating) {
+    users.add(user_id);
+    items.add(item_id);
+    values.add(rating);
 
-		// Update index data structures if necessary.
-		if (byUser != null) {
-			for (int u = byUser.size(); u <= user_id; u++)
-				byUser.add(new ArrayList<Integer>());
-			byUser.get(user_id).add(pos);
-		}
-		if (byItem != null) {
-			for (int i = byItem.size(); i <= item_id; i++)
-				byItem.add(new ArrayList<Integer>());
-			byItem.get(item_id).add(pos);
-		}
-	}
+    int pos = users.size() - 1;
 
-	/** Override an existing value if it exists. */
-	public void addOrUpdate(int user_id, int item_id, double rating) {
-		for (int index = 0; index < values.size(); index++)
-			if (users.get(index) == user_id && items.get(index) == item_id) {
-				values.set(index, rating);
-				return;
-			}
-		add(user_id, item_id, rating);
-	}
+    if (user_id > maxUserID)
+      maxUserID = user_id;
+    if (item_id > maxItemID)
+      maxItemID = item_id;
+    if (rating < minRating)
+      minRating = rating;
+    if (rating > maxRating)
+      maxRating = rating;
 
-	public Double remove(int index) {
-		users.remove(index);
-		items.remove(index);
-		return values.remove(index);
-	}
+    // Update index data structures if necessary.
+    if (byUser != null) {
+      for (int u = byUser.size(); u <= user_id; u++)
+        byUser.add(new IntArrayList());
+      byUser.get(user_id).add(pos);
+    }
+    if (byItem != null) {
+      for (int i = byItem.size(); i <= item_id; i++)
+        byItem.add(new IntArrayList());
+      byItem.get(item_id).add(pos);
+    }
+  }
 
-	public void removeUser(int user_id) {
-		for (int index = 0; index < size(); index++)
-			if (users.get(index) == user_id) {
-				users.remove(index);
-				items.remove(index);
-				values.remove(index);
-			}
-		if (maxUserID == user_id)
-			maxUserID--;
-	}
+  /** Override an existing value if it exists. */
+  public void addOrUpdate(int user_id, int item_id, double rating) {
+    for (int index = 0; index < values.size(); index++)
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
+        values.set(index, rating);
+        return;
+      }
+    add(user_id, item_id, rating);
+  }
 
-	public void removeItem(int item_id) {
-		for (int index = 0; index < size(); index++)
-			if (items.get(index) == item_id) {
-				users.remove(index);
-				items.remove(index);
-				values.remove(index);
-			}
-		if (maxItemID == item_id)
-			maxItemID--;
-	}       
+  @Override
+  public void removeAt(int index) {
+    users.remove(index);
+    items.remove(index);
+    values.removeDouble(index);
+  }
 
-	public boolean isReadOnly() {
-		return true;
-	}
+  @Override
+  public void removeUser(int user_id) {
+    for (int index = 0; index < size(); index++)
+      if (users.getInt(index) == user_id) {
+        users.remove(index);
+        items.remove(index);
+        values.remove(index);
+      }
+    if (maxUserID == user_id)
+      maxUserID--;
+  }
 
-	public void add(double item) { throw new UnsupportedOperationException(); }
+  @Override
+  public void removeItem(int item_id) {
+    for (int index = 0; index < size(); index++)
+      if (items.getInt(index) == item_id) {
+        users.remove(index);
+        items.remove(index);
+        values.remove(index);
+      }
+    if (maxItemID == item_id)
+      maxItemID--;
+  }       
+  
+  public boolean isReadOnly() {
+    return true;
+  }
 
-	public void clear() { throw new UnsupportedOperationException(); }
+//  @Override
+//  public boolean add(Double e) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void add(int index, Double element) {
+//    throw new UnsupportedOperationException();
+//  }
 
-	public boolean contains(double item) { throw new UnsupportedOperationException(); }
-
-	public void copyTo(double[] array, int index) { throw new UnsupportedOperationException(); }        
-
-	public int indexOf(double item) { throw new UnsupportedOperationException(); }
-
-	public void insert(int index, double item) { throw new UnsupportedOperationException(); }
-
-	public boolean remove(double item) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean add(Double arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public void add(int arg0, Double arg1) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean addAll(Collection<? extends Double> arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean addAll(int arg0, Collection<? extends Double> arg1){ throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean contains(Object arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean containsAll(Collection<?> arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public int indexOf(Object arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean isEmpty() { throw new UnsupportedOperationException(); }
-
-	@Override
-	public Iterator<Double> iterator() { throw new UnsupportedOperationException(); }
-
-	@Override
-	public int lastIndexOf(Object arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public ListIterator<Double> listIterator() { throw new UnsupportedOperationException(); }
-
-	@Override
-	public ListIterator<Double> listIterator(int arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean remove(Object arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean removeAll(Collection<?> arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public boolean retainAll(Collection<?> arg0) { throw new UnsupportedOperationException(); }
-
-	@Override
-	public List<Double> subList(int arg0, int arg1){ throw new UnsupportedOperationException(); }
-
-	@Override
-	public Object[] toArray() { throw new UnsupportedOperationException(); }
-
-	@Override
-	public <T> T[] toArray(T[] arg0) { throw new UnsupportedOperationException(); }
+//  @Override
+//  public boolean addAll(Collection<? extends Double> c) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean addAll(int index, Collection<? extends Double> c) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void clear() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean contains(Object o) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean containsAll(Collection<?> c) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public int indexOf(Object o) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean isEmpty() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public int lastIndexOf(Object o) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean remove(Object o) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean removeAll(Collection<?> c) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean retainAll(Collection<?> c) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public Double set(int index, Double element) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public Object[] toArray() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public <T> T[] toArray(T[] a) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public int compareTo(List<? extends Double> o) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean addAll(DoubleCollection arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean contains(double arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean containsAll(DoubleCollection arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean rem(double arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean removeAll(DoubleCollection arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean retainAll(DoubleCollection arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public double[] toArray(double[] arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public double[] toDoubleArray() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public double[] toDoubleArray(double[] arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean add(double arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void add(int arg0, double arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean addAll(DoubleList arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean addAll(int arg0, DoubleCollection arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean addAll(int arg0, DoubleList arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void addElements(int arg0, double[] arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void addElements(int arg0, double[] arg1, int arg2, int arg3) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleList doubleSubList(int arg0, int arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void getElements(int arg0, double[] arg1, int arg2, int arg3) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public int indexOf(double arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public int lastIndexOf(double arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public double removeDouble(int arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void removeElements(int arg0, int arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public void size(int arg0) {
+//    throw new UnsupportedOperationException(); 
+//  }
+//
+//  @Override
+//  public DoubleList subList(int arg0, int arg1) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleListIterator doubleListIterator() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleListIterator doubleListIterator(int arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleListIterator iterator() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleListIterator listIterator() {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleListIterator listIterator(int arg0) {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public DoubleIterator doubleIterator() {
+//    throw new UnsupportedOperationException();
+//  }
 
 }

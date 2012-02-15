@@ -17,6 +17,8 @@
 
 package org.mymedialite.ratingprediction;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.util.List;
 
 import org.mymedialite.IUserSimilarityProvider;
@@ -57,7 +59,7 @@ public abstract class UserKNN extends KNN implements IUserSimilarityProvider {
     if ((user_id > correlation.numberOfRows() - 1) || (item_id > maxItemID))
       return baseline_predictor.predict(user_id, item_id);
 
-    List<Integer> relevant_users = correlation.getPositivelyCorrelatedEntities(user_id);
+    IntList relevant_users = correlation.getPositivelyCorrelatedEntities(user_id);
 
     double sum = 0;
     double weight_sum = 0;

@@ -36,7 +36,7 @@ public abstract class IncrementalRatingPredictor extends RatingPredictor impleme
       updateItems = true;
   }
   
-  /** {@inheritDoc} */
+  /**  */
   public void addRating(int userId, int itemId, double rating) {
     if (userId > maxUserID)
       addUser(userId);
@@ -46,20 +46,20 @@ public abstract class IncrementalRatingPredictor extends RatingPredictor impleme
     ratings.add(userId, itemId, rating);
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public void updateRating(int userId, int itemId, double rating) throws IllegalArgumentException {
     Integer index = ratings.tryGetIndex(userId, itemId);
     if (index != null)
-      ratings.set(index, rating);
+      ratings.set(index.intValue(), rating);
     else
       throw new IllegalArgumentException(String.format("Cannot update rating for user %i and item %i: No such rating exists.", userId, itemId));
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public void removeRating(int userId, int itemId) {
     Integer index = ratings.tryGetIndex(userId, itemId);
     if (index != null)
-      ratings.remove(index);
+      ratings.removeAt(index);
   }
 
   /**
@@ -76,36 +76,36 @@ public abstract class IncrementalRatingPredictor extends RatingPredictor impleme
     maxItemID = Math.max(maxItemID, itemId);
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public void removeUser(int userId) {
     if (userId == maxUserID)
       maxUserID--;
     ratings.removeUser(userId);
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public void removeItem(int itemId) {
     if (itemId == maxItemID)
       maxItemID--;
     ratings.removeItem(itemId);
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public boolean getUpdateUsers() {
     return updateUsers;
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public void setUpdateUsers(boolean updateUsers) {
     this.updateUsers = updateUsers;
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public boolean getUpdateItems() {
     return updateItems;
   }
 
-  /** {@inheritDoc} */
+  /**  */
   public void setUpdateItems(boolean updateItems) {
     this.updateItems = updateItems;
   }

@@ -17,6 +17,7 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -40,23 +41,17 @@ public class TimedRatings extends Ratings implements ITimedRatings {
   protected Date earliestTime;
   protected Date latestTime;
   
-  /**
-   * 
-   */
+  @Override
   public List<Date> times() {
     return times;
   }
 
-  /**
-   * 
-   */
+  @Override
   public Date earliestTime() {
     return earliestTime;
   }
 
-  /**
-   * 
-   */
+  @Override
   public Date latestTime() {
     return latestTime;
   }
@@ -72,14 +67,12 @@ public class TimedRatings extends Ratings implements ITimedRatings {
     latestTime.setTime(0L);
   }
 
-  /**
-   */
+  @Override
   public void add(int user_id, int item_id, double rating) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   */
+  @Override
   public void add(int user_id, int item_id, double rating, Date time) {
     users.add(user_id);
     items.add(item_id);
@@ -104,16 +97,17 @@ public class TimedRatings extends Ratings implements ITimedRatings {
     // Update index data structures if necessary
     if (byUser != null) {
       for (int u = byUser.size(); u <= user_id; u++)
-        byUser.add(new ArrayList<Integer>());
+        byUser.add(new IntArrayList());
       byUser.get(user_id).add(pos);
     }
     
     if (byItem != null) {
       for (int i = byItem.size(); i <= item_id; i++)
-        byItem.add(new ArrayList<Integer>());
+        byItem.add(new IntArrayList());
       byItem.get(item_id).add(pos);
     }
     
+    // TODO Check this
     //if (by_time != null)
   }
 

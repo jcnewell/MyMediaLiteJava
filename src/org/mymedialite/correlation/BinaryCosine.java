@@ -79,7 +79,7 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
     for (int row_id = 0; row_id < transpose.numberOfRows(); row_id++) {
       IntList row = transpose.getEntriesByRow(row_id);
       for (int i = 0; i < row.size(); i++) {
-        int x = row.get(i);
+        int x = row.getInt(i);
         for (int j = i + 1; j < row.size(); j++) {
           int y = row.getInt(j);
           overlap.set(x, y, overlap.get(x, y) + 1);
@@ -109,7 +109,7 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
       for (int i = 0; i < row.size(); i++) {
         int x = row.getInt(i);
         for (int j = i + 1; j < row.size(); j++) {
-          int y = row.get(j);
+          int y = row.getInt(j);
           overlap.set(x, y, (short)(overlap.get(x, y) + 1));
         }
       }

@@ -17,6 +17,9 @@
 
 package org.mymedialite.correlation;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import java.util.List;
 import java.util.Set;
 import org.mymedialite.data.IRatings;
@@ -85,12 +88,12 @@ public class Pearson extends RatingCorrelationMatrix {
 	public static float computeCorrelation(IRatings ratings, EntityType entityType, int i, int j, float shrinkage) {
 		if (i == j) return 1;
 
-		List<Integer> ratings1 = (entityType == EntityType.USER) ? ratings.byUser().get(i) : ratings.byItem().get(i);
-		List<Integer> ratings2 = (entityType == EntityType.USER) ? ratings.byUser().get(j) : ratings.byItem().get(j);
+		IntList ratings1 = (entityType == EntityType.USER) ? ratings.byUser().get(i) : ratings.byItem().get(i);
+		IntList ratings2 = (entityType == EntityType.USER) ? ratings.byUser().get(j) : ratings.byItem().get(j);
 
 		// get common ratings for the two entities
-		Set<Integer> e1 = (entityType == EntityType.USER) ? ratings.getItems(ratings1) : ratings.getUsers(ratings1);
-		Set<Integer> e2 = (entityType == EntityType.USER) ? ratings.getItems(ratings2) : ratings.getUsers(ratings2);
+		IntSet e1 = (entityType == EntityType.USER) ? ratings.getItems(ratings1) : ratings.getUsers(ratings1);
+		IntSet e2 = (entityType == EntityType.USER) ? ratings.getItems(ratings2) : ratings.getUsers(ratings2);
 
 		e1.retainAll(e2);
 
@@ -140,7 +143,7 @@ public class Pearson extends RatingCorrelationMatrix {
 
 		if (entityType != EntityType.USER && entityType != EntityType.ITEM) throw new IllegalArgumentException("entity type must be either USER or ITEM, not " + entityType);
 
-		List<List<Integer>> ratings_by_other_entity = (entityType == EntityType.USER) ? ratings.byItem() : ratings.byUser();
+		List<IntList> ratings_by_other_entity = (entityType == EntityType.USER) ? ratings.byItem() : ratings.byUser();
 
 		SparseMatrix<Integer> freqs  = new SparseMatrix<Integer>(numEntities, numEntities, 0);
 		SparseMatrix<Double> i_sums  = new SparseMatrix<Double>(numEntities, numEntities, 0.0);

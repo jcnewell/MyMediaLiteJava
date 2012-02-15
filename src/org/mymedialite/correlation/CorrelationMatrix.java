@@ -17,6 +17,9 @@
 
 package org.mymedialite.correlation;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -137,8 +140,8 @@ public class CorrelationMatrix extends Matrix<Float> {
     writer.println(numEntities);
     for (int i = 0; i < numEntities; i++) {
       for (int j = i + 1; j < numEntities; j++) {
-        Float val = get(i, j);
-        if (val != 0f) writer.println(i + " " + j + " " + val.toString());
+        float val = get(i, j);
+        if (val != 0f) writer.println(i + " " + j + " " + val);
       }
     }
   }
@@ -172,7 +175,7 @@ public class CorrelationMatrix extends Matrix<Float> {
    * @param entity_id the entity ID
    * @return a sorted list of all entities that are positively correlated to entity_id
    */
-  public List<Integer> getPositivelyCorrelatedEntities(int entity_id) {
+  public IntList getPositivelyCorrelatedEntities(int entity_id) {
     List<Neighbor> result = new ArrayList<Neighbor>();
     for (int i = 0; i < numEntities; i++) {
       if(i != entity_id) {
@@ -181,7 +184,7 @@ public class CorrelationMatrix extends Matrix<Float> {
       }
     }
     Collections.sort(result);    
-    List<Integer> ids = new ArrayList<Integer>(result.size());
+    IntList ids = new IntArrayList(result.size());
     for(int i = 0; i <result.size() ; i++) {
       ids.add(result.get(i).id);
     }
@@ -212,16 +215,16 @@ public class CorrelationMatrix extends Matrix<Float> {
 
   final class Neighbor implements Comparable<Neighbor> {
     int id;
-    Float value;
+    float value;
 
-    Neighbor(int id, Float value) {
+    Neighbor(int id, float value) {
       this.id = id;
       this.value = value;
     }
 
     @Override
     public int compareTo(Neighbor o) {
-      return value.compareTo(o.value);
+      return Float.compare(value, o.value);
     }
   }
 

@@ -21,6 +21,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 import java.util.List;
 
+import org.mymedialite.datatype.DoubleListProxy;
+import org.mymedialite.datatype.IntListProxy;
 import org.mymedialite.datatype.ListProxy;
 
 /**
@@ -36,9 +38,9 @@ public class RatingsProxy extends Ratings {
    */
   public RatingsProxy(IRatings ratings, IntList indices) {
 
-    users  = new ListProxy<Integer>(ratings.users(), indices);
-    items  = new ListProxy<Integer>(ratings.items(), indices);
-    values = new ListProxy<Double>(ratings, indices);
+    users  = new IntListProxy(ratings.users(), indices);
+    items  = new IntListProxy(ratings.items(), indices);
+    values = new DoubleListProxy(ratings.values(), indices);
 
     maxUserID = ratings.maxUserID();
     maxItemID = ratings.maxItemID();

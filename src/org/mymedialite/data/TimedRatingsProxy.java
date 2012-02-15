@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.mymedialite.datatype.DoubleListProxy;
+import org.mymedialite.datatype.IntListProxy;
 import org.mymedialite.datatype.ListProxy;
 
 /**
@@ -38,9 +40,9 @@ public class TimedRatingsProxy extends TimedRatings {
    */
   public TimedRatingsProxy(ITimedRatings ratings, IntList indices) {
     
-    users  = new ListProxy<Integer>(ratings.users(), indices);
-    items  = new ListProxy<Integer>(ratings.items(), indices);
-    values = new ListProxy<Double>(ratings, indices);
+    users  = new IntListProxy(ratings.users(), indices);
+    items  = new IntListProxy(ratings.items(), indices);
+    values = new DoubleListProxy(ratings.values(), indices);
     times  = new ListProxy<Date>(ratings.times(), indices);
 
     maxUserID = ratings.maxUserID();

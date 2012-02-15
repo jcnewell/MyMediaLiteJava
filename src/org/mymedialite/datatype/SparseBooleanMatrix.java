@@ -19,7 +19,7 @@
 package org.mymedialite.datatype;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -40,7 +40,7 @@ import org.mymedialite.datatype.IMatrix;
  */
 public class SparseBooleanMatrix implements IBooleanMatrix {
 
-  ArrayList<IntArraySet> row_list = new ArrayList<IntArraySet>();
+  ArrayList<IntSet> row_list = new ArrayList<IntSet>();
 
   /** Default constructor */
   public SparseBooleanMatrix() {}
@@ -68,7 +68,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
   public IntSet get(int x) {
     if (x >= row_list.size())
       for (int i = row_list.size(); i <= x; i++)
-        row_list.add(new IntArraySet());
+        row_list.add(new IntOpenHashSet());
     return row_list.get(x);
   }
 
@@ -118,7 +118,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
    * The IDs of the non-empty rows in the matrix (the ones that contain at least one true entry)
    */
   public IntCollection nonEmptyRowIDs() {
-    IntSet row_ids = new IntArraySet();
+    IntSet row_ids = new IntOpenHashSet();
     for (int i = 0; i < row_list.size(); i++)
       if (row_list.get(i).size() > 0)
         row_ids.add(i);
@@ -129,18 +129,18 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
    * Get the IDs of the non-empty columns in the matrix (the ones that contain at least one true entry)
    */
   public IntCollection nonEmptyColumnIDs() {
-    IntSet col_ids = new IntArraySet();
+    IntSet col_ids = new IntOpenHashSet();
     for (int i = 0; i < row_list.size(); i++)
       for (int id : row_list.get(i).toIntArray())
         col_ids.add(id);
     return col_ids;
   }
 
-  //  public void setRow(int x, IntArraySet row) {
+  //  public void setRow(int x, IntOpenHashSet row) {
   //      row_list.set(x, row);
   //  }
   //
-  //  public void addRow(int x, IntArraySet row) {
+  //  public void addRow(int x, IntOpenHashSet row) {
   //    row_list.add(x, row);
   //  }
 
@@ -173,7 +173,7 @@ public class SparseBooleanMatrix implements IBooleanMatrix {
   //   * @param y the column ID
   //   */
   //  public void add(int x, int y) {
-  //    IntArraySet row = getRow(x);
+  //    IntOpenHashSet row = getRow(x);
   //    row.add(y);
   //  }
 

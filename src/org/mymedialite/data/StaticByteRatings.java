@@ -17,6 +17,10 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,46 +35,40 @@ import java.util.List;
  */
 public class StaticByteRatings extends StaticRatings {
 
-  List<Byte> byte_values;
+  ByteList byte_values;
 
-  /**
-   */
-  public Double get(int index) {
-    return (double) byte_values.get(index);
+  @Override
+  public double get(int index) {
+    return byte_values.getByte(index);
   }
-
-  public Double set(int index, Double rating) {
+  
+  @Override
+  public double set(int index, double rating) {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   */
-  public Double get(int user_id, int item_id) {
+  @Override
+  public double get(int user_id, int item_id) {
     //TODO speed up
     for (int index = 0; index < pos; index++)
-      if (users.get(index) == user_id && items.get(index) == item_id)
-        return new Double(byte_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return new Double(byte_values.getByte(index));
 
     throw new IllegalArgumentException("rating " + user_id + ", " + item_id + " not found.");
   }
 
-  /**
-   */
   public StaticByteRatings(int size) {
-    users  = new ArrayList<Integer>(size);
-    items  = new ArrayList<Integer>(size);
-    byte_values = new ArrayList<Byte>(size);
+    users       = new IntArrayList(size);
+    items       = new IntArrayList(size);
+    byte_values = new ByteArrayList(size);
   }
 
-  /**
-   */
-  public void Add(int user_id, int item_id, double rating)
-  {
-    Add(user_id, item_id, (byte) rating);
+  @Override
+  public void add(int user_id, int item_id, double rating) {
+    add(user_id, item_id, rating);
   }
 
-  /**
-   */
+  @Override
   public void add(int user_id, int item_id, byte rating) {
     if (pos == byte_values.size())
       throw new IndexOutOfBoundsException("Ratings storage instanceof full, only space for " + size() + "ratings");
@@ -92,40 +90,35 @@ public class StaticByteRatings extends StaticRatings {
     pos++;
   }
 
-  /**
-   */
+  @Override
   public Double tryGet(int user_id, int item_id) {
     // TODO Is anything replying on this as a return value? (in C# it was marked "out")
     Double rating = Double.NEGATIVE_INFINITY;
     //TODO speed up
     for (int index = 0; index < pos; index++)
-      if (users.get(index) == user_id && items.get(index) == item_id) {
-        rating = new Double(byte_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
+        rating = new Double(byte_values.getByte(index));
         return rating;
       }
 
     return null;
   }
 
-  /**
-   */
-  public Double get(int user_id, int item_id, Collection<Integer> indexes) {
+  public double get(int user_id, int item_id, IntCollection indexes) {
     for (int index : indexes)
-      if (users.get(index) == user_id && items.get(index) == item_id)
-        return new Double(byte_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id)
+        return new Double(byte_values.getByte(index));
 
     throw new IllegalArgumentException("rating " + user_id + ", " + item_id + " not found.");
   }
 
-  /**
-   */
   public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
     // TODO Is anything replying on this as a return value? (in C# it was marked "out")
     double rating = Double.NEGATIVE_INFINITY;
 
     for (int index : indexes)
-      if (users.get(index) == user_id && items.get(index) == item_id) {
-        rating = new Double(byte_values.get(index));
+      if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
+        rating = new Double(byte_values.getByte(index));
         return rating;
       }
 

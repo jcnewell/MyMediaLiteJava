@@ -17,150 +17,165 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 import java.util.*;
 
 /**
  * Interface for rating datasets.
  * @version 2.03
  */
-public interface IRatings extends List<Double>, IDataSet {
+public interface IRatings extends IDataSet {
 
-	public int size();
+  DoubleList values();
+  
+  public int size();
 
-	/** Get the maximum rating in the dataset. */
-	double maxRating(); 
-	
-	/** Get the minimum rating in the dataset. */
-	double minRating();  
+  /** Get the maximum rating in the dataset. */
+  double maxRating(); 
 
-	/** Get the rating count by user. */
-	List<Integer> countByUser();  
-	
-	/** Get the rating count by item. */
-	List<Integer> countByItem();  
+  /** Get the minimum rating in the dataset. */
+  double minRating();  
 
-	/** Average rating in the dataset. */
-	double average();
+  /** Get the rating count by user. */
+  IntList countByUser();  
 
-	/**
-	 * Directly access rating by user and item</summary>
-	 * @param userId the user ID
-	 * @param itemId the item ID
-	 * @return <value>the rating value for the given user and item
-	 */
-	Double get(int userId, int itemId);
-	
-	/**
-	 * Directly access ratings.
-	 * @param index the index of the rating
-	 * @return the rating value
-	 */
-	Double get(int index);
+  /** Get the rating count by item. */
+  IntList countByItem();  
 
-	/**
-	 * Directly access the ratings
-	 * @param index the rating index
-	 * @param rating the rating value
-	 */
-	Double set(int index, Double rating);
-	
-	/** 
-	 * Get all users that are referenced by a given list of indices.
-	 * @param indices the indices to take into account
-	 * @return the set of users
-	 */
-	Set<Integer> getUsers(List<Integer> indices);
-	/**
-	 * Get all items that are referenced by a given list of indices.
-	 * @param indices the indices to take into account
-	 * @return the set of items
-	 */
-	Set<Integer> getItems(List<Integer> indices);
+  /** Average rating in the dataset. */
+  double average();
 
-	/**
-	 * Get index of rating for given user and item.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @return the index of the first rating encountered that matches the user ID and item ID
-	 */
-	int getIndex(int user_id, int item_id);
+  /**
+   * Directly access rating by user and item</summary>
+   * @param userId the user ID
+   * @param itemId the item ID
+   * @return <value>the rating value for the given user and item
+   */
+  double get(int userId, int itemId);
 
-	/**
-	 * Get index of rating for given user and item.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param indexes the indexes to look at
-	 * @return the index of the first rating encountered that matches the user ID and item ID
-	 */
-	int getIndex(int user_id, int item_id, Collection<Integer> indexes);
+  /**
+   * Directly access ratings.
+   * @param index the index of the rating
+   * @return the rating value
+   */
+  double get(int index);
 
-	/**
-	 * Try to get the index for given user and item.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-     * @return the index of the rating that matches the user ID and item ID or null, if not found
-	 */
-	Integer tryGetIndex(int user_id, int item_id);
+  /**
+   * Directly access the ratings
+   * @param index the rating index
+   * @param rating the rating value
+   */
+  double set(int index, double rating);
 
-	/** 
-	 * Try to get the index for given user and item.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param indexes the indexes to look at
-	 * @return the index of the first rating encountered that matches the user ID and item ID or null, if none is found
-	 */
-	Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes);	
-	
-	/** 
-	 * Try to retrieve a rating for a given user-item combination.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @return the first rating encountered that matches the user ID and item ID, or null if none is found
-	 */
-	Double tryGet(int user_id, int item_id);
+  /** 
+   * Get all users that are referenced by a given list of indices.
+   * @param indices the indices to take into account
+   * @return the set of users
+   */
+  IntSet getUsers(IntList indices);
+  
+  /**
+   * Get all items that are referenced by a given list of indices.
+   * @param indices the indices to take into account
+   * @return the set of items
+   */
+  IntSet getItems(IntList indices);
+  
+  /**
+   * Get index of rating for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @return the index of the first rating encountered that matches the user ID and item ID
+   */
+  int getIndex(int user_id, int item_id);
 
-	/**
-	 * Try to retrieve a rating for a given user-item combination.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param indexes the indexes to look at
-	 * @return the first rating encountered that matches the user ID and item ID, or null if none found
-	 */
-	Double tryGet(int user_id, int item_id, Collection<Integer> indexes);
-	// TODO name 'tryGet' makes no sense here
-	
-	/** 
-	 * Directly access rating by user and item.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param indexes the indexes to look at
-	 * @return the first rating encountered that matches the user ID and item ID
-	 */
-	Double get(int user_id, int item_id, Collection<Integer> indexes);
-	
-	/**
-	 * Add byte-valued rating to the collection.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param rating the rating
-	 */
-	void add(int user_id, int item_id, byte rating);
+  /**
+   * Get index of rating for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param indexes the indexes to look at
+   * @return the index of the first rating encountered that matches the user ID and item ID
+   */
+  int getIndex(int user_id, int item_id, IntCollection indexes);
 
-	/**
-	 * Add float-valued rating to the collection.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param rating the rating
-	 */
-	void add(int user_id, int item_id, float rating);
+  /**
+   * Try to get the index for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @return the index of the rating that matches the user ID and item ID or null, if not found
+   */
+  Integer tryGetIndex(int user_id, int item_id);
 
-	/** 
-	 * Add a new rating.
-	 * @param user_id the user ID
-	 * @param item_id the item ID
-	 * @param rating the rating value
-	 */
-	void add(int user_id, int item_id, double rating);
+  /** 
+   * Try to get the index for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param indexes the indexes to look at
+   * @return the index of the first rating encountered that matches the user ID and item ID or null, if none is found
+   */
+  Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes);	
+
+  /** 
+   * Try to retrieve a rating for a given user-item combination.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @return the first rating encountered that matches the user ID and item ID, or null if none is found
+   */
+  Double tryGet(int user_id, int item_id);
+
+  /**
+   * Try to retrieve a rating for a given user-item combination.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param indexes the indexes to look at
+   * @return the first rating encountered that matches the user ID and item ID, or null if none found
+   */
+  Double tryGet(int user_id, int item_id, Collection<Integer> indexes);
+  // TODO name 'tryGet' makes no sense here
+
+  /** 
+   * Directly access rating by user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param indexes the indexes to look at
+   * @return the first rating encountered that matches the user ID and item ID
+   */
+  double get(int user_id, int item_id, Collection<Integer> indexes);
+
+  /**
+   * Add byte-valued rating to the collection.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param rating the rating
+   */
+  void add(int user_id, int item_id, byte rating);
+
+  /**
+   * Add float-valued rating to the collection.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param rating the rating
+   */
+  void add(int user_id, int item_id, float rating);
+
+  /** 
+   * Add a new rating.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param rating the rating value
+   */
+  void add(int user_id, int item_id, double rating);
+  
+  /**
+   * Remove the rating at the specified index  
+   * @param index the rating index
+   */
+   void removeAt(int index);
+  
 }
 
 

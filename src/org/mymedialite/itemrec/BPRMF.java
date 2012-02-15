@@ -59,7 +59,7 @@ public class BPRMF extends MF {
   protected double[] itemBias;
 
   /** Fast sampling memory limit, in MiB */
-  public int fastSamplingMemoryLimit = 1024;
+  public int fastSamplingMemoryLimit = 0; // 1024;
 
   /** Sample positive observations with (true) or without (false) replacement */
   public boolean withReplacement = false;
