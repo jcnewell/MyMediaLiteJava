@@ -37,7 +37,7 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
   private static final String VERSION = "2.03";
 
   /** The average rating for each entity */
-  protected ArrayList<Double> entity_averages = new ArrayList<Double>();
+  protected ArrayList<Double> entity_averages; // = new ArrayList<Double>();
 
   /** The global average rating (default prediction if there is no data about an entity) */
   protected double global_average = 0;
@@ -61,6 +61,8 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
    */
   protected void train(List<Integer> entity_ids, int max_entity_id) {
     List<Integer> rating_counts = new ArrayList<Integer>();
+    entity_averages = new ArrayList<Double>();
+    
     for (int i = 0; i <= max_entity_id; i++) {
       rating_counts.add(0);
       entity_averages.add(0.0D);
@@ -73,8 +75,8 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
     }
 
     global_average = ratings.average();
-
-    for (int i = 0; i < entity_averages.size(); i++) {
+    
+    for (int i = 0; i <= max_entity_id; i++) {
       if (rating_counts.get(i) != 0) {
         entity_averages.set(i, entity_averages.get(i) / rating_counts.get(i));
       } else {

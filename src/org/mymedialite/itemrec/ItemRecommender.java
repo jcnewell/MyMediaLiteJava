@@ -59,9 +59,14 @@ public abstract class ItemRecommender implements IRecommender, Cloneable {
   }
 
   /** Create a shallow copy of the object. */
-  // TODO check cloning
   public ItemRecommender clone() {
-    return this.clone();
+    ItemRecommender clone = null;
+    try {
+      clone =  (ItemRecommender) super.clone();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return clone;
   }
 
   public abstract double predict(int userId, int itemId);
@@ -122,4 +127,5 @@ public abstract class ItemRecommender implements IRecommender, Cloneable {
   public String toString() {
     return this.getClass().getName();
   }
+  
 }

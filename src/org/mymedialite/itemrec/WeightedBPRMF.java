@@ -103,7 +103,7 @@ public class WeightedBPRMF extends BPRMF {
         + " learnRate=" + learnRate
         + " boldDriver=" + boldDriver
         + " initMean=" + initMean
-        + " initStdev=" + initStdDev ;
+        + " initStdev=" + initStDev ;
   }
   
   private class SampleTriple {

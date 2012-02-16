@@ -35,25 +35,25 @@ import org.mymedialite.ratingprediction.RatingPredictor;
  * @version 2.03
  */
 public class Recommender {
-  
+
   // Prevent instantiation.
   private Recommender() {}
-  
+
   static String normalizeName(String s) {
     s = s.replaceAll("_", "");
     return s.toUpperCase();
   }
-  
+
   public interface ErrorHandler {
     void reportError(String error);
   }
-  
+
   public static class DefaultErrorHandler implements ErrorHandler {
     public void reportError(String message) {
       System.err.println(message);
     }
   }
-  
+
   /**
    * Configure a recommender.
    * @param recommender the recommender to configure
@@ -86,17 +86,21 @@ public class Recommender {
 
     for (Entry<String, String> entry : parameters.entrySet()) {
       String key = normalizeName(entry.getKey()); 
+      // TODO Invoke setters when available.
       for (Field field : recommender.getClass().getFields()) {
         if (field.getName().equalsIgnoreCase(key)) {
-          if (field.getType().getName() == "double") field.set(recommender, Double.parseDouble(entry.getValue()));
-        } else if (field.getType().getName() == "float") {
-          if (field.getType().getName() == "float") field.set(recommender, Float.parseFloat(entry.getValue()));
-        } else if (field.getType().getName() == "int") {
-          if (field.getType().getName() == "int") field.set(recommender, Integer.parseInt(entry.getValue()));
-        } else if (field.getType().getName() == "boolean") {
-          if (field.getType().getName() == "boolean") field.set(recommender, Boolean.parseBoolean(entry.getValue()));
-        } else {
-          errorHandler.reportError("Parameter " + key + " has unknown type " + field.getType());  
+          //System.out.println("key: " + key + " value:" + entry.getValue());
+          if (field.getType().getName().equals("double")) {
+            field.set(recommender, Double.parseDouble(entry.getValue()));
+          } else if (field.getType().getName().equals("float")) {
+            field.set(recommender, Float.parseFloat(entry.getValue()));
+          } else if (field.getType().getName().equals("int")) {
+            field.set(recommender, Integer.parseInt(entry.getValue()));
+          } else if (field.getType().getName().equals("boolean")) {
+            field.set(recommender, Boolean.parseBoolean(entry.getValue()));
+          } else {
+            errorHandler.reportError("Parameter " + key + " has unknown type " + field.getType());  
+          }
         }
       }
     }
@@ -110,18 +114,21 @@ public class Recommender {
    * @param val the string representation of the value
    */
   public static void setProperty(IRecommender recommender, String key, String val) throws IllegalAccessException {
-    key = normalizeName(key); 
+    key = normalizeName(key);
+    // TODO Invoke setter when available.
     for (Field field : recommender.getClass().getFields()) {
       if (field.getName().equalsIgnoreCase(key)) {
-        if (field.getType().getName() == "double") field.set(recommender, Double.parseDouble(val));
-      } else if (field.getType().getName() == "float") {
-        if (field.getType().getName() == "float") field.set(recommender, Float.parseFloat(val));
-      } else if (field.getType().getName() == "int") {
-        if (field.getType().getName() == "int") field.set(recommender, Integer.parseInt(val));
-      } else if (field.getType().getName() == "boolean") {
-        if (field.getType().getName() == "boolean") field.set(recommender, Boolean.parseBoolean(val));
-      } else {
-        throw new IllegalArgumentException("Parameter " + key + " has unknown type " + field.getType());  
+        if (field.getType().getName().equals("double")) {
+          field.set(recommender, Double.parseDouble(val));
+        } else if (field.getType().getName().equals("float")) {
+          field.set(recommender, Float.parseFloat(val));
+        } else if (field.getType().getName().equals("int")) {
+          field.set(recommender, Integer.parseInt(val));
+        } else if (field.getType().getName().equals("boolean")) {
+          field.set(recommender, Boolean.parseBoolean(val));
+        } else {
+          throw new IllegalArgumentException("Parameter " + key + " has unknown type " + field.getType());  
+        }
       }
     }
   }

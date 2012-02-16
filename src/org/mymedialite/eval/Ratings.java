@@ -1,5 +1,5 @@
 // Copyright (C) 2010 Steffen Rendle, Zeno Gantner
-// Copyright (C) 2011 Zeno Gantner, Chris Newell
+// Copyright (C) 2011, 2012 Zeno Gantner, Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -18,21 +18,34 @@
 
 package org.mymedialite.eval;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mymedialite.data.IRatings;
 import org.mymedialite.data.ISplit;
-import org.mymedialite.ratingprediction.*;
+import org.mymedialite.data.ITimedRatings;
+import org.mymedialite.ratingprediction.IRatingPredictor;
+import org.mymedialite.ratingprediction.ITimeAwareRatingPredictor;
+import org.mymedialite.ratingprediction.RatingPredictor;
 
-/** 
- * Evaluation class
+/**
+ * Evaluation class for rating prediction.
  * @version 2.03
  */
 public class Ratings {
-
-  /** the evaluation measures for rating prediction offered by the class */
+  
+  /** Prevent instantiation. */
+  private Ratings() { }
+  
+  /**
+   * The evaluation measures for rating prediction offered by the class.
+   * 
+   * See http://recsyswiki.com/wiki/Root_mean_square_error and http://recsyswiki.com/wiki/Mean_absolute_error
+   * 
+   */
   public static Collection<String> getMeasures() {
-    HashSet<String> measures = new HashSet<String>();
+    Set<String> measures = new HashSet<String>();
     measures.add("RMSE");
     measures.add("MAE");
     measures.add("NMAE");
@@ -40,139 +53,69 @@ public class Ratings {
     return measures;
   }
 
-  /** 
-   * Format rating prediction results.
-   * @param result the result dictionary
-   * @return a string containing the results
-   */
-  public static String formatResults(Map<String, Double> result) {
-    String results = "RMSE: " + result.get("RMSE") +
-        "MAE:  " + result.get("MAE") +
-        "NMAE: " + result.get("NMAE");
-    return results;
-  }
-
-  /** 
-   * Write the rating prediction results to STDOUT
-   * @param result the result dictionary
-   */
-  public static void displayResults(Map<String, Double> result) {
-    System.out.println("RMSE: " + result.get("RMSE"));
-    System.out.println("MAE:  " + result.get("MAE"));
-    System.out.println("NMAE: " + result.get("NMAE"));
-  }
-
-  /** 
-   * Evaluates a rating predictor for RMSE, MAE, and NMAE
-   * For NMAE, see "Eigentaste: A Constant Time Collaborative Filtering Algorithm" by Goldberg et al.
-   * @param recommender Rating prediction engine
+  /**
+   * Evaluates a rating predictor for RMSE, (N)MAE, and CBD.
+   * 
+   * See http://recsyswiki.com/wiki/Root_mean_square_error and http://recsyswiki.com/wiki/Mean_absolute_error
+   *   
+   * For NMAE, see the paper by Goldberg et al.
+   *   
+   * For CBD (capped binomial deviance), see http://www.kaggle.com/c/ChessRatings2/Details/Evaluation
+   *   
+   * If the recommender can take time into account, and the rating dataset provides rating times,
+   * this information will be used for making rating predictions.
+   *   
+   * Literature:
+   *     Ken Goldberg, Theresa Roeder, Dhruv Gupta, and Chris Perkins:
+   *     Eigentaste: A Constant Time Collaborative Filtering Algorithm.
+   *     Information Retrieval Journal 2001.
+   *     http://goldberg.berkeley.edu/pubs/eigentaste.pdf
+   * 
+   * @param recommender rating predictor
    * @param ratings Test cases
    * @return a Dictionary containing the evaluation results
    */
   public static RatingPredictionEvaluationResults evaluate(IRatingPredictor recommender, IRatings ratings) {
     double rmse = 0;
     double mae  = 0;
+    double cbd  = 0;
 
-    if (recommender == null) throw new IllegalArgumentException("null recommender");
-    if (ratings == null) throw new IllegalArgumentException("null ratings");
+    if (recommender == null)
+      throw new IllegalArgumentException("recommender = null");
+    if (ratings == null)
+      throw new IllegalArgumentException("ratings = null");
 
-    for (int index = 0; index < ratings.size(); index++) {
-      double error = (recommender.predict(ratings.users().get(index), ratings.items().get(index)) - ratings.get(index));
+    if (recommender instanceof ITimeAwareRatingPredictor && ratings instanceof ITimedRatings) {
+      ITimeAwareRatingPredictor time_aware_recommender = (ITimeAwareRatingPredictor) recommender;
+      ITimedRatings timed_ratings = (ITimedRatings) ratings;
+      for (int index = 0; index < ratings.size(); index++) {
+        double prediction = time_aware_recommender.predict(timed_ratings.users().get(index), timed_ratings.items().get(index), timed_ratings.times().get(index));
+        double error = prediction - ratings.get(index);
 
-      rmse += error * error;
-      mae  += Math.abs(error);
+        rmse += error * error;
+        mae  += Math.abs(error);
+        cbd  += computeCBD(ratings.get(index), prediction, ratings.minRating(), ratings.maxRating());
+      }
+    } else {
+      for (int index = 0; index < ratings.size(); index++) {
+        double prediction = recommender.predict(ratings.users().get(index), ratings.items().get(index));
+        double error = prediction - ratings.get(index);        
+        rmse += error * error;
+        mae  += Math.abs(error);
+        cbd  += computeCBD(ratings.get(index), prediction, ratings.minRating(), ratings.maxRating());
+      }
     }
+    
     mae  = mae / ratings.size();
     rmse = Math.sqrt(rmse / ratings.size());
-
-    RatingPredictionEvaluationResults result = new RatingPredictionEvaluationResults();
-    result.put("RMSE", rmse);
-    result.put("MAE",  mae);
-    result.put("NMAE", mae / (recommender.getMaxRating() - recommender.getMinRating()));
-    return result;
-  }
-
-  /**
-   * Online evaluation for rating prediction.
-   * Every rating that is tested is added to the training set afterwards.
-   * @param recommender rating predictor
-   * @param ratings Test cases
-   * @return a Dictionary containing the evaluation results
-   */
-  public static RatingPredictionEvaluationResults evaluateOnline(IIncrementalRatingPredictor recommender, IRatings ratings) throws IllegalArgumentException {
-    double rmse = 0;
-    double mae  = 0;
-
-    if (recommender == null) throw new IllegalArgumentException("recommender");
-    if (ratings == null)     throw new IllegalArgumentException("ratings");
-
-    // Iterate in random order    // TODO also support chronological order
-    for (int index : ratings.randomIndex()) {
-      double error = (recommender.predict(ratings.users().get(index), ratings.items().get(index)) - ratings.get(index));
-
-      rmse += error * error;
-      mae  += Math.abs(error);
-
-      recommender.addRating(ratings.users().get(index), ratings.items().get(index), ratings.get(index));
-    }
-    mae  = mae / ratings.size();
-    rmse = Math.sqrt(rmse / ratings.size());
+    cbd  = cbd / ratings.size();
 
     RatingPredictionEvaluationResults result = new RatingPredictionEvaluationResults();
     result.put("RMSE", rmse);
     result.put("MAE", mae);
     result.put("NMAE", mae / (recommender.getMaxRating() - recommender.getMinRating()));
+    result.put("CBD", cbd);
     return result;
-  }
-
-  /**
-   * Evaluate on the folds of a dataset split.
-   * @param recommender a rating predictor
-   * @param split a rating dataset split
-   * @return a dictionary containing the average results over the different folds of the split
-   */
-  public static RatingPredictionEvaluationResults evaluateOnSplit(RatingPredictor recommender, ISplit<IRatings> split) {
-    return evaluateOnSplit(recommender, split, false);
-  }
-
-  /**
-   * Evaluate on the folds of a dataset split.
-   * @param recommender a rating predictor
-   * @param split a rating dataset split
-   * @param show_results set to true to print results to STDERR
-   * @return a dictionary containing the average results over the different folds of the split
-   */
-  public static RatingPredictionEvaluationResults evaluateOnSplit(
-      RatingPredictor recommender,
-      ISplit<IRatings> split,
-      boolean show_results) {
-
-    RatingPredictionEvaluationResults avg_results = new RatingPredictionEvaluationResults();
-
-    for (int i = 0; i < split.numberOfFolds(); i++)
-      try {
-        RatingPredictor split_recommender = recommender.clone(); // to avoid changes : recommender
-        split_recommender.setRatings(split.train().get(i));
-        split_recommender.train();
-        RatingPredictionEvaluationResults fold_results = evaluate(split_recommender, split.test().get(i));
-
-        for (String key : fold_results.keySet()) {
-          if (avg_results.containsKey(key)) {
-            avg_results.put(key, avg_results.get(key) + fold_results.get(key));
-          } else {
-            avg_results.put(key, fold_results.get(key));
-          }
-        }
-        if (show_results)
-          System.err.println("fold " +  i + " " + formatResults(fold_results));
-      } catch (CloneNotSupportedException e) {
-        // nothing to do here
-      }
-
-    for (String key : avg_results.keySet()) {
-      avg_results.put(key, avg_results.get(key) / split.numberOfFolds());
-    }
-    return avg_results;
   }
 
   /**
@@ -196,13 +139,14 @@ public class Ratings {
       prediction = 0.01;
     if (prediction > 0.99)
       prediction = 0.99;
+    
     return -(actual_rating * Math.log10(prediction) + (1 - actual_rating) * Math.log10(1 - prediction));
   }
 
   /**
    * Computes the RMSE fit of a recommender on the training data.
-   * @param recommender the rating predictor to evaluate
    * @return the RMSE on the training data
+   * @param recommender the rating predictor to evaluate
    */
   public static double computeFit(RatingPredictor recommender) {
     return evaluate(recommender, recommender.getRatings()).get("RMSE");

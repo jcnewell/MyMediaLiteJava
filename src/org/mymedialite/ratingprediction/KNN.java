@@ -57,8 +57,8 @@ public abstract class KNN extends IncrementalRatingPredictor {
    * Default constructor
    */
   public KNN() {
-    baseline_predictor.regU = 10;
-    baseline_predictor.regI = 5;
+    baseline_predictor.regU = 12; // 10;
+    baseline_predictor.regI = 1; // 5;
   }
   
   /**
@@ -128,7 +128,7 @@ public abstract class KNN extends IncrementalRatingPredictor {
   public void loadModel(String filename) throws IOException {
     baseline_predictor.loadModel(filename + "-global-effects");
     if (ratings != null)
-      baseline_predictor.ratings = ratings;
+      baseline_predictor.setRatings(ratings);
 
     BufferedReader reader = Model.getReader(filename, this.getClass());    
     CorrelationMatrix correlation = CorrelationMatrix.readCorrelationMatrix(reader);

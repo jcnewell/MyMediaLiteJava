@@ -27,8 +27,8 @@ import java.util.List;
  * k-fold  cross-validation split for rating prediction.
  * 
  * Please note that k-fold cross-validation is not the best/most realistic way of evaluating
- * recommender system algorithms.
- * In particular, chronological splits (see RatingsChronologicalSplit) are more realistic.
+ * recommender system algorithms. In particular, chronological splits (see RatingsChronologicalSplit) 
+ * are more realistic.
  *
  * The dataset must not be modified after the split - this would lead to undefined behavior.
  * @version 2.03
@@ -80,8 +80,8 @@ public class RatingCrossValidationSplit implements ISplit<IRatings> {
     List<IntList> test_indices  = new ArrayList<IntList>(num_folds);
 
     for (int i = 0; i < num_folds; i++) {
-      train_indices.set(i, new IntArrayList());
-      test_indices.set(i, new IntArrayList());
+      train_indices.add(new IntArrayList());
+      test_indices.add(new IntArrayList());
     }
 
     // Assign indices to folds

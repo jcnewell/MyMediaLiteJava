@@ -34,9 +34,10 @@ public class Constants {
    *   - a space
    *   - a comma
    *   - a semicolon
+   *   - two colons (i.e. "::")
    *   
    * with zero or more additional spaces on either side. 
    */
-  public static final String SPLIT_CHARS = "\\s*(\t|\\s|,|;)\\s*";  // "\t|\\s+|\\s*,\\s*||\\s*;\\s*";
+  public static final String SPLIT_CHARS = "\\s*(\t|\\s|,|;|::)\\s*";
 
 }

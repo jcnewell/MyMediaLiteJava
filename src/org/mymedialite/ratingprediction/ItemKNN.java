@@ -78,7 +78,7 @@ public abstract class ItemKNN extends KNN implements IItemSimilarityProvider {
         double weight = correlation.get(item_id, item_id2);
         weight_sum += weight;
         sum += weight * (rating - baseline_predictor.predict(user_id, item_id2));
-
+ 
         if (--neighbors == 0)
           break;
       }
@@ -86,7 +86,7 @@ public abstract class ItemKNN extends KNN implements IItemSimilarityProvider {
     double result = baseline_predictor.predict(user_id, item_id);
     if (weight_sum != 0)
       result += sum / weight_sum;
-
+    
     if (result > maxRating)
       result = maxRating;
     if (result < minRating)

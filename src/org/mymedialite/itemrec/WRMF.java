@@ -169,7 +169,7 @@ public class WRMF extends MF {
         " cPos="           + cPos +
         " numIter="        + numIter +
         " initMean="       + initMean +
-        " initStdDev="     + initStdDev;
+        " initStDev="     + initStDev;
   }
   
 }

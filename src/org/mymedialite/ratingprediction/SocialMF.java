@@ -85,8 +85,8 @@ public class SocialMF extends BiasedMatrixFactorization implements IUserRelation
     // Init latent factor matrices
     userFactors = new Matrix<Double>(numUsers(), numFactors);
     itemFactors = new Matrix<Double>(ratings.maxItemID() + 1, numFactors);
-    MatrixExtensions.initNormal(userFactors, initMean, initStdDev);
-    MatrixExtensions.initNormal(itemFactors, initMean, initStdDev);
+    MatrixExtensions.initNormal(userFactors, initMean, initStDev);
+    MatrixExtensions.initNormal(itemFactors, initMean, initStDev);
 
     // Init biases
     userBias = new double[numUsers()];
@@ -279,7 +279,7 @@ public class SocialMF extends BiasedMatrixFactorization implements IUserRelation
         + " learnRate=" + learnRate
         + " numIter=" + numIter
         + " initMean=" + initMean
-        + " initStdDev=" + initStdDev;   
+        + " initStDev=" + initStDev;   
   }
 
 }

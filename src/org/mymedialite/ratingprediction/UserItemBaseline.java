@@ -109,7 +109,7 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
   public void train() {
     userBiases = new double[maxUserID + 1];
     itemBiases = new double[maxItemID + 1];
-    
+
     globalAverage = ratings.average();
 
     for (int i = 0; i < numIter; i++)
@@ -140,6 +140,7 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
       itemBiases[ratings.items().get(index)] += ratings.get(index) - globalAverage - userBiases[ratings.users().get(index)];
       item_ratings_count[ratings.items().get(index)]++;
     }
+
     for (int i = 0; i < itemBiases.length; i++)
       if (item_ratings_count[i] != 0)
         itemBiases[i] = itemBiases[i] / (regI + item_ratings_count[i]);
@@ -206,6 +207,6 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
 
   @Override
   public String toString() {
-    return String.format("user-item-baseline regU=%f regI=%f numIter=%i", regU, regI, numIter);
+    return "user-item-baseline regU=" + regU + " regI=" + regI+ " numIter=" + numIter;
   }
 }

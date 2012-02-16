@@ -50,7 +50,7 @@ public class MatrixExtensions {
    * @param stdev the standard deviation of the normal distribution
    * @param column the column to be initialized
    */
-  public static void columnInitNormal(Matrix<Double> matrix, double mean, double stdev, int column) {
+  public static void columnInitNormal(Matrix<Double> matrix, int column, double mean, double stdev) {
     Random random = Random.getInstance();
     for (int i = 0; i < matrix.dim1; i++)
       matrix.set(i, column, random.nextNormal(mean, stdev));

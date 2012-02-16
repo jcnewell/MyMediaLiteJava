@@ -391,14 +391,14 @@ public class BPRMF extends MF {
     super.addUser(user_id);
 
     userFactors.addRows(user_id + 1);
-    MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStdDev);
+    MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStDev);
   }
 
   /** {@inheritDoc} */
   public void addItem(int item_id) {
     super.addItem(item_id);
     itemFactors.addRows(item_id + 1);
-    MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStdDev);
+    MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStDev);
 
     // Create new item bias array
     double[] itemBias = Arrays.copyOf(this.itemBias, item_id + 1);
@@ -431,7 +431,7 @@ public class BPRMF extends MF {
    * @param user_id the user ID
    */
   protected void retrainUser(int user_id) {
-    MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStdDev);
+    MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStDev);
     IntCollection user_items = feedback.userMatrix().get(user_id);
 
     for (int i = 0; i < userFactors.data.length; i++)
@@ -459,7 +459,7 @@ public class BPRMF extends MF {
    * @param item_id the item ID
    */
   protected void retrainItem(int item_id) {
-    MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStdDev);
+    MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStDev);
     int num_pos_events = feedback.userMatrix().numberOfEntries();
     int num_item_iterations = num_pos_events / (maxItemID + 1);
     for (int i = 0; i < num_item_iterations; i++) {
@@ -631,7 +631,7 @@ public class BPRMF extends MF {
         + " boldDriver=" + boldDriver
         + " fastSamplingMemoryLimit=" + fastSamplingMemoryLimit
         + " initMean=" + initMean
-        + " initStdDev=" + initStdDev ;
+        + " initStDev=" + initStDev ;
   }
 
   private class SampleTriple {

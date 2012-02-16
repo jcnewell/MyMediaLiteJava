@@ -45,7 +45,7 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   public double initMean;
 
   /** Standard deviation of the normal distribution used to initialize the latent factors */
-  public double initStdDev;
+  public double initStDev;
 
   /** Number of latent factors per user/item */
   public int numFactors = 10;
@@ -56,7 +56,7 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   public MF() {
     this.numIter    = 30;
     this.initMean   = 0;
-    this.initStdDev = 0.1;
+    this.initStDev = 0.1;
   }
 
   /** Get the latent user factor matrix */
@@ -75,8 +75,8 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
     userFactors = new Matrix<Double>(maxUserID + 1, numFactors);
     itemFactors = new Matrix<Double>(maxItemID + 1, numFactors);
 
-    MatrixExtensions.initNormal(userFactors, initMean, initStdDev);
-    MatrixExtensions.initNormal(itemFactors, initMean, initStdDev);
+    MatrixExtensions.initNormal(userFactors, initMean, initStDev);
+    MatrixExtensions.initNormal(itemFactors, initMean, initStDev);
   }
   
   /** { @inheritDoc } */

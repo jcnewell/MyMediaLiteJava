@@ -130,7 +130,7 @@ public class LogisticRegressionMatrixFactorization extends BiasedMatrixFactoriza
     	+ " numIter=" + numIter
     	+ " boldDriver=" + boldDriver
     	+ " initMean=" + initMean
-    	+ " initStdDev=" + initStdDev;
+    	+ " initStDev=" + initStDev;
   }
   
 }

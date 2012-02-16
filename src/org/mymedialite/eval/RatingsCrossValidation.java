@@ -99,9 +99,9 @@ public class RatingsCrossValidation {
       }
     }
 
-    for (String key : Ratings.getMeasures())
+    for (String key : Ratings.getMeasures()) {
       avg_results.put(key, avg_results.get(key) / split.numberOfFolds());
-
+    }
     return avg_results;
   }
 

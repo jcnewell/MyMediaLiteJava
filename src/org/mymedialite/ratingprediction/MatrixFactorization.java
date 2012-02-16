@@ -43,7 +43,7 @@ import org.mymedialite.io.Model;
  * (3) Change the learn_rate (decrease it if your range is larger than 1 to 5).
  *
  * This recommender supports incremental updates.
- * 
+ * @version 2.03
  */
 public class MatrixFactorization extends IncrementalRatingPredictor implements IIterativeModel {
 
@@ -72,7 +72,7 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
   /**
    * Standard deviation of the normal distribution used to initialize the factors.
    */
-  public double initStdDev;
+  public double initStDev;
 
   /**
    * Number of latent factors.
@@ -113,7 +113,7 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
     regularization = 0.015;
     learnRate = 0.01;
     numIter = 30;
-    initStdDev = 0.1;
+    initStDev = 0.1;
     numFactors = 10;
   }
 
@@ -125,8 +125,8 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
     // Init factor matrices
     userFactors = new Matrix<Double>(maxUserID + 1, numFactors);
     itemFactors = new Matrix<Double>(maxItemID + 1, numFactors);
-    MatrixExtensions.initNormal(userFactors, initMean, initStdDev);
-    MatrixExtensions.initNormal(itemFactors, initMean, initStdDev);
+    MatrixExtensions.initNormal(userFactors, initMean, initStDev);
+    MatrixExtensions.initNormal(itemFactors, initMean, initStDev);
   }
 
   /**
@@ -152,7 +152,7 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
    */
   public void retrainUser(int user_id) {
     if (updateUsers) {
-      MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStdDev);
+      MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStDev);
       learnFactors(ratings.byUser().get(user_id), true, false);
     }
   }
@@ -163,7 +163,7 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
    */
   public void retrainItem(int item_id) {
     if (updateItems) {
-      MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStdDev);
+      MatrixExtensions.rowInitNormal(itemFactors, item_id, initMean, initStDev);
       learnFactors(ratings.byItem().get(item_id), false, true);
     }
   }
@@ -364,7 +364,7 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
         + " learnRate=" + learnRate
         + " numIter=" + numIter
         + " initMean=" + initMean
-        + " initStdDev=" + initStdDev;
+        + " initStDev=" + initStDev;
   }
 
 }

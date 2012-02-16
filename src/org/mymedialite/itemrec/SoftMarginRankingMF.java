@@ -121,7 +121,7 @@ public class SoftMarginRankingMF extends BPRMF {
     + " boldDriver=" + boldDriver
     + " fastSamplingMemoryLimit=" + fastSamplingMemoryLimit
     + " initMean=" + initMean
-    + " initStdev=" + initStdDev ;
+    + " initStdev=" + initStDev ;
   }
   
 }

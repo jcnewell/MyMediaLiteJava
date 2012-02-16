@@ -86,17 +86,17 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
     // Init factor matrices
     userFactors = new Matrix<Double>(maxUserID + 1, numFactors);
     itemFactors = new Matrix<Double>(maxItemID + 1, numFactors);
-    MatrixExtensions.initNormal(userFactors, initMean, initStdDev);
-    MatrixExtensions.initNormal(itemFactors, initMean, initStdDev);
+    MatrixExtensions.initNormal(userFactors, initMean, initStDev);
+    MatrixExtensions.initNormal(itemFactors, initMean, initStDev);
 
     userBias = new double[maxUserID + 1];
     for (int u = 0; u <= maxUserID; u++)  userBias[u] = 0;
     itemBias = new double[maxItemID + 1];
     for (int i = 0; i <= maxItemID; i++)  itemBias[i] = 0;
 
-    // learn model parameters
+    // Learn model parameters
 
-    // compute global average
+    // Compute global average
     double global_average = ratings.average();
 
     // TODO also learn global bias?
@@ -272,7 +272,7 @@ public class BiasedMatrixFactorization extends MatrixFactorization {
         + " learnRate=" + learnRate
         + " numIter=" + numIter
         + " initMean=" + initMean
-        + " initStdDev=" + initStdDev;   
+        + " initStDev=" + initStDev;   
   }
   
 }
