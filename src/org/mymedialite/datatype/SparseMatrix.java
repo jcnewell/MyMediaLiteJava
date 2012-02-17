@@ -34,6 +34,7 @@ public class SparseMatrix<T> implements IMatrix<T> {
   /**
    * List that stores the rows of the matrix.
    */
+  // TODO Consider fastutil
   protected List<HashMap<Integer, T>> row_list = new ArrayList<HashMap<Integer, T>>();
 
   /**
@@ -64,17 +65,11 @@ public class SparseMatrix<T> implements IMatrix<T> {
     this.d = d;
   }
 
-  /**
-   * 
-   */
   @Override
   public IMatrix<T> createMatrix(int num_rows, int num_columns) {
     return new SparseMatrix<T>(num_rows, num_columns, null);
   }
 
-  /**
-   * 
-   */
   @Override
   public boolean isSymmetric() {
     if (numberOfRows() != numberOfColumns()) return false;
@@ -89,25 +84,16 @@ public class SparseMatrix<T> implements IMatrix<T> {
     return true;
   }
 
-  /**
-   * 
-   */
   @Override
   public int numberOfRows() {
     return row_list.size();
   }
 
-  /**
-   * 
-   */
   @Override
   public int numberOfColumns() {
     return numberOfColumns;
   }
 
-  /**
-   * 
-   */
   @Override
   public IMatrix<T> transpose() {
     SparseMatrix<T> transpose = new SparseMatrix<T>(numberOfColumns(), numberOfRows());
@@ -154,7 +140,6 @@ public class SparseMatrix<T> implements IMatrix<T> {
   }
 
   /**
-   * 
    * The non-empty rows of the matrix (the ones that contain at least one non-zero entry),
    * with their IDs
    * .
@@ -190,6 +175,18 @@ public class SparseMatrix<T> implements IMatrix<T> {
     for (HashMap<Integer, T> row : row_list)
       counter += row.size();
     return counter;
+  }
+
+  @Override
+  public void grow(int num_rows, int num_cols) {
+    // If necessary, grow rows
+    if (num_rows > numberOfRows())
+      for (int i = row_list.size(); i < num_rows; i++)
+        row_list.add(new HashMap<Integer, T>());
+
+    // If necessary, grow columns
+    if (num_cols > numberOfColumns)
+      numberOfColumns = num_cols;
   }
 
 }

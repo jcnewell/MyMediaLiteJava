@@ -127,7 +127,8 @@ public class SlopeOne extends RatingPredictor {
 
     SkewSymmetricSparseMatrix diff_matrix = (SkewSymmetricSparseMatrix) IMatrixExtensions.readFloatMatrix(reader, this.diff_matrix);
     SymmetricSparseMatrix<Integer> freq_matrix = (SymmetricSparseMatrix<Integer>) IMatrixExtensions.readIntegerMatrix(reader, this.freq_matrix);
-
+    reader.close();
+    
     // assign new model
     this.global_average = global_average;
     this.diff_matrix = diff_matrix;
@@ -142,6 +143,8 @@ public class SlopeOne extends RatingPredictor {
     writer.println(Double.toString(global_average));
     IMatrixExtensions.writeSparseMatrix(writer, diff_matrix);
     IMatrixExtensions.writeSparseMatrix(writer, freq_matrix);
+    writer.flush();
+    writer.close();
   }
 
 }

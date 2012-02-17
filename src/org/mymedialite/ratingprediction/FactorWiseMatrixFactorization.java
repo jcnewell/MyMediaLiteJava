@@ -257,6 +257,8 @@ public class FactorWiseMatrixFactorization extends RatingPredictor implements II
     writer.println(num_learned_factors);
     IMatrixExtensions.writeMatrix(writer, userFactors);
     IMatrixExtensions.writeMatrix(writer, itemFactors);
+    writer.flush();
+    writer.close();
   }
 
   /**
@@ -272,7 +274,8 @@ public class FactorWiseMatrixFactorization extends RatingPredictor implements II
 
     Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
     Matrix<Double> item_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
-
+    reader.close();
+    
     if (user_factors.numberOfColumns() != item_factors.numberOfColumns())
       throw new IOException("Number of user and item factors must match: " + user_factors.numberOfColumns() + " != " + item_factors.numberOfColumns());
 

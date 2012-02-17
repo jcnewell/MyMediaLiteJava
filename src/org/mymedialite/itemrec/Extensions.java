@@ -175,10 +175,7 @@ public class Extensions {
   public static List<Integer> predictItems(IRecommender recommender, int user_id, Collection<Integer> candidate_items) {
     ArrayList<WeightedItem> result = new ArrayList<WeightedItem>(candidate_items.size());
     for (int item_id : candidate_items) {
-      // TODO Remove
-      //result.add(new WeightedItem(item_id, recommender.predict(user_id, item_id)));
       double predict = recommender.predict(user_id, item_id);
-      //System.out.println("predict: " + predict);
       result.add(new WeightedItem(item_id, predict));
     }
     Collections.sort(result, Collections.reverseOrder());

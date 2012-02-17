@@ -74,7 +74,6 @@ public class SparseBooleanMatrixStatic implements IBooleanMatrix {
     return new IntArraySet(row_list.get(x));
   }
 
-  // TODO confirm int[] the correct type to use here rather than Collection<Integer>
   public void setRow(int x, int[] row) {
     if (x >= row_list.size())
       for (int i = row_list.size(); i <= x; i++)

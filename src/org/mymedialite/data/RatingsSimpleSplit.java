@@ -71,17 +71,18 @@ public class RatingsSimpleSplit implements ISplit<IRatings> {
     List<Integer> random_index = ratings.randomIndex();
 
     int num_test_ratings = (int) Math.round(ratings.size() * ratio);
-
+    int num_train_ratings = ratings.size() - num_test_ratings;
+    
     // Assign indices to training part
-    IntList train_indices = new IntArrayList(ratings.size() - num_test_ratings);
-    for (int i = 0; i < train_indices.size(); i++)
-      train_indices.set(i, random_index.get(i));
+    IntList train_indices = new IntArrayList(num_train_ratings);
+    for (int i = 0; i < num_train_ratings; i++)
+      train_indices.add(i, random_index.get(i));
 
     // Assign indices to test part
     IntList test_indices  = new IntArrayList(num_test_ratings);
-    for (int i = 0; i < test_indices.size(); i++)
-      test_indices.set(i, random_index.get(i + train_indices.size()));
-
+    for (int i = 0; i < num_test_ratings; i++)
+      test_indices.add(i, random_index.get(i + num_train_ratings));
+    
     train = new ArrayList<IRatings>();
     test  = new ArrayList<IRatings>();
     
@@ -94,4 +95,5 @@ public class RatingsSimpleSplit implements ISplit<IRatings> {
       test.add(new RatingsProxy(ratings, test_indices));
     }
   }
+  
 }

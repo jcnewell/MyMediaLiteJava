@@ -80,17 +80,19 @@ public class RatingsChronologicalSplit implements ISplit<ITimedRatings> {
     
     Collections.sort(chronological_index, ratings);
     int num_test_ratings  = (int) Math.round(ratings.size() * ratio);
+    int num_train_ratings = ratings.size() - num_test_ratings;
     
     // Assign indices to training part
-    IntList train_indices = new IntArrayList(ratings.size() - num_test_ratings);
-    for (int i = 0; i < train_indices.size(); i++)
-        train_indices.set(i, chronological_index.get(i));
+
+    IntList train_indices = new IntArrayList(num_train_ratings);
+    for (int i = 0; i < num_train_ratings; i++)
+      train_indices.add(chronological_index.get(i));
 
     // Assign indices to test part
     IntList test_indices  = new IntArrayList(num_test_ratings);
-    for (int i = 0; i < test_indices.size(); i++)
-        test_indices.set(i, chronological_index.get(i + train_indices.size()));
-
+    for (int i = 0; i < num_test_ratings; i++)
+        test_indices.add(chronological_index.get(i + num_train_ratings));
+    
     // Create split data structures
     train = new ArrayList<ITimedRatings>();
     train.add(new TimedRatingsProxy(ratings, train_indices));

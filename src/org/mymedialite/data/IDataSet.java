@@ -1,4 +1,4 @@
-// Copyright (C) 2011 Zeno Gantner, CHris Newell
+// Copyright (C) 2011 Zeno Gantner, Chris Newell
 //
 // This file is part of MyMediaLite.
 //
@@ -18,8 +18,9 @@
 
 package org.mymedialite.data;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
 
 /**
@@ -95,10 +96,10 @@ public interface IDataSet {
 
   /** Build the user indices. */
   void buildUserIndices();
-  
+
   /** Build the item indices. */
   void buildItemIndices();
-  
+
   /** Build the random index. */
   void buildRandomIndex();
 
@@ -113,5 +114,53 @@ public interface IDataSet {
    * @param item_id the item ID
    */
   void removeItem(int item_id);
+
+  /**
+   * Get all users that are referenced by a given list of indices.
+   * @param indices the indices to take into account
+   * @return all users referenced by the list of indices
+   */
+  IntSet getUsers(IntList indices);
+  
+  /**
+   * Get all items that are referenced by a given list of indices.
+   * @param indices the indices to take into account
+   * @return all items referenced by the list of indices
+   */
+  IntSet getItems(IntList indices);
+
+  /**
+   * Get index for a given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @return the index of the first event encountered that matches the user ID and item ID
+   */
+  int getIndex(int user_id, int item_id);
+  
+  /**
+   * Get index for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param indexes the indexes to look at
+   * @return the index of the first event encountered that matches the user ID and item ID
+   */
+  int getIndex(int user_id, int item_id, IntCollection indexes);
+
+  /**
+   * Try to get the index for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @return the index of the first event encountered that matches the user ID and item ID or null, if not found
+   */
+  Integer tryGetIndex(int user_id, int item_id);
+  
+  /**
+   * Try to get the index for given user and item.
+   * @param user_id the user ID
+   * @param item_id the item ID
+   * @param indexes the indexes to look at
+   * @return the index of the first event encountered that matches the user ID and item ID or null, if not found
+   */
+  Integer tryGetIndex(int user_id, int item_id, IntCollection indexes);
 
 }

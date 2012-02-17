@@ -117,7 +117,7 @@ public class ItemsCrossValidation {
         }
         
         if (show_results)
-          System.err.println("fold " + fold + " " + fold_results);
+          System.out.println("fold " + fold + " " + fold_results);
 
       } catch (Exception e) {
         System.err.println("===> ERROR: " + e.getMessage() + e.getStackTrace());

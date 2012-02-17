@@ -39,8 +39,13 @@ public interface IItemRelationAwareRecommender extends IRecommender {
 	public void setItemRelation(SparseBooleanMatrix s);
 
 	/**
-	 * Number of items
+	 * Get the number of items
 	 */
-	public int numItems();
+	public int getNumItems();
 
+	/**
+     * Set the number of items
+     */
+    public void setNumItems(int numItems);
+	
 }

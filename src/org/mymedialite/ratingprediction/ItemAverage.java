@@ -46,7 +46,37 @@ public class ItemAverage extends EntityAverage {
   }
 
   @Override
+  public void addRating(int user_id, int item_id, double rating) {
+    super.addRating(user_id, item_id, rating);
+    retrain(item_id, ratings.byItem().get(item_id), ratings.items());
+  }
+
+  @Override
+  public void updateRating(int user_id, int item_id, double rating) {
+    super.updateRating(user_id, item_id, rating);
+    retrain(item_id, ratings.byItem().get(item_id), ratings.items());
+  }
+
+  @Override
+  public void removeRating(int user_id, int item_id) {
+    super.removeRating(user_id, item_id);
+    retrain(item_id, ratings.byItem().get(item_id), ratings.items());
+  }
+
+  @Override
+  public void addItem(int item_id) {
+    while (entity_averages.size() < item_id + 1)
+      entity_averages.add(0);
+  }
+
+  @Override
+  public void removeItem(int item_id) {
+    entity_averages.set(item_id, global_average);
+  }
+
+  @Override
   public String toString() {
     return "ItemAverage";
   }
+
 }

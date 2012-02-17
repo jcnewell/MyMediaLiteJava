@@ -52,9 +52,7 @@ public class SparseVector<T> {
    * @param x the index
    */
   public T get(int x) {
-    
-   // TODO check whether it would be more appropriate for this method to return null.
-    
+
     T result = data.get(x);
     if(result == null) {
      try {

@@ -72,7 +72,7 @@ public class PairwiseWins extends GroupRecommender {
 
     Collections.sort(wins_by_item, Collections.reverseOrder());
     List<Integer> ranked_items = new ArrayList<Integer>(wins_by_item.size());
-    for (int i=0; i<ranked_items.size(); i++) {
+    for (int i=0; i<wins_by_item.size(); i++) {
       ranked_items.add(i, wins_by_item.get(i).item_id);
     }
 

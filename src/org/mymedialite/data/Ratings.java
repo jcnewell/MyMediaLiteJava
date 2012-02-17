@@ -64,19 +64,13 @@ public class Ratings extends DataSet implements IRatings {
   public double set(int index, double rating) {
     return values.set(index, rating);
   }	
-
-  public void setMinRating(double value) {
-    minRating = value;    
-  }
   
+  @Override
   public double minRating() {
     return minRating;    
   }
-
-  public void setMaxRating(double value) {
-    maxRating = value;
-  }
   
+  @Override
   public double maxRating() {
     return maxRating;
   }
@@ -129,22 +123,6 @@ public class Ratings extends DataSet implements IRatings {
   }
 
   @Override
-  public IntSet getUsers(IntList indices) {
-    IntSet result_set = new IntOpenHashSet();
-    for (int index : indices)
-      result_set.add(users.getInt(index));
-    return result_set;
-  }
-
-  @Override
-  public IntSet getItems(IntList indices) {
-    IntSet result_set = new IntOpenHashSet();
-    for (int index : indices)
-      result_set.add(items.getInt(index));
-    return result_set;
-  }
-  
-  @Override
   public double get(int user_id, int item_id) {
     for (int index = 0; index < values.size(); index++)
       if (users.getInt(index) == user_id && items.getInt(index) == item_id)
@@ -161,7 +139,7 @@ public class Ratings extends DataSet implements IRatings {
   }
 
   @Override
-  public double get(int user_id, int item_id, Collection<Integer> indexes) {
+  public double get(int user_id, int item_id, IntCollection indexes) {
     for (int index : indexes)
       if (users.getInt(index) == user_id && items.getInt(index) == item_id)
         return values.getDouble(index);
@@ -169,7 +147,7 @@ public class Ratings extends DataSet implements IRatings {
   }
 
   @Override
-  public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
+  public Double tryGet(int user_id, int item_id, IntCollection indexes) {
     for (int index : indexes)
       if (users.getInt(index) == user_id && items.getInt(index) == item_id)
         return values.get(index);
@@ -182,30 +160,6 @@ public class Ratings extends DataSet implements IRatings {
       if (users.getInt(i) == user_id && items.getInt(i) == item_id)
         return i;
     return null;
-  }
-
-  @Override
-  public Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes) {
-    for (int i : indexes)
-      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
-        return i;
-    return null;
-  }
-
-  @Override
-  public int getIndex(int user_id, int item_id) {
-    for (int i = 0; i < size(); i++)
-      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
-        return i;
-    throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
-  }
-
-  @Override
-  public int getIndex(int user_id, int item_id, IntCollection indexes) {
-    for (int i : indexes)
-      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
-        return i;
-    throw new InvalidKeyException("index " + user_id + "' " + item_id + " not found.");
   }
 
   @Override
@@ -250,17 +204,6 @@ public class Ratings extends DataSet implements IRatings {
     }
   }
 
-  /** Override an existing value if it exists. */
-  public void addOrUpdate(int user_id, int item_id, double rating) {
-    for (int index = 0; index < values.size(); index++)
-      if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
-        values.set(index, rating);
-        return;
-      }
-    add(user_id, item_id, rating);
-  }
-
-  @Override
   public void removeAt(int index) {
     users.remove(index);
     items.remove(index);
@@ -295,6 +238,25 @@ public class Ratings extends DataSet implements IRatings {
     return true;
   }
 
+
+//  @Override
+//  public Integer tryGetIndex(int user_id, int item_id, IntCollection indexes) {
+//    for (int i : indexes)
+//      if (users.getInt(i) == user_id && items.getInt(i) == item_id)
+//        return i;
+//    return null;
+//  }
+//  
+//  /** Override an existing value if it exists. */
+//  public void addOrUpdate(int user_id, int item_id, double rating) {
+//    for (int index = 0; index < values.size(); index++)
+//      if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
+//        values.set(index, rating);
+//        return;
+//      }
+//    add(user_id, item_id, rating);
+//  }
+//  
 //  @Override
 //  public boolean add(Double e) {
 //    throw new UnsupportedOperationException();

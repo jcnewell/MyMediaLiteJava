@@ -110,8 +110,8 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
    * @param item_id >the item ID
    */
   public void remove(int user_id, int item_id) {
-    int index;
-    while((index = tryGetIndex(user_id, item_id)) != -1) {
+    Integer index;
+    while((index = tryGetIndex(user_id, item_id)) != null) {
       users.remove(index);
       items.remove(index);
     }
@@ -204,16 +204,4 @@ public class PosOnlyFeedback<T extends IBooleanMatrix> extends DataSet implement
     return transpose;
   }
 
-  /**
-   * 
-   * @param user_id
-   * @param item_id
-   * @return the index or -1 if not found.
-   */
-  public int tryGetIndex(int user_id, int item_id) {
-    for (int i = 0; i < size(); i++) {
-      if (users.getInt(i) == user_id && items.getInt(i) == item_id) return i;
-    }
-    return -1;
-  }
 }

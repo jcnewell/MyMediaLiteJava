@@ -212,171 +212,87 @@ public class IntCombinedList implements IntList {
   }
 
   @Override
-  public boolean add(Integer e) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean add(Integer e) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void add(int index, Integer element) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void add(int index, Integer element) { throw new UnsupportedOperationException(); }
 
   @Override
-  public Integer set(int index, Integer element) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public Integer set(int index, Integer element) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int compareTo(List<? extends Integer> o) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public int compareTo(List<? extends Integer> o) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(IntCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(IntCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean contains(int arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean contains(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean containsAll(IntCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean containsAll(IntCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public IntIterator intIterator() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public IntIterator intIterator() { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean rem(int arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean rem(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean removeAll(IntCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean removeAll(IntCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean retainAll(IntCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean retainAll(IntCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int[] toArray(int[] arg0) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public int[] toArray(int[] arg0){ throw new UnsupportedOperationException(); }
 
   @Override
-  public int[] toIntArray() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public int[] toIntArray() { throw new UnsupportedOperationException(); }
 
   @Override
-  public int[] toIntArray(int[] arg0) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public int[] toIntArray(int[] arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(IntList arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(IntList arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(int arg0, IntCollection arg1) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(int arg0, IntCollection arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(int arg0, IntList arg1) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(int arg0, IntList arg1) { throw new UnsupportedOperationException(); }
+  
+  @Override
+  public void addElements(int arg0, int[] arg1){ throw new UnsupportedOperationException(); }
 
   @Override
-  public void addElements(int arg0, int[] arg1) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void addElements(int arg0, int[] arg1, int arg2, int arg3) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void addElements(int arg0, int[] arg1, int arg2, int arg3) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void getElements(int arg0, int[] arg1, int arg2, int arg3){ throw new UnsupportedOperationException(); }
 
   @Override
-  public void getElements(int arg0, int[] arg1, int arg2, int arg3) {
-    // TODO Auto-generated method stub
-    
-  }
+  public int indexOf(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int indexOf(int arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public IntListIterator intListIterator() { throw new UnsupportedOperationException(); }
 
   @Override
-  public IntListIterator intListIterator() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public IntListIterator intListIterator(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public IntListIterator intListIterator(int arg0) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public IntList intSubList(int arg0, int arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public IntList intSubList(int arg0, int arg1) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public int lastIndexOf(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int lastIndexOf(int arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public void removeElements(int arg0, int arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void removeElements(int arg0, int arg1) {
-    // TODO Auto-generated method stub
-    
-  }
+  public int removeInt(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int removeInt(int arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public void size(int arg0) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void size(int arg0) { throw new UnsupportedOperationException(); }
 
 }

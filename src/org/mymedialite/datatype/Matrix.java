@@ -91,10 +91,12 @@ public class Matrix<T> implements IMatrix<T>  {
         this.data[i * dim2 + j] = data.get(i).get(j);
   }
 
+  @Override
   public IMatrix<T> createMatrix(int num_rows, int num_columns) {
     return new Matrix<T>(num_rows, num_columns, null);
   }
 
+  @Override
   public IMatrix<T> transpose() {
     Matrix<T> transpose = new Matrix<T>(dim2, dim1, null);
     for (int i = 0; i < dim1; i++)
@@ -103,23 +105,28 @@ public class Matrix<T> implements IMatrix<T>  {
     return transpose;
   }
 
+  @Override
   public int numberOfRows() {
     return dim1;
   }
 
+  @Override
   public int numberOfColumns() { 
     return dim2;
   }
 
+  @Override
   @SuppressWarnings({"unchecked"})
   public T get(int i, int j) {
     return (T) data[i * dim2 + j];    
   }
 
+  @Override
   public void set(int i, int j, T value) {
     data[i * dim2 + j] = value;
   }
-
+  
+  @Override
   public boolean isSymmetric() {
     if (dim1 != dim2)
       return false;
@@ -202,6 +209,7 @@ public class Matrix<T> implements IMatrix<T>  {
    * @param num_rows the minimum number of rows
    * @param num_cols the minimum number of columns
    */
+  @Override
   public void grow(int num_rows, int num_cols) {
     if (num_rows > dim1 || num_cols > dim2) {
       // create new data structure
@@ -211,7 +219,8 @@ public class Matrix<T> implements IMatrix<T>  {
           new_data[i * num_cols + j] = get(i, j);
         }
       }
-      // replace old data structure
+      
+      // Replace old data structure
       this.dim1 = num_rows;
       this.dim2 = num_cols;
       this.data = new_data;

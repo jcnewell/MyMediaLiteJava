@@ -109,7 +109,7 @@ public class RatingPrediction {
   static RatingFileFormat file_format = RatingFileFormat.DEFAULT;
   static RatingType rating_type       = RatingType.DOUBLE;
   static int cross_validation;
-  static boolean show_fold_results;
+  static boolean show_fold_results = false;
   static double test_ratio;
   static String chronological_split = null;
   static double chronological_split_ratio = -1;
@@ -227,8 +227,15 @@ public class RatingPrediction {
 
     for(String arg : args) {
       int div = arg.indexOf("=") + 1;
-      String name = arg.substring(0, div);
-      String value = arg.substring(div);
+      String name;
+      String value;
+      if(div > 0) { 
+        name = arg.substring(0, div);
+        value = arg.substring(div);
+      } else {
+        name = arg;
+        value = null;
+      }
 
       // String-valued options
       if(name.equals("--training-file="))             training_file        = value;
@@ -263,12 +270,12 @@ public class RatingPrediction {
       else if(name.equals("--file-format="))          file_format          = RatingFileFormat.valueOf(value);
 
       // Boolean options
-      else if(name.equals("--compute-fit"))           compute_fit          = Boolean.parseBoolean(value);
-      else if(name.equals("--online-evaluation"))     online_eval          = Boolean.parseBoolean(value);
-      else if(name.equals("--show-fold-results"))     show_fold_results    = Boolean.parseBoolean(value);
-      else if(name.equals("--search-hp"))             search_hp            = Boolean.parseBoolean(value);
-      else if(name.equals("--help"))                  show_help            = Boolean.parseBoolean(value);
-      else if(name.equals("--version"))               show_version         = Boolean.parseBoolean(value);
+      else if(name.equals("--compute-fit"))           compute_fit          = true;
+      else if(name.equals("--online-evaluation"))     online_eval          = true;
+      else if(name.equals("--show-fold-results"))     show_fold_results    = true;
+      else if(name.equals("--search-hp"))             search_hp            = true;
+      else if(name.equals("--help"))                  show_help            = true;
+      else if(name.equals("--version"))               show_version         = true;
     }
     // ... some more command line parameter actions ...
     boolean no_eval = true;
@@ -553,7 +560,7 @@ public class RatingPrediction {
     // Item relation
     if (recommender instanceof IItemRelationAwareRecommender) {
       ((IItemRelationAwareRecommender)recommender).setItemRelation(RelationData.read(Utils.combine(data_dir, item_relation_file), item_mapping));
-      System.out.println("relation over " + ((IItemRelationAwareRecommender)recommender).numItems() + " items");
+      System.out.println("relation over " + ((IItemRelationAwareRecommender)recommender).getNumItems() + " items");
     }
 
     // Read test data

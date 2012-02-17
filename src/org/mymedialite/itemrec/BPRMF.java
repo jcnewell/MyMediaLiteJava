@@ -58,7 +58,12 @@ public class BPRMF extends MF {
   /** Item bias terms */
   protected double[] itemBias;
 
-  /** Fast sampling memory limit, in MiB */
+  /** 
+   * Fast sampling memory limit, in MiB
+   * 
+   * TODO find out why fast sampling does not improve performance
+   */
+  //public int fastSamplingMemoryLimit = 1024;
   public int fastSamplingMemoryLimit = 0; // 1024;
 
   /** Sample positive observations with (true) or without (false) replacement */
@@ -513,7 +518,6 @@ public class BPRMF extends MF {
       int num_test_items = feedback.userMatrix().get(user_id).size();
       if (num_test_items == 0) continue;
 
-      // TODO check why this changed from int[] to List<Integer>
       List<Integer> prediction = Extensions.predictItems(this, user_id, maxItemID);
 
       int num_eval_items = maxItemID + 1;
@@ -579,6 +583,8 @@ public class BPRMF extends MF {
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     saveModel(writer);
+    writer.flush();
+    writer.close();
   }
 
   public void saveModel(PrintWriter writer) {
@@ -591,6 +597,7 @@ public class BPRMF extends MF {
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
     loadModel(reader);
+    reader.close();
   }
 
   /** { @inheritDoc } */

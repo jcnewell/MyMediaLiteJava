@@ -35,7 +35,7 @@ import org.mymedialite.datatype.SymmetricMatrix;
  * Class for computing and storing correlations and similarities.
  * @version 2.03
  */
-public class CorrelationMatrix extends Matrix<Float> {
+public class CorrelationMatrix extends SymmetricMatrix<Float> {
 
   /**
    * Number of entities, e.g. users or items.
@@ -49,32 +49,32 @@ public class CorrelationMatrix extends Matrix<Float> {
     return true;
   }
 
-  /**
-   * 
-   * @param i
-   * @param j
-   */
-  public Float get(int i, int j) {
-    return (Float)data[i * dim2 + j];
-  }
-
-  /**
-   * 
-   * @param i
-   * @param j
-   * @param value
-   */
-  public void set(int i, int j, Float value) {
-    data[i * dim2 + j] = value;
-    data[j * dim2 + i] = value;
-  }
+//  /**
+//   * 
+//   * @param i
+//   * @param j
+//   */
+//  public Float get(int i, int j) {
+//    return (Float)data[i * dim2 + j];
+//  }
+//
+//  /**
+//   * 
+//   * @param i
+//   * @param j
+//   * @param value
+//   */
+//  public void set(int i, int j, Float value) {
+//    data[i * dim2 + j] = value;
+//    data[j * dim2 + i] = value;
+//  }
 
   /**
    * Creates a CorrelationMatrix object for a given number of entities.
    * @param numEntities number of entities
    */
   public CorrelationMatrix(int numEntities) {
-    super(numEntities, numEntities, 0.0F);
+    super(numEntities, 0.0F);
     this.numEntities = numEntities;
   }
 
@@ -165,7 +165,8 @@ public class CorrelationMatrix extends Matrix<Float> {
     if (entity_id < 0 || entity_id >= numEntities) throw new IllegalArgumentException("Invalid entity ID: " + entity_id);
     double result = 0;
     for (int entity_id2 : entities) {
-      if (entity_id2 >= 0 && entity_id2 < numEntities) result += get(entity_id, entity_id2);
+      if (entity_id2 >= 0 && entity_id2 < numEntities)
+        result += get(entity_id, entity_id2);
     }
     return result;
   }
@@ -178,7 +179,7 @@ public class CorrelationMatrix extends Matrix<Float> {
   public IntList getPositivelyCorrelatedEntities(int entity_id) {
     List<Neighbor> result = new ArrayList<Neighbor>();
     for (int i = 0; i < numEntities; i++) {
-      if(i != entity_id) {
+      if(i != entity_id && get(i, entity_id) > 0) {
         Neighbor neighbor = new Neighbor(i, get(i, entity_id));
         result.add(neighbor);
       }

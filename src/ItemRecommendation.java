@@ -109,22 +109,22 @@ public class ItemRecommendation {
   static String prediction_file;
 
   // Command-line parameters (other)
-  static boolean compute_fit;
+  static boolean compute_fit = false;
   static int cross_validation;
-  static boolean show_fold_results;
+  static boolean show_fold_results = false;
   static double test_ratio;
   static double rating_threshold = Double.NaN;
   static int num_test_users;
   static int predict_items_number = -1;
-  static boolean online_eval;
-  static boolean filtered_eval;
-  static boolean repeat_eval;
+  static boolean online_eval = false;
+  static boolean filtered_eval = false;
+  static boolean repeat_eval = false;
   static String group_method;
-  static boolean overlap_items;
-  static boolean in_training_items;
-  static boolean in_test_items;
-  static boolean all_items;
-  static boolean user_prediction;
+  static boolean overlap_items = false;
+  static boolean in_training_items = false;
+  static boolean in_test_items = false;
+  static boolean all_items = false;
+  static boolean user_prediction = false;
   static int random_seed = -1;
   static int find_iter = 0;
 
@@ -256,8 +256,15 @@ public class ItemRecommendation {
 
     for(String arg : args) {
       int div = arg.indexOf("=") + 1;
-      String name = arg.substring(0, div);
-      String value = arg.substring(div);
+      String name;
+      String value;
+      if(div > 0) { 
+        name = arg.substring(0, div);
+        value = arg.substring(div);
+      } else {
+        name = arg;
+        value = null;
+      }
 
       // String-valued options
       if(name.equals("--training-file="))             training_file        = value;
@@ -295,18 +302,18 @@ public class ItemRecommendation {
       else if(name.equals("--file-format="))          file_format = ItemDataFileFormat.valueOf(value);
 
       // Boolean options
-      else if(name.equals("--user-prediction"))       user_prediction   = Boolean.parseBoolean(value);
-      else if(name.equals("--compute-fit"))           compute_fit       = Boolean.parseBoolean(value);
-      else if(name.equals("--online-evaluation"))     online_eval       = Boolean.parseBoolean(value);
-      else if(name.equals("--filtered-evaluation"))   filtered_eval     = Boolean.parseBoolean(value);
-      else if(name.equals("--repeat-evaluation"))     repeat_eval       = Boolean.parseBoolean(value);
-      else if(name.equals("--show-fold-results"))     show_fold_results = Boolean.parseBoolean(value);
-      else if(name.equals("--overlap-items"))         overlap_items     = Boolean.parseBoolean(value);
-      else if(name.equals("--all-items"))             all_items         = Boolean.parseBoolean(value);
-      else if(name.equals("--in-training-items"))     in_training_items = Boolean.parseBoolean(value);
-      else if(name.equals("--in-test-items"))         in_test_items     = Boolean.parseBoolean(value);
-      else if(name.equals("--help"))                  show_help         = Boolean.parseBoolean(value);
-      else if(name.equals("--version"))               show_version      = Boolean.parseBoolean(value);
+      else if(name.equals("--user-prediction"))       user_prediction   = true;
+      else if(name.equals("--compute-fit"))           compute_fit       = true;
+      else if(name.equals("--online-evaluation"))     online_eval       = true;
+      else if(name.equals("--filtered-evaluation"))   filtered_eval     = true;
+      else if(name.equals("--repeat-evaluation"))     repeat_eval       = true;
+      else if(name.equals("--show-fold-results"))     show_fold_results = true;
+      else if(name.equals("--overlap-items"))         overlap_items     = true;
+      else if(name.equals("--all-items"))             all_items         = true;
+      else if(name.equals("--in-training-items"))     in_training_items = true;
+      else if(name.equals("--in-test-items"))         in_test_items     = true;
+      else if(name.equals("--help"))                  show_help         = true;
+      else if(name.equals("--version"))               show_version      = true;
       else usage("Did not understand " + name);
     }
 
@@ -568,7 +575,7 @@ public class ItemRecommendation {
         // Item relation
         if (recommender instanceof IItemRelationAwareRecommender) {
           ((IItemRelationAwareRecommender)recommender).setItemRelation(RelationData.read(Utils.combine(data_dir, item_relations_file), item_mapping));
-          System.out.println("Relation over " + ((IItemRelationAwareRecommender)recommender).numItems() + " items");
+          System.out.println("Relation over " + ((IItemRelationAwareRecommender)recommender).getNumItems() + " items");
         }
 
         // User groups
@@ -610,7 +617,6 @@ public class ItemRecommendation {
                 training_data.add(group_id, item_id);
           // Add the users that do not belong to groups
 
-          // TODO Check this.
           //training_data = training_data_group;
 
           // Transform groups to users

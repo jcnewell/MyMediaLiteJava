@@ -92,12 +92,10 @@ public class StaticByteRatings extends StaticRatings {
 
   @Override
   public Double tryGet(int user_id, int item_id) {
-    // TODO Is anything replying on this as a return value? (in C# it was marked "out")
-    Double rating = Double.NEGATIVE_INFINITY;
     //TODO speed up
     for (int index = 0; index < pos; index++)
       if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
-        rating = new Double(byte_values.getByte(index));
+        Double rating = new Double(byte_values.getByte(index));
         return rating;
       }
 
@@ -112,13 +110,11 @@ public class StaticByteRatings extends StaticRatings {
     throw new IllegalArgumentException("rating " + user_id + ", " + item_id + " not found.");
   }
 
-  public Double tryGet(int user_id, int item_id, Collection<Integer> indexes) {
-    // TODO Is anything replying on this as a return value? (in C# it was marked "out")
-    double rating = Double.NEGATIVE_INFINITY;
+  public Double tryGet(int user_id, int item_id, IntCollection indexes) {
 
     for (int index : indexes)
       if (users.getInt(index) == user_id && items.getInt(index) == item_id) {
-        rating = new Double(byte_values.getByte(index));
+        Double rating = new Double(byte_values.getByte(index));
         return rating;
       }
 

@@ -86,7 +86,7 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
    * The maximum number of iterations.
    * If the algorithm converges to a stable solution, it will terminate earlier.
    */
-  private int numIter;
+  public int numIter;
 
   /**
    * Default constructor.
@@ -338,6 +338,8 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
     VectorExtensions.writeVector(writer, user_cluster_averages);
     VectorExtensions.writeVector(writer, item_cluster_averages);
     IMatrixExtensions.writeMatrix(writer, cocluster_averages);
+    writer.flush();
+    writer.close();
   }
 
   /**
@@ -353,7 +355,8 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
     DoubleList user_cluster_averages = VectorExtensions.readVector(reader);
     DoubleList item_cluster_averages = VectorExtensions.readVector(reader);
     IMatrix<Double> cocluster_averages = IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));
-
+    reader.close();
+    
     int num_user_clusters = user_cluster_averages.size();
     int num_item_clusters = item_cluster_averages.size();
 

@@ -91,8 +91,7 @@ public class TimedRatingData {
       String date_String = tokens[3];
       if (tokens[3].startsWith("\"") && tokens.length > 4 && tokens[4].endsWith("\"")) {
         date_String = tokens[3] + " " + tokens[4];
-        // TODO Check substring takes the same arguments as C# SubString
-        date_String = date_String.substring(1, date_String.length() - 2);
+        date_String = date_String.substring(1, date_String.length() - 1);
       }
 
       if (date_String.length() == 19) {  // format "yyyy-mm-dd hh:mm:ss" 
@@ -121,7 +120,6 @@ public class TimedRatingData {
         ratings.add(user_id, item_id, rating, calendar.getTime());
 
       } else if ((unix_time = Utils.parseInteger(date_String)) != null) {  // unsigned integer value, interpreted as seconds since Unix epoch
-        // TODO check this has the same time offset as C# version.
         Date date = new Date();
         date.setTime((long)unix_time * 1000);
         ratings.add(user_id, item_id, rating, date);

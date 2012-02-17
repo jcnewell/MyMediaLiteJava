@@ -106,8 +106,8 @@ public class VectorExtensions {
 
     IntList vector = new IntArrayList(dim);
 
-    for (int i = 0; i < vector.size(); i++)
-      vector.set(i, Integer.parseInt(reader.readLine()));
+    for (int i = 0; i < dim; i++)
+      vector.add(i, Integer.parseInt(reader.readLine()));
 
     return vector;
   }

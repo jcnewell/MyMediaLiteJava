@@ -87,7 +87,7 @@ public class BPRLinear extends ItemRecommender implements IItemAttributeAwareRec
   /**
    * Number of iterations over the training data.
    */
-  private int numIter = 10;
+  public int numIter = 10;
 
   /**
    * Fast sampling memory limit, in MiB.

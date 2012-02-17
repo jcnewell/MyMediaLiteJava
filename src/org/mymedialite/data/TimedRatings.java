@@ -106,9 +106,8 @@ public class TimedRatings extends Ratings implements ITimedRatings {
         byItem.add(new IntArrayList());
       byItem.get(item_id).add(pos);
     }
-    
-    // TODO Check this
     //if (by_time != null)
+
   }
 
   @Override

@@ -177,7 +177,8 @@ public class BiPolarSlopeOne extends RatingPredictor {
     SkewSymmetricSparseMatrix diff_matrix_dislike = (SkewSymmetricSparseMatrix) IMatrixExtensions.readFloatMatrix(reader, this.diff_matrix_dislike);
     SymmetricSparseMatrix<Integer> freq_matrix_dislike = (SymmetricSparseMatrix<Integer>) IMatrixExtensions.readIntegerMatrix(reader, this.freq_matrix_dislike);
     List<Double> user_average = VectorExtensions.readVector(reader);
-
+    reader.close();
+    
     // Assign new model
     this.global_average = global_average;
     this.diff_matrix_like = diff_matrix_like;
@@ -199,5 +200,8 @@ public class BiPolarSlopeOne extends RatingPredictor {
     IMatrixExtensions.writeSparseMatrix(writer, diff_matrix_dislike);
     IMatrixExtensions.writeSparseMatrix(writer, freq_matrix_dislike);
     VectorExtensions.writeVector(writer, user_average);
+    writer.flush();
+    writer.close();
   }
+  
 }

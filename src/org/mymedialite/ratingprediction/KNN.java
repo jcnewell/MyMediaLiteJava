@@ -107,7 +107,7 @@ public abstract class KNN extends IncrementalRatingPredictor {
    */
   protected CorrelationMatrix correlation;
 
-  // TODO Check whether this should preserve k in the load/save methods below.
+  // TODO Check whether k value should be preserved k in the load/save methods below.
   
   /**
    * 

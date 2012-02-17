@@ -80,6 +80,8 @@ public class WeightedEnsemble extends Ensemble {
         recommenders.get(i).saveModel("model-" + i + ".txt");
         writer.println(recommenders.get(i).getClass().getName() + " " + weights.get(i).toString());
       }
+      writer.flush();
+      writer.close();
     }
   
 
@@ -108,6 +110,7 @@ public class WeightedEnsemble extends Ensemble {
        
         weights.add(Double.parseDouble(data[1]));
       }
+      reader.close();
 
       this.weights = weights;
       this.recommenders = recommenders;

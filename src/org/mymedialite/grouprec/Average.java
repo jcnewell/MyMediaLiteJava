@@ -56,7 +56,7 @@ public class Average extends GroupRecommender {
     
     Collections.sort(average_scores, Collections.reverseOrder());
     List<Integer> ranked_items = new ArrayList<Integer>(average_scores.size());
-    for (int i=0; i<ranked_items.size(); i++) {
+    for (int i=0; i<average_scores.size(); i++) {
       ranked_items.add(i, average_scores.get(i).item_id);
     }
     

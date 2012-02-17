@@ -138,7 +138,6 @@ public abstract class ItemKNN extends KNN implements IItemSimilarityProvider {
   /**
    */
   public int[] getMostSimilarItems(int item_id, int n) {
-    // TODO default n = 10
     return correlation.getNearestNeighbors(item_id, n);
   }
   

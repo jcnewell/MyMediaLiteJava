@@ -70,5 +70,13 @@ public interface IMatrix<T> {
    * @return a matrix with num_rows rows and num_column columns
    */
   IMatrix<T> createMatrix(int num_rows, int num_columns);
+  
+  /**
+   * Grows the matrix to the requested size, if necessary.
+   * The new entries are filled with zeros.
+   * @param numRows the minimum number of rows
+   * @param numCols the minimum number of columns
+   */
+  void grow(int numRows, int numCols);
 
 }

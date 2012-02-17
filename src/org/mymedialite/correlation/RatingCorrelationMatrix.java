@@ -18,12 +18,13 @@
 package org.mymedialite.correlation;
 
 import org.mymedialite.data.IRatings;
+import org.mymedialite.taxonomy.EntityType;
 
 /**
  * CorrelationMatrix that computes correlations over rating data.
  * @version 2.03
  */
-public class RatingCorrelationMatrix extends CorrelationMatrix {
+public abstract class RatingCorrelationMatrix extends CorrelationMatrix {
 
 	/**
 	 * Constructor.
@@ -38,8 +39,6 @@ public class RatingCorrelationMatrix extends CorrelationMatrix {
 	 * @param ratings the rating data
 	 * @param entity_type EntityType.USER or EntityType.ITEM
 	 */
-  public void computeCorrelations(IRatings ratings, int entity_type) {
-		throw new UnsupportedOperationException();
-  }
+  public abstract void computeCorrelations(IRatings ratings, EntityType entity_type);
 
 }

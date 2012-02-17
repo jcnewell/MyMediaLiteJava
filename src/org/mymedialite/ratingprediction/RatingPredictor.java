@@ -26,7 +26,7 @@ import org.mymedialite.data.IRatings;
  * Abstract class for rating predictors that keep the rating data in memory for training (and possibly prediction)
  * @version 2.03
  */
-public abstract class RatingPredictor implements IRatingPredictor, Cloneable {
+public abstract class RatingPredictor implements IRatingPredictor {
 
   /** Maximum user ID */
   public int maxUserID;

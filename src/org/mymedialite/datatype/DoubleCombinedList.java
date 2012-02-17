@@ -236,171 +236,87 @@ public class DoubleCombinedList implements DoubleList {
   }
 
   @Override
-  public boolean add(Double e) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean add(Double e) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void add(int index, Double element) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void add(int index, Double element) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int compareTo(List<? extends Double> o) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public int compareTo(List<? extends Double> o) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(DoubleCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(DoubleCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean contains(double arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean contains(double arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean containsAll(DoubleCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean containsAll(DoubleCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public DoubleIterator doubleIterator() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public DoubleIterator doubleIterator() { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean rem(double arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean rem(double arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean removeAll(DoubleCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean removeAll(DoubleCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean retainAll(DoubleCollection arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean retainAll(DoubleCollection arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public double[] toArray(double[] arg0) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public double[] toArray(double[] arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public double[] toDoubleArray() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public double[] toDoubleArray() { throw new UnsupportedOperationException(); }
 
   @Override
-  public double[] toDoubleArray(double[] arg0) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public double[] toDoubleArray(double[] arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(DoubleList arg0) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(DoubleList arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(int arg0, DoubleCollection arg1) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(int arg0, DoubleCollection arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public boolean addAll(int arg0, DoubleList arg1) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+  public boolean addAll(int arg0, DoubleList arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void addElements(int arg0, double[] arg1) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void addElements(int arg0, double[] arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void addElements(int arg0, double[] arg1, int arg2, int arg3) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void addElements(int arg0, double[] arg1, int arg2, int arg3) { throw new UnsupportedOperationException(); }
 
   @Override
-  public DoubleListIterator doubleListIterator() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public DoubleListIterator doubleListIterator() { throw new UnsupportedOperationException(); }
 
   @Override
-  public DoubleListIterator doubleListIterator(int arg0) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public DoubleListIterator doubleListIterator(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public DoubleList doubleSubList(int arg0, int arg1) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public DoubleList doubleSubList(int arg0, int arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void getElements(int arg0, double[] arg1, int arg2, int arg3) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void getElements(int arg0, double[] arg1, int arg2, int arg3) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int indexOf(double arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public int indexOf(double arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public int lastIndexOf(double arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public int lastIndexOf(double arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public double removeDouble(int arg0) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public double removeDouble(int arg0) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void removeElements(int arg0, int arg1) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void removeElements(int arg0, int arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public double set(int arg0, double arg1) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public double set(int arg0, double arg1) { throw new UnsupportedOperationException(); }
 
   @Override
-  public void size(int arg0) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void size(int arg0) { throw new UnsupportedOperationException(); }
 
 }

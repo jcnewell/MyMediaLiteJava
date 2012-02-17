@@ -128,7 +128,6 @@ public final class BinaryCosine extends BinaryDataCorrelationMatrix {
     for (int x = 0; x < numEntities; x++)
       for (int y = 0; y < x; y++) {
         if(entity_data.numEntriesByRow(x) == 0 || entity_data.numEntriesByRow(y) == 0) {
-          System.out.println("0!!!!");
           set(x, y, 0.0F);
         } else {
           set(x, y, (float) (overlap.get(x, y) / Math.sqrt(entity_data.numEntriesByRow(x) * entity_data.numEntriesByRow(y))));

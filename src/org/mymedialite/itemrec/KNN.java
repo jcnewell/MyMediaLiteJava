@@ -50,6 +50,8 @@ public abstract class KNN extends ItemRecommender {
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     saveModel(writer);
+    writer.flush();
+    writer.close();
   }
 
   /** { @inheritDoc } */
@@ -68,6 +70,7 @@ public abstract class KNN extends ItemRecommender {
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
     loadModel(reader);
+    reader.close();
   }
 
   /** { @inheritDoc } */

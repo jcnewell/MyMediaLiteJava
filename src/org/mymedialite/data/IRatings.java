@@ -29,8 +29,6 @@ import java.util.*;
  * @version 2.03
  */
 public interface IRatings extends IDataSet {
-
-  DoubleList values();
   
   public int size();
 
@@ -48,6 +46,8 @@ public interface IRatings extends IDataSet {
 
   /** Average rating in the dataset. */
   double average();
+  
+  DoubleList values();
 
   /**
    * Directly access rating by user and item</summary>
@@ -72,54 +72,6 @@ public interface IRatings extends IDataSet {
   double set(int index, double rating);
 
   /** 
-   * Get all users that are referenced by a given list of indices.
-   * @param indices the indices to take into account
-   * @return the set of users
-   */
-  IntSet getUsers(IntList indices);
-  
-  /**
-   * Get all items that are referenced by a given list of indices.
-   * @param indices the indices to take into account
-   * @return the set of items
-   */
-  IntSet getItems(IntList indices);
-  
-  /**
-   * Get index of rating for given user and item.
-   * @param user_id the user ID
-   * @param item_id the item ID
-   * @return the index of the first rating encountered that matches the user ID and item ID
-   */
-  int getIndex(int user_id, int item_id);
-
-  /**
-   * Get index of rating for given user and item.
-   * @param user_id the user ID
-   * @param item_id the item ID
-   * @param indexes the indexes to look at
-   * @return the index of the first rating encountered that matches the user ID and item ID
-   */
-  int getIndex(int user_id, int item_id, IntCollection indexes);
-
-  /**
-   * Try to get the index for given user and item.
-   * @param user_id the user ID
-   * @param item_id the item ID
-   * @return the index of the rating that matches the user ID and item ID or null, if not found
-   */
-  Integer tryGetIndex(int user_id, int item_id);
-
-  /** 
-   * Try to get the index for given user and item.
-   * @param user_id the user ID
-   * @param item_id the item ID
-   * @param indexes the indexes to look at
-   * @return the index of the first rating encountered that matches the user ID and item ID or null, if none is found
-   */
-  Integer tryGetIndex(int user_id, int item_id, Collection<Integer> indexes);	
-
-  /** 
    * Try to retrieve a rating for a given user-item combination.
    * @param user_id the user ID
    * @param item_id the item ID
@@ -134,8 +86,7 @@ public interface IRatings extends IDataSet {
    * @param indexes the indexes to look at
    * @return the first rating encountered that matches the user ID and item ID, or null if none found
    */
-  Double tryGet(int user_id, int item_id, Collection<Integer> indexes);
-  // TODO name 'tryGet' makes no sense here
+  Double tryGet(int user_id, int item_id, IntCollection indexes);
 
   /** 
    * Directly access rating by user and item.
@@ -144,7 +95,7 @@ public interface IRatings extends IDataSet {
    * @param indexes the indexes to look at
    * @return the first rating encountered that matches the user ID and item ID
    */
-  double get(int user_id, int item_id, Collection<Integer> indexes);
+  double get(int user_id, int item_id, IntCollection indexes);
 
   /**
    * Add byte-valued rating to the collection.

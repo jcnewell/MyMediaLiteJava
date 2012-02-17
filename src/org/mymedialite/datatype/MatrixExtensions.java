@@ -77,7 +77,7 @@ public class MatrixExtensions {
    * @param v the value
    */
   public static void inc(Matrix<Double> matrix, int i, int j, double v) {
-    matrix.data[i * matrix.dim2 + j] = (Double)(matrix.data[i * matrix.dim2 + j]) + v;
+    matrix.data[i * matrix.dim2 + j] = (Double) matrix.data[i * matrix.dim2 + j] + v;
   }
 
   /** 
@@ -94,7 +94,28 @@ public class MatrixExtensions {
 
     for (int x = 0; x < dim1; x++)
       for (int y = 0; y < dim2; y++)
-        matrix1.data[x * dim2 + y] = (Double)matrix1.data[x * dim2 + y] + (Double)matrix2.data[x * dim2 + y];
+        matrix1.data[x * dim2 + y] = (Double) matrix1.data[x * dim2 + y] + (Double)matrix2.data[x * dim2 + y];
+  }
+
+  /**
+   * Increments the specified matrix element by 1.
+   * @param matrix the matrix
+   * @param i the row
+   * @param j the column
+   */
+  public static void inc(Matrix<Integer> matrix, int i, int j) {
+    matrix.data[i * matrix.dim2 + j] = (Integer) matrix.data[i * matrix.dim2 + j] + 1;
+  }
+
+  /**
+   * Increment all entries of a matrix with a scalar.
+   * @param matrix the matrix
+   * @param d the number to increment with
+   */
+  public static void inc(Matrix<Double> matrix, double d) {
+    for (int x = 0; x < matrix.dim1; x++)
+      for (int y = 0; y < matrix.dim2; y++)
+        matrix.data[x * matrix.dim2 + y] = (Double) matrix.data[x * matrix.dim2 + y] + d;
   }
 
   /**
@@ -239,4 +260,41 @@ public class MatrixExtensions {
       result += (Double) matrix1.data[i * matrix1.dim2 + c] * ((Double)matrix2.data[j * matrix2.dim2 + c] - (Double)matrix3.data[k * matrix3.dim2 + c]);
     return result;
   }
+
+  /**
+   * Return the maximum value contained in a matrix.
+   * @param m the matrix
+   */
+  public static int maxInteger(Matrix<Integer> m) {
+    int max = Integer.MIN_VALUE;
+    for(Object o : m.data)
+      max = Math.max(max, (Integer) o);
+    
+    return max;
+  }
+
+  /**
+   * Return the maximum value contained in a matrix.
+   * @param m the matrix
+   */
+  public static double maxDouble(Matrix<Double> m) {
+    double max = Double.MIN_VALUE;
+    for(Object o : m.data)
+      max = Math.max(max, (Double) o);
+    
+    return max;
+  }
+
+  /**
+   * return the maximum value contained in a matrix.
+   * @param m the matrix
+   */
+  public static float maxFloat(Matrix<Float> m) {
+    float max = Float.MIN_VALUE;
+    for(Object o : m.data)
+      max = Math.max(max, (Float) o);
+    
+    return max;
+  }
+
 }

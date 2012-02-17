@@ -29,7 +29,7 @@ import org.mymedialite.datatype.SparseBooleanMatrix;
  * and provides flexible access to it. 
  * @version 2.03
  */
-public abstract class ItemRecommender implements IRecommender, Cloneable {
+public abstract class ItemRecommender implements IRecommender {
 
   /** The maximum user ID */
   protected int maxUserID;
@@ -84,44 +84,6 @@ public abstract class ItemRecommender implements IRecommender, Cloneable {
   public abstract void saveModel(String filename) throws IOException;
 
   public abstract void saveModel(PrintWriter writer) throws IOException;
-
-  public void addFeedback(int user_id, int item_id) throws IllegalArgumentException {    
-    if (user_id > maxUserID)
-      addUser(user_id);
-    if (item_id > maxItemID)
-      addItem(item_id);
-    feedback.add(user_id, item_id);
-  }
-
-  public void removeFeedback(int user_id, int item_id) {
-    if (user_id > maxUserID)
-      throw new IllegalArgumentException("Unknown user " + user_id);
-    if (item_id > maxItemID)
-      throw new IllegalArgumentException("Unknown item " + item_id);
-    feedback.remove(user_id, item_id);
-  }
-
-  protected void addUser(int user_id) {
-    if (user_id > maxUserID)
-      maxUserID = user_id;
-  }
-
-  protected void addItem(int item_id)  {
-    if (item_id > maxItemID)
-      maxItemID = item_id;
-  }
-
-  public void removeUser(int user_id) {
-    feedback.removeUser(user_id);
-    if (user_id == maxUserID)
-      maxUserID--;
-  }
-
-  public void removeItem(int item_id) {
-    feedback.removeItem(item_id);
-    if (item_id == maxItemID)
-      maxItemID--;
-  }
 
   @Override
   public String toString() {

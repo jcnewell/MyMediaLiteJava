@@ -31,7 +31,7 @@ import org.mymedialite.io.Model;
  * Abstract class for Matrix Factorization based item predictors.
  * @version 2.03
  */
-public abstract class MF extends ItemRecommender implements IIterativeModel {
+public abstract class MF extends IncrementalItemRecommender implements IIterativeModel {
     
   private static final String VERSION = "2.03";
   
@@ -64,7 +64,7 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   
   /** Get the latent item factor matrix */
   public Matrix<Double> getItemFactors() { return itemFactors; }
-
+  
   /** { @inheritDoc } */
   public int getNumIter() { return numIter; }
   
@@ -106,7 +106,7 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
    */  
   public double predict(int user_id, int item_id) {
     if ((user_id < 0) || (user_id >= userFactors.dim1)) {
-      System.out.println("user is unknown: " + user_id);
+      System.err.println("user is unknown: " + user_id);
       return 0;
     }
     if ((item_id < 0) || (item_id >= itemFactors.dim1)) {
@@ -121,6 +121,8 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     saveModel(writer);
+    writer.flush();
+    writer.close();
   }
   
   /** { @inheritDoc } */
@@ -129,8 +131,6 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
     IMatrixExtensions.writeMatrix(writer, itemFactors);
     boolean error = writer.checkError();
     if(error) System.out.println("Error writing file.");
-    writer.flush();
-    writer.close();
   }
   
   /** { @inheritDoc } */
@@ -159,7 +159,6 @@ public abstract class MF extends ItemRecommender implements IIterativeModel {
     }
     this.userFactors = user_factors;
     this.itemFactors = item_factors;
-    reader.close();
   }
   
 }

@@ -121,7 +121,7 @@ public class ItemsOnline {
         }
       }
 
-      // update recommender
+      // Update recommender
       incremental_recommender.addFeedback(users[index], items[index]);
     }
 

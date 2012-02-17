@@ -32,7 +32,7 @@ import org.mymedialite.io.Model;
  * This recommender supports incremental updates.
  * @version 2.03
  */
-public class MostPopular extends ItemRecommender {
+public class MostPopular extends IncrementalItemRecommender {
 
   private static final String VERSION = "2.03";
   
@@ -41,13 +41,11 @@ public class MostPopular extends ItemRecommender {
 
   public void train() {
     view_count = new ArrayList<Integer>(maxItemID + 1);
-    for (int i = 0; i <= maxItemID; i++) view_count.add(0);
+    for (int i = 0; i <= maxItemID; i++)
+      view_count.add(0);
 
-    for (int u = 0; u < feedback.userMatrix().numberOfRows(); u++) {
-      for (int i : feedback.userMatrix().get(u)) {
-        view_count.set(i, view_count.get(i) + 1);
-      }
-    }
+     for(int i : feedback.items())
+       view_count.set(i, view_count.get(i) + 1);
   }
   
   public double predict(int user_id, int item_id) {
@@ -64,6 +62,7 @@ public class MostPopular extends ItemRecommender {
   }
   
   public void removeItem (int item_id) {
+    super.removeItem(item_id);
     view_count.set(item_id,  0);
   }
 
@@ -80,6 +79,8 @@ public class MostPopular extends ItemRecommender {
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     saveModel(writer);
+    writer.flush();
+    writer.close();
   }
   
   public void saveModel(PrintWriter writer) {
@@ -87,14 +88,13 @@ public class MostPopular extends ItemRecommender {
     for (int i = 0; i <= maxItemID; i++) {
       writer.println(i + " " + view_count.get(i));
     }
-    writer.flush();
-    writer.close();
   }
 
   public void loadModel(String filename) throws IOException {
     System.out.println("MostPopular.loadModel()");
     BufferedReader reader = Model.getReader(filename, this.getClass());
     loadModel(reader);
+    reader.close();
   }
   
   public void loadModel(BufferedReader reader) throws IOException {
@@ -111,7 +111,6 @@ public class MostPopular extends ItemRecommender {
     }
     this.view_count = view_count;
     maxItemID = view_count.size() - 1;
-    reader.close();
   }
 
   public String toString() {

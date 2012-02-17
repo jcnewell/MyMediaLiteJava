@@ -66,7 +66,7 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
   /**
    * Number of iterations over the dataset to perform.
    */
-  protected int numIter;
+  public int numIter;
   
   /**
    * Bin size in days for modeling the time-dependent item bias.

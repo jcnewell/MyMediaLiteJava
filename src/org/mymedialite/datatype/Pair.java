@@ -27,6 +27,11 @@ public class Pair <F, S> {
   public F first;
   public S second;
 
+  /**
+   * Create a Pair object from existing data.
+   * @param first the first component
+   * @param second the second component
+   */
   public Pair(F first, S second) {
     this.first = first;
     this.second = second;

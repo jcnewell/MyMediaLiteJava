@@ -23,7 +23,7 @@ import java.io.IOException;
  * Generic interface for simple recommenders.
  * @version 2.03
  */ 
-public interface IRecommender {
+public interface IRecommender extends Cloneable {
   
   /**
    * Predict the rating or score for a given user-item combination.

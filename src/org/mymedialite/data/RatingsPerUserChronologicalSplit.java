@@ -93,7 +93,7 @@ public class RatingsPerUserChronologicalSplit implements ISplit<ITimedRatings> {
 
       int num_test_ratings  = (int) Math.round(ratings.byUser().get(u).size() * ratio);
       int num_train_ratings = ratings.byUser().get(u).size() - num_test_ratings;
-
+     
       // Assign indices to training part
       for (int i = 0; i < num_train_ratings; i++)
         train_indices.add(chronological_index.get(i));

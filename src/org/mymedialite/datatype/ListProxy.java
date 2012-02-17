@@ -115,7 +115,7 @@ public class ListProxy<T> implements List<T> {
     for (int index : indices)
       subList.add(list.get(index));
 
-    return list.iterator();
+    return subList.iterator();
   }
   
   @Override
@@ -124,7 +124,7 @@ public class ListProxy<T> implements List<T> {
     for (int index : indices)
       subList.add(list.get(index));
 
-    return list.listIterator();
+    return subList.listIterator();
   }
 
   @Override
@@ -133,7 +133,7 @@ public class ListProxy<T> implements List<T> {
     for (int i = index; i<indices.size(); i++)
       subList.add(list.get(indices.getInt(i)));
 
-    return list.listIterator();
+    return subList.listIterator();
   }
 
   @Override

@@ -38,6 +38,6 @@ public class Constants {
    *   
    * with zero or more additional spaces on either side. 
    */
-  public static final String SPLIT_CHARS = "\\s*(\t|\\s|,|;|::)\\s*";
+  public static final String SPLIT_CHARS =  " *(\\s|,|;|::) *";
 
 }

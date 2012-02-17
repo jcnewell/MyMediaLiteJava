@@ -306,6 +306,8 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
     writer.println(Double.toString(globalBias));
     IMatrixExtensions.writeMatrix(writer, userFactors);
     IMatrixExtensions.writeMatrix(writer, itemFactors);
+    writer.flush();
+    writer.close();
   }
 
   /**

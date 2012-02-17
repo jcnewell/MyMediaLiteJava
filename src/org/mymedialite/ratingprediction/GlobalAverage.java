@@ -87,6 +87,8 @@ public class GlobalAverage extends IncrementalRatingPredictor {
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
     writer.println(global_average);
+    writer.flush();
+    writer.close();
   }
 
   /**
@@ -96,6 +98,7 @@ public class GlobalAverage extends IncrementalRatingPredictor {
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
     this.global_average = Double.parseDouble(reader.readLine());
+    reader.close();
   }
 
 }
