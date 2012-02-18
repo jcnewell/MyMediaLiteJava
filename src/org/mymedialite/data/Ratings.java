@@ -84,6 +84,7 @@ public class Ratings extends DataSet implements IRatings {
 
   public void buildByUserCounts() {
     countByUser = new IntArrayList(maxUserID + 1);
+    countByUser.size(maxUserID + 1);
     for (int index = 0; index < size(); index++) {
       int userId = users.getInt(index);
       Integer count = countByUser.get(userId);

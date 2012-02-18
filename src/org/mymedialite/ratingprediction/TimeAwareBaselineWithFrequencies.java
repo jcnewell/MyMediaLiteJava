@@ -99,7 +99,7 @@ public class TimeAwareBaselineWithFrequencies extends TimeAwareBaseline {
    */
   public void train() {
     // TODO check for better way to do this.
-    int number_of_days = (int)((timed_ratings.latestTime().getTime() - timed_ratings.earliestTime().getTime()) / 3600000);
+    int number_of_days = (int)((timed_ratings.latestTime().getTime() - timed_ratings.earliestTime().getTime()) / (24 * 3600000));
 
     // Compute log rating frequencies
     log_frequency_by_day = new SparseMatrix<Integer>(maxUserID + 1, number_of_days, 0);
@@ -174,27 +174,27 @@ public class TimeAwareBaselineWithFrequencies extends TimeAwareBaseline {
  * 
  */
 public String toString() {
-  return "TimeAwareBaseline "
-      + "num_iter="                         + numIter
-      + "bin_size="                         + binSize
-      + "beta="                             + beta
-      + "user_bias_learn_rate="             + userBiasLearnRate
-      + "item_bias_learn_rate="             + itemBiasLearnRate
-      + "alpha_learn_rate="                 + alphaLearnRate
-      + "item_bias_by_time_bin_learn_rate=" + itemBiasByTimeBinLearnRate
-      + "user_bias_by_day_learn_rate="      + userBiasByDayLearnRate
-      + "user_scaling_learn_rate="          + userScalingLearnRate
-      + "user_scaling_by_day_learn_rate="   + userScalingByDayLearnRate
-      + "reg_u="                            + regU
-      + "reg_i="                            + regI
-      + "reg_alpha="                        + regAlpha
-      + "reg_item_bias_by_time_bin="        + regItemBiasByTimeBin
-      + "reg_user_bias_by_day="             + regUserBiasByDay
-      + "reg_user_scaling="                 + regUserScaling
-      + "reg_user_scaling_by_day="          + regUserScalingByDay
-      + "frequencyLogBase"                  + FrequencyLogBase
-      + "itemBiasAtFrequencyLearnRate"      + ItemBiasAtFrequencyLearnRate
-      + "regItemBiasAtFrequency"            + RegItemBiasAtFrequency;
+  return "TimeAwareBaselineWithFrequencies"
+      + " num_iter="                         + numIter
+      + " bin_size="                         + binSize
+      + " beta="                             + beta
+      + " user_bias_learn_rate="             + userBiasLearnRate
+      + " item_bias_learn_rate="             + itemBiasLearnRate
+      + " alpha_learn_rate="                 + alphaLearnRate
+      + " item_bias_by_time_bin_learn_rate=" + itemBiasByTimeBinLearnRate
+      + " user_bias_by_day_learn_rate="      + userBiasByDayLearnRate
+      + " user_scaling_learn_rate="          + userScalingLearnRate
+      + " user_scaling_by_day_learn_rate="   + userScalingByDayLearnRate
+      + " reg_u="                            + regU
+      + " reg_i="                            + regI
+      + " reg_alpha="                        + regAlpha
+      + " reg_item_bias_by_time_bin="        + regItemBiasByTimeBin
+      + " reg_user_bias_by_day="             + regUserBiasByDay
+      + " reg_user_scaling="                 + regUserScaling
+      + " reg_user_scaling_by_day="          + regUserScalingByDay
+      + " frequencyLogBase"                  + FrequencyLogBase
+      + " itemBiasAtFrequencyLearnRate"      + ItemBiasAtFrequencyLearnRate
+      + " regItemBiasAtFrequency"            + RegItemBiasAtFrequency;
   }
 
 }

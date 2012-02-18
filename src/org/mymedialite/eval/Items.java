@@ -174,11 +174,12 @@ public class Items {
       result.put("recall@10", result.get("recall@10") + recall.get(10));
 
       if (num_users % 1000 == 0)
-        System.err.println(".");
+        System.out.print(".");
       if (num_users % 60000 == 0)
-        System.err.println();
+        System.out.println();
 
     }
+    if (num_users > 1000) System.out.println();
     
     for(String measure : getMeasures())
       result.put(measure, result.get(measure) / num_users);

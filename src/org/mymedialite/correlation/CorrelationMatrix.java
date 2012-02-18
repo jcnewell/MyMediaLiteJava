@@ -49,26 +49,6 @@ public class CorrelationMatrix extends SymmetricMatrix<Float> {
     return true;
   }
 
-//  /**
-//   * 
-//   * @param i
-//   * @param j
-//   */
-//  public Float get(int i, int j) {
-//    return (Float)data[i * dim2 + j];
-//  }
-//
-//  /**
-//   * 
-//   * @param i
-//   * @param j
-//   * @param value
-//   */
-//  public void set(int i, int j, Float value) {
-//    data[i * dim2 + j] = value;
-//    data[j * dim2 + i] = value;
-//  }
-
   /**
    * Creates a CorrelationMatrix object for a given number of entities.
    * @param numEntities number of entities
@@ -206,9 +186,10 @@ public class CorrelationMatrix extends SymmetricMatrix<Float> {
         entities.add(neighbor);
       }
     }
+    
     Collections.sort(entities);    
-    int[] ids = new int[k];
-    for(int i = 0; i < k; i++) {
+    int[] ids = new int[Math.min(k, entities.size())];
+    for(int i = 0; i < ids.length; i++) {
       ids[i] = entities.get(entities.size() - 1 - i).id;
     }
     return ids;

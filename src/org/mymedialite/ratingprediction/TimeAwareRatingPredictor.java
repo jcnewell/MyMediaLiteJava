@@ -31,14 +31,12 @@ import org.mymedialite.data.ITimedRatings;
 public abstract class TimeAwareRatingPredictor extends RatingPredictor implements ITimeAwareRatingPredictor {
 
   /**
-   * rating data, including time information.
+   * Rating data, including time information.
    */
   protected ITimedRatings timed_ratings;
 
-  protected IRatings ratings;
-
   /**
-   * the rating data, including time information.
+   * The rating data, including time information.
    */
   public ITimedRatings getTimedRatings() {
     return timed_ratings;
@@ -49,9 +47,6 @@ public abstract class TimeAwareRatingPredictor extends RatingPredictor implement
     this.timed_ratings = timedRatings;
   }
 
-  /**
-   * 
-   */
   public IRatings getRatings() {
     return ratings;
   }
@@ -64,9 +59,6 @@ public abstract class TimeAwareRatingPredictor extends RatingPredictor implement
     timed_ratings = (ITimedRatings) ratings;
   }
 
-  /**
-   * 
-   */
   public abstract double predict(int user_id, int item_id, Date time);
 
 }

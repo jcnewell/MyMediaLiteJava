@@ -194,14 +194,16 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
    */
   public void train() {
     initModel();
-
     global_average = ratings.average();
-
+    
     // Compute mean day of rating by user
     userMeanDay = new ArrayList<Double>(maxUserID + 1);
-    for (int i = 0; i < timed_ratings.size(); i++)
-      userMeanDay.set(ratings.users().get(i), userMeanDay.get(ratings.users().get(i)) + relativeDay(timed_ratings.times().get(i)));
+    for(int i = 0; i <= maxUserID; i++)
+      userMeanDay.add(0.0);
 
+    for (int i = 0; i < timed_ratings.size(); i++)
+      userMeanDay.set(ratings.users().get(i), userMeanDay.get(ratings.users().get(i)) + relativeDay(timed_ratings.times().get(i)));  
+    
     for (int u = 0; u <= maxUserID; u++)
       if (ratings.countByUser().get(u) != 0)
         userMeanDay.set(u, userMeanDay.get(u) / ratings.countByUser().get(u));
@@ -218,7 +220,7 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
    * @param date the date/time of the rating event
    */
   protected int relativeDay(Date date) {
-   return (int)((date.getTime() - timed_ratings.earliestTime().getTime()) / 3600000);
+   return (int)((date.getTime() - timed_ratings.earliestTime().getTime()) / (24 * 3600000));
   }
 
   /**
@@ -226,19 +228,27 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
    */
   protected void initModel() {
     
-    int number_of_days = (int)((timed_ratings.latestTime().getTime() - timed_ratings.earliestTime().getTime()) / 3600000);
+    int number_of_days = (int)((timed_ratings.latestTime().getTime() - timed_ratings.earliestTime().getTime()) / (24 * 3600000));
 
     int number_of_bins = number_of_days / binSize + 1;
     System.out.println(number_of_days + " days, " + number_of_bins + " bins");
 
     // Initialize parameters
-    user_bias = new ArrayList<Double>(maxUserID + 1);
+    user_bias = new ArrayList<Double>(maxUserID + 1);    
     item_bias = new ArrayList<Double>(maxItemID + 1);
     alpha = new ArrayList<Double>(maxUserID + 1);
-    item_bias_by_time_bin = new Matrix<Double>(maxItemID + 1, number_of_bins);
+
+    item_bias_by_time_bin = new Matrix<Double>(maxItemID + 1, number_of_bins, 0.0);
     user_bias_by_day = new SparseMatrix<Double>(maxUserID + 1, number_of_days, 0.0);
     user_scaling = new ArrayList<Double>(maxUserID + 1);
     user_scaling_by_day = new SparseMatrix<Double>(maxUserID + 1, number_of_days, 0.0);
+
+    for (int i = 0; i <= maxUserID; i++) {
+      user_bias.add(0.0);
+      item_bias.add(0.0);
+      alpha.add(0.0);
+      user_scaling.add(0.0);
+    }
   }
 
   /**
@@ -249,7 +259,7 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
       int i = timed_ratings.items().get(index);
       int day = relativeDay(timed_ratings.times().get(index));
       int bin = day / binSize;
-
+      
       // Compute error
       double err = timed_ratings.get(index) - predict(u, i, day, bin);
       updateParameters(u, i, day, bin, err);
@@ -308,8 +318,8 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
     double result = global_average;
 
     double dev_u = Math.signum(day - userMeanDay.get(user_id)) * Math.pow(Math.abs(day - userMeanDay.get(user_id)), beta);
-    result += user_bias.get(user_id) + alpha.get(user_id) * dev_u + user_bias_by_day.get(user_id, day);
-    result += (item_bias.get(item_id) + item_bias_by_time_bin.get(item_id, bin)) * (user_scaling.get(user_id) + user_scaling_by_day.get(user_id, day));
+    result += user_bias.get(user_id) + alpha.get(user_id) * dev_u + user_bias_by_day.get(user_id, day);    
+    result += (item_bias.get(item_id) + item_bias_by_time_bin.get(item_id, bin)) ;  //  * (user_scaling.get(user_id) + user_scaling_by_day.get(user_id, day));
 
     return result;
   }
@@ -368,24 +378,24 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
    * 
    */
   public String toString() {
-    return "TimeAwareBaseline "
-        + "num_iter="                         + numIter
-        + "bin_size="                         + binSize
-        + "beta="                             + beta
-        + "user_bias_learn_rate="             + userBiasLearnRate
-        + "item_bias_learn_rate="             + itemBiasLearnRate
-        + "alpha_learn_rate="                 + alphaLearnRate
-        + "item_bias_by_time_bin_learn_rate=" + itemBiasByTimeBinLearnRate
-        + "user_bias_by_day_learn_rate="      + userBiasByDayLearnRate
-        + "user_scaling_learn_rate="          + userScalingLearnRate
-        + "user_scaling_by_day_learn_rate="   + userScalingByDayLearnRate
-        + "reg_u="                            + regU
-        + "reg_i="                            + regI
-        + "reg_alpha="                        + regAlpha
-        + "reg_item_bias_by_time_bin="        + regItemBiasByTimeBin
-        + "reg_user_bias_by_day="             + regUserBiasByDay
-        + "reg_user_scaling="                 + regUserScaling
-        + "reg_user_scaling_by_day="          + regUserScalingByDay;
+    return "TimeAwareBaseline"
+        + " num_iter="                         + numIter
+        + " bin_size="                         + binSize
+        + " beta="                             + beta
+        + " user_bias_learn_rate="             + userBiasLearnRate
+        + " item_bias_learn_rate="             + itemBiasLearnRate
+        + " alpha_learn_rate="                 + alphaLearnRate
+        + " item_bias_by_time_bin_learn_rate=" + itemBiasByTimeBinLearnRate
+        + " user_bias_by_day_learn_rate="      + userBiasByDayLearnRate
+        + " user_scaling_learn_rate="          + userScalingLearnRate
+        + " user_scaling_by_day_learn_rate="   + userScalingByDayLearnRate
+        + " reg_u="                            + regU
+        + " reg_i="                            + regI
+        + " reg_alpha="                        + regAlpha
+        + " reg_item_bias_by_time_bin="        + regItemBiasByTimeBin
+        + " reg_user_bias_by_day="             + regUserBiasByDay
+        + " reg_user_scaling="                 + regUserScaling
+        + " reg_user_scaling_by_day="          + regUserScalingByDay;
   }
 
   @Override

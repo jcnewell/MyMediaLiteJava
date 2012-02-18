@@ -88,18 +88,24 @@ public class TimedRatingData {
       int user_id = user_mapping.toInternalID(tokens[0]);
       int item_id = item_mapping.toInternalID(tokens[1]);
       double rating = Double.parseDouble(tokens[2]);
-      String date_String = tokens[3];
-      if (tokens[3].startsWith("\"") && tokens.length > 4 && tokens[4].endsWith("\"")) {
-        date_String = tokens[3] + " " + tokens[4];
-        date_String = date_String.substring(1, date_String.length() - 1);
+      
+      String dateString;
+      if(tokens.length > 4 ) {
+        dateString = tokens[3] + " " + tokens[4];
+      } else {
+        dateString = tokens[3];
+      }
+ 
+      if (dateString.startsWith("\"") && dateString.endsWith("\"")) {
+        dateString = dateString.substring(1, dateString.length() - 1);
       }
 
-      if (date_String.length() == 19) {  // format "yyyy-mm-dd hh:mm:ss" 
-        String[] date_time_tokens = date_String.split("[\\s-:]");
+      if (dateString.length() == 19) {  // format "yyyy-mm-dd hh:mm:ss" 
+        String[] date_time_tokens = dateString.split("[\\s-:]");
         Calendar calendar = Calendar.getInstance();
         calendar.set(
             Integer.parseInt(date_time_tokens[0]),
-            Integer.parseInt(date_time_tokens[1]),
+            Integer.parseInt(date_time_tokens[1]) - 1,
             Integer.parseInt(date_time_tokens[2]),
             Integer.parseInt(date_time_tokens[3]),
             Integer.parseInt(date_time_tokens[4]),
@@ -108,8 +114,8 @@ public class TimedRatingData {
         
         ratings.add(user_id, item_id, rating, calendar.getTime());
       
-      } else if (date_String.length() == 10) {  // format "yyyy-mm-dd"
-        String[] date_time_tokens = date_String.split("[\\s-:]");
+      } else if (dateString.length() == 10) {  // format "yyyy-mm-dd"
+        String[] date_time_tokens = dateString.split("[\\s-:]");
         Calendar calendar = Calendar.getInstance();
         calendar.set(
             Integer.parseInt(date_time_tokens[0]),
@@ -119,14 +125,14 @@ public class TimedRatingData {
         
         ratings.add(user_id, item_id, rating, calendar.getTime());
 
-      } else if ((unix_time = Utils.parseInteger(date_String)) != null) {  // unsigned integer value, interpreted as seconds since Unix epoch
+      } else if ((unix_time = Utils.parseInteger(dateString)) != null) {  // unsigned integer value, interpreted as seconds since Unix epoch
         Date date = new Date();
         date.setTime((long)unix_time * 1000);
         ratings.add(user_id, item_id, rating, date);
       
       } else {
         SimpleDateFormat dateFormat = new SimpleDateFormat();
-        Date date = dateFormat.parse(date_String);
+        Date date = dateFormat.parse(dateString);
         ratings.add(user_id, item_id, rating, date);
       }
       

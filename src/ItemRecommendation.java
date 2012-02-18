@@ -1,19 +1,4 @@
-// Copyright (C) 2010, 2011 Zeno Gantner, Chris Newell
-//
-// This file is part of MyMediaLite.
-//
-// MyMediaLite is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// MyMediaLite is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with MyMediaLite.  If not, see <http://www.gnu.org/licenses/>.
+
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import java.io.IOException;
@@ -63,7 +48,8 @@ import org.mymedialite.util.Recommender;
 import org.mymedialite.util.Utils;
 
 /**
- * Item prediction program, see Usage() method for more information.
+ * Item prediction program, see usage() method for more information.
+ *
  * @version 2.03
  */
 public class ItemRecommendation {
@@ -142,7 +128,7 @@ public class ItemRecommendation {
     System.exit(0);
   }
 
-  public static class ErrorHandler implements Recommender.ErrorHandler {
+  private static class ErrorHandler implements Recommender.ErrorHandler {
     public void reportError(String message) {
       usage(message);
     }
@@ -156,10 +142,10 @@ public class ItemRecommendation {
 
   static void usage(int exit_code) {
     System.out.println("MyMediaLite item recommendation from positive-only feedback " + VERSION);
-    System.out.println(" usage:   item_recommendation --training-file=FILE --recommender=METHOD [OPTIONS]");
-    System.out.println("   method ARGUMENTS have the form name=value");
+    System.out.println("  Usage:   item_recommendation --training-file=FILE --recommender=METHOD [OPTIONS]");
+    System.out.println("     method ARGUMENTS have the form name=value");
     System.out.println();
-    System.out.println("  general OPTIONS:\n" +
+    System.out.println("  General OPTIONS:\n" +
         "   --recommender=METHOD             use METHOD for recommendations (default: MostPopular)\n" +
         "   --group-recommender=METHOD       use METHOD to combine the predictions for several users\n" +
         "   --recommender-options=OPTIONS    use OPTIONS as recommender options\n" +
@@ -168,7 +154,7 @@ public class ItemRecommendation {
         "   --random-seed=N                  initialize the random number generator with N\n" +
         "\n" +
 
-      "  files:\n" +
+      "  Files:\n" +
       "   --training-file=FILE         read training data from FILE\n" +
       "   --test-file=FILE             read test data from FILE\n" +
       "   --file-format=ignore_first_line|default\n" +
@@ -182,28 +168,28 @@ public class ItemRecommendation {
       "   --load-model=FILE            load model from FILE\n" +
       "\n" +
 
-      "  data interpretation:\n" +
+      "  Data interpretation:\n" +
       "     --user-prediction          transpose the user-item matrix and perform user prediction instead of item prediction\n" +
       "     --rating-threshold=NUM     (for rating datasets) interpret rating >= NUM as positive feedback\n" +
       "\n" +
 
-      "  choosing the items for evaluation/prediction (mutually exclusive):\n" +
+      "  Choosing the items for evaluation/prediction (mutually exclusive):\n" +
       "   --candidate-items=FILE       use the items in FILE (one per line) as candidate items in the evaluation\n" +
       "   --overlap-items              use only the items that are both in the training and the test set as candidate items in the evaluation\n" +
       "   --in-training-items          use only the items in the training set as candidate items in the evaluation\n" +
       "   --in-test-items              use only the items in the test set as candidate items in the evaluation\n" +
       "   --all-items                  use all known items as candidate items in the evaluation\n" +
 
-      "  choosing the users for evaluation/prediction\n" +
+      "  Choosing the users for evaluation/prediction\n" +
       "   --test-users=FILE    predict items for users specified in FILE (one user per line)\n" +
       "\n" +
 
-      "  prediction options:\n" +
+      "  Prediction options:\n" +
       "   --prediction-file=FILE       write ranked predictions to FILE, one user per line\n" +
       "   --predict-items-number=N     predict N items per user (needs --predict-items-file)\n" +
       "\n" +
 
-      "  evaluation options:\n" +
+      "  Evaluation options:\n" +
       "   --cross-validation=K         perform k-fold cross-validation on the training data\n" +
       "   --show-fold-results          show results for individual folds in cross-validation\n" +
       "   --test-ratio=NUM             evaluate by splitting of a NUM part of the feedback\n" +
@@ -214,7 +200,7 @@ public class ItemRecommendation {
       "   --compute-fit                display fit on training data\n" +
       "\n" +
 
-      "   finding the right number of iterations (iterative methods)\n" +
+      "   Finding the right number of iterations (iterative methods)\n" +
       "   --find-iter=N                give out statistics every N iterations\n" +
       "   --max-iter=N                 perform at most N iterations\n" +
       "   --auc-cutoff=NUM             abort if AUC is below NUM\n" +
