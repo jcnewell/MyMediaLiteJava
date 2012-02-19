@@ -18,7 +18,6 @@
 package org.mymedialite.ratingprediction;
 
 import java.io.IOException;
-import java.util.Random;
 
 import org.mymedialite.ratingprediction.RatingPredictor;
 
@@ -27,12 +26,12 @@ import org.mymedialite.ratingprediction.RatingPredictor;
  * For use as experimental baseline.
  * @version 2.03
  */
-public class RandomRatingPredictor extends RatingPredictor {
+public class Random extends RatingPredictor {
 
-  Random random;
-  
-  public RandomRatingPredictor() { 
-    random = new Random();
+  java.util.Random random;
+
+  public Random() { 
+    random = new java.util.Random();
   }
 
   @Override

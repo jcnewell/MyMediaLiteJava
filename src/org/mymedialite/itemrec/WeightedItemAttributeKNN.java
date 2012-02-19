@@ -1,5 +1,4 @@
-//Copyright (C) 2010 Steffen Rendle, Zeno Gantner
-//Copyright (C) 2011 Zeno Gantner, Chris Newell
+//Copyright (C) 2011 Chris Newell
 //
 //This file is part of MyMediaLite.
 //
@@ -23,6 +22,8 @@ package org.mymedialite.itemrec;
  * over the item attibutes.
  * 
  * This recommender does NOT support incremental updates.
+ * 
+ * @author Chris Newell
  * @version 2.03
  */
 public class WeightedItemAttributeKNN extends ItemAttributeKNN {

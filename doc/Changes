@@ -1,11 +1,9 @@
-201-02-06 Initial release of 2.03
-- Added all missing packages and classes
+201-02-18 Initial release of 2.03
+- Added missing packages and classes
 - Added command line programs
-- Replaced IntHashSet with fastutils IntArraySet
-- DenseMatrix support added using Colt
-- Added default constructor for ItemRecommender
-- Added WeightedItemAttributeKNN, Perfect and Worst Item Recommenders
-- Added init method to IMatrix interface - unsupported by SparseMatrices. Required because of type erasure.
+- Introduced fastutils primitive collections
+- Introduced Colt DenseMatrices
+- Added WeightedItemAttributeKNN
 
 2011-11-??	getting closer to 2.02
  - BPRMF, MatrixFactorization: fix two bugs in incremental updates (zeno)
