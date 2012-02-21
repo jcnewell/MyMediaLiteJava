@@ -49,7 +49,6 @@ public class VectorExtensions {
     for (Object v : vector) {
       writer.println(v);
     }
-    writer.println();
   }  
   
   /**
@@ -103,62 +102,11 @@ public class VectorExtensions {
    */
   public static IntList readIntVector(BufferedReader reader) throws IOException {
     int dim = Integer.parseInt(reader.readLine());
-
     IntList vector = new IntArrayList(dim);
-
     for (int i = 0; i < dim; i++)
       vector.add(i, Integer.parseInt(reader.readLine()));
 
     return vector;
   }
-  
-//
-//  /**
-//   * Compute the Euclidean norm of a collection of doubles
-//   * @param vector the vector to compute the norm for
-//   * @return the Euclidean norm of the vector
-//   */
-//  public static double euclideanNorm(Double[] vector) {
-//      double sum = 0;
-//      for (double v : vector) {
-//        sum += Math.pow(v, 2);
-//      }
-//      return Math.sqrt(sum);
-//  }
-//  
-//  /**
-//   * Compute the Euclidean norm of a collection of doubles
-//   * @param vector the vector to compute the norm for
-//   * @return the Euclidean norm of the vector
-//   */
-//  public static double euclideanNorm(Collection<Double> vector) {
-//    double sum = 0;
-//    for (double v : vector) {
-//      sum += Math.pow(v, 2);
-//    }
-//    return Math.sqrt(sum);
-//  }
-//
-//  /**
-//   * Compute the L1 norm of a collection of doubles.
-//   * @param vector the vector to compute the norm for
-//   * @return the L1 norm of the vector
-//   */
-//  public static double L1Norm(Collection<Double> vector) {
-//    double sum = 0;
-//    for (double v : vector) sum += Math.abs(v);
-//    return sum;
-//  }
-//  
-//  /**
-//   * Initialize a collection of doubles with values from a normal distribution
-//   * @param vector the vector to initialize
-//   * @param mean the mean of the normal distribution
-//   * @param stdev the standard deviation of the normal distribution
-//   */
-//  public static void initNormal(List<Double> vector, double mean, double stdev) {
-//    Random rnd = Random.getInstance();
-//    for (int i = 0; i < vector.size(); i++) vector.set(i, rnd.nextNormal(mean, stdev));
-//  }
-  
+
 }

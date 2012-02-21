@@ -46,7 +46,6 @@ public class IMatrixExtensions {
         writer.println(i + " " + j + " " + matrix.get(i, j));
       }
     }
-    writer.println();
   }
   
   /**
@@ -59,7 +58,6 @@ public class IMatrixExtensions {
     for (Pair<Integer, Integer> index_pair : matrix.nonEmptyEntryIDs())
       writer.println(index_pair.first + " " + index_pair.second + " " + matrix.get(index_pair.first, index_pair.second));
 
-    writer.println();
   }
 
   /**
@@ -74,7 +72,13 @@ public class IMatrixExtensions {
     int dim2 = Integer.parseInt(numbers[1]);
     IMatrix<Double> matrix = example_matrix.createMatrix(dim1, dim2);
 
-    while ((numbers = reader.readLine().split(" ")).length == 3) {
+    int length = dim1 * dim2;
+    for (int n = 0; n < length; n++) {
+      String line = reader.readLine();
+      numbers = line.split(" ");
+      if(numbers.length != 3)
+        throw new IOException("Expected three fields: " + line);
+      
       int i = Integer.parseInt(numbers[0]);
       int j = Integer.parseInt(numbers[1]);
       double v = Double.parseDouble(numbers[2]);
@@ -101,7 +105,13 @@ public class IMatrixExtensions {
     int dim2 = Integer.parseInt(numbers[1]);
     IMatrix<Float> matrix = example_matrix.createMatrix(dim1, dim2);
 
-    while ((numbers = reader.readLine().split(" ")).length == 3) {
+    int length = dim1 * dim2;
+    for (int n = 0; n < length; n++) {
+      String line = reader.readLine();
+      numbers = line.split(" ");
+      if(numbers.length != 3)
+        throw new IOException("Expected three fields: " + line);
+      
       int i = Integer.parseInt(numbers[0]);
       int j = Integer.parseInt(numbers[1]);
       Float v = Float.parseFloat(numbers[2]);
@@ -128,7 +138,13 @@ public class IMatrixExtensions {
     int dim2 = Integer.parseInt(numbers[1]);
     IMatrix<Integer> matrix = example_matrix.createMatrix(dim1, dim2);
 
-    while ((numbers = reader.readLine().split(" ")).length == 3) {
+    int length = dim1 * dim2;
+    for (int n = 0; n < length; n++) {
+      String line = reader.readLine();
+      numbers = line.split(" ");
+      if(numbers.length != 3)
+        throw new IOException("Expected three fields: " + line);
+
       int i = Integer.parseInt(numbers[0]);
       int j = Integer.parseInt(numbers[1]);
       Integer v = Integer.parseInt(numbers[2]);
