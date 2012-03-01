@@ -95,22 +95,17 @@ public class CorrelationMatrix extends SymmetricMatrix<Float> {
 
     String regex = "[\t ,]";  // tab, space or commma.
 
-    //String line;
-    //while ((line = reader.readLine()) != null) {
+    String line;
+    // TODO count number of non-zero entries and record in file?
+    while ((line = reader.readLine()) != null) {
+      String[] numbers = line.split(regex);
+      int i = Integer.parseInt(numbers[0]);
+      int j = Integer.parseInt(numbers[1]);
+      float c = Float.parseFloat(numbers[2]);
 
-    for (int n = 0; n < numEntities; n++) {
-      for (int m = n + 1; m < numEntities; m++) {
-        String line = reader.readLine();
-        String[] numbers = line.split(regex);
-        int i = Integer.parseInt(numbers[0]);
-        int j = Integer.parseInt(numbers[1]);
-        float c = Float.parseFloat(numbers[2]);
-
-        if (i >= numEntities) throw new IOException("Entity ID is too big: i = " + i);
-        if (j >= numEntities) throw new IOException("Entity ID is too big: j = " + j);
-
-        cm.set(i, j, c);
-      }
+      if (i >= numEntities) throw new IOException("Entity ID is too big: i = " + i);
+      if (j >= numEntities) throw new IOException("Entity ID is too big: j = " + j);
+      cm.set(i, j, c);
     }
     return cm;
   }
@@ -126,7 +121,8 @@ public class CorrelationMatrix extends SymmetricMatrix<Float> {
     for (int i = 0; i < numEntities; i++) {
       for (int j = i + 1; j < numEntities; j++) {
         float val = get(i, j);
-        if (val != 0f) writer.println(i + " " + j + " " + val);
+        if (val != 0f) 
+          writer.println(i + " " + j + " " + val);
       }
     }
   }
