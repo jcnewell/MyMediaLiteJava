@@ -18,6 +18,8 @@
 
 package org.mymedialite.itemrec;
 
+import java.util.List;
+
 import org.mymedialite.IRecommender;
 
 /**
@@ -36,6 +38,13 @@ public interface IIncrementalItemRecommender extends IRecommender {
 	 * @param item_id the item ID
 	 */
 	void addFeedback(int user_id, int item_id);
+
+	/**
+     * Add a list of new positive feedback events
+     * @param user_id the user ID
+     * @param item_ids the List of item IDs
+     */
+	void addFeedback(int user_id, List<Integer> item_ids);
 	
 	/**
 	 * remove all positive feedback events with that user-item combination

@@ -20,9 +20,7 @@ package org.mymedialite.io;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
 import org.mymedialite.data.IEntityMapping;
-import org.mymedialite.data.IHierarchicalEntityMapping;
 import org.mymedialite.datatype.SparseBooleanMatrix;
 
 /**

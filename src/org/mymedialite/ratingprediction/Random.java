@@ -17,7 +17,9 @@
 
 package org.mymedialite.ratingprediction;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.mymedialite.ratingprediction.RatingPredictor;
 
@@ -44,11 +46,15 @@ public class Random extends RatingPredictor {
   }
 
   @Override
-  public void loadModel(String filename) throws IOException {
-  }
+  public void loadModel(String filename) throws IOException { /* do nothing */ }
 
   @Override
-  public void saveModel(String filename) throws IOException {
-  }
+  public void loadModel(BufferedReader reader) throws IOException { /* do nothing */ }
+  
+  @Override
+  public void saveModel(String filename) throws IOException { /* do nothing */ }
 
+  @Override
+  public void saveModel(PrintWriter writer) throws IOException { /* do nothing */ }
+  
 }

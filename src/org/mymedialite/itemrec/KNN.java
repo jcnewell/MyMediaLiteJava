@@ -19,7 +19,10 @@
 package org.mymedialite.itemrec;
 
 import java.io.*;
+import java.util.List;
+
 import org.mymedialite.correlation.CorrelationMatrix;
+import org.mymedialite.data.WeightedItem;
 import org.mymedialite.io.Model;
 import org.mymedialite.itemrec.ItemRecommender;
 
@@ -27,7 +30,7 @@ import org.mymedialite.itemrec.ItemRecommender;
  * Base class for item recommenders that use some kind of kNN model.
  * @version 2.03
  */
-public abstract class KNN extends ItemRecommender {
+public abstract class KNN extends IncrementalItemRecommender {
 
   private static final String VERSION = "2.03";
 
@@ -58,12 +61,15 @@ public abstract class KNN extends ItemRecommender {
   public void saveModel(PrintWriter writer) {
     writer.println(nearest_neighbors.length);
     for (int[] nn : nearest_neighbors) {
-      writer.write(nn[0]);
+      writer.write(Integer.toString(nn[0]));
       for (int i = 1; i < nn.length; i++)
-        writer.print(" " + nn[i]);
+        writer.print(" " + Integer.toString(nn[i]));
+
       writer.println();
     }
     correlation.write(writer);
+    writer.flush();
+    writer.close();
   }
 
   /** { @inheritDoc } */
@@ -85,7 +91,20 @@ public abstract class KNN extends ItemRecommender {
       }
     }
     this.correlation = CorrelationMatrix.readCorrelationMatrix(reader);
+    reader.close();
     this.k = nearest_neighbors[0].length;
     this.nearest_neighbors = nearest_neighbors;
   }
+
+  @Override
+  public void addItem(int item_id) {
+    if (item_id > maxItemID)
+     throw new UnsupportedOperationException("New items are not supported");
+  }
+  
+  @Override
+  public void removeItem(int item_id) {
+    throw new UnsupportedOperationException();
+  }
+  
 }

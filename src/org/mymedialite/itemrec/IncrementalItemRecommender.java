@@ -18,6 +18,8 @@
 
 package org.mymedialite.itemrec;
 
+import java.util.List;
+
 /**
  * Base class for item recommenders that support incremental updates.
  */
@@ -33,6 +35,12 @@ public abstract class IncrementalItemRecommender extends ItemRecommender impleme
     feedback.add(user_id, item_id);
   }
 
+  @Override
+  public void addFeedback(int user_id, List<Integer> item_ids) {
+    for(int item_id : item_ids)
+      addFeedback(user_id, item_id); 
+  }
+  
   @Override
   public void removeFeedback(int user_id, int item_id) {
     if (user_id > maxUserID)

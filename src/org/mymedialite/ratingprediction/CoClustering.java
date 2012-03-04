@@ -330,6 +330,13 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
    */
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    saveModel(writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
     VectorExtensions.writeVector(writer, user_clustering);
     VectorExtensions.writeVector(writer, item_clustering);
     writer.println(Double.toString(global_average));
@@ -338,15 +345,17 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
     VectorExtensions.writeVector(writer, user_cluster_averages);
     VectorExtensions.writeVector(writer, item_cluster_averages);
     IMatrixExtensions.writeMatrix(writer, cocluster_averages);
-    writer.flush();
-    writer.close();
   }
 
-  /**
-   * 
-   */
+  @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
     IntList user_clustering = VectorExtensions.readIntVector(reader);
     IntList item_clustering = VectorExtensions.readIntVector(reader);
     double global_average = Double.parseDouble(reader.readLine());
@@ -384,7 +393,6 @@ public class CoClustering extends RatingPredictor implements IIterativeModel {
     this.item_averages = item_averages;
     this.user_clustering = user_clustering;
     this.item_clustering = item_clustering;
-
   }
 
   /**

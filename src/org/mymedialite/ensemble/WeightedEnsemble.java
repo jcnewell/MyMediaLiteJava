@@ -70,25 +70,31 @@ public class WeightedEnsemble extends Ensemble {
     return result / weight_sum;
   }
 
-  /**
-   * @throws IOException 
-   */
+  @Override
   public void saveModel(String filename) throws IOException {
-      PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION); 
-      writer.println(recommenders.size());
-      for (int i=0; i < recommenders.size(); i++) {
-        recommenders.get(i).saveModel("model-" + i + ".txt");
-        writer.println(recommenders.get(i).getClass().getName() + " " + weights.get(i).toString());
-      }
-      writer.flush();
-      writer.close();
-    }
-  
+    PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    saveModel(writer);
+    writer.flush();
+    writer.close();
+  }
 
-  /**
-   */
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
+    writer.println(recommenders.size());
+    for (int i=0; i < recommenders.size(); i++) {
+      recommenders.get(i).saveModel("model-" + i + ".txt");
+      writer.println(recommenders.get(i).getClass().getName() + " " + weights.get(i).toString());
+    }
+  }
+  
+  @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  public void loadModel(BufferedReader reader) throws IOException {
       int numberOfComponents = Integer.parseInt(reader.readLine());
 
       List<Double> weights = new ArrayList<Double>();
@@ -110,7 +116,6 @@ public class WeightedEnsemble extends Ensemble {
        
         weights.add(Double.parseDouble(data[1]));
       }
-      reader.close();
 
       this.weights = weights;
       this.recommenders = recommenders;

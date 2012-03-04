@@ -18,11 +18,13 @@
 
 package org.mymedialite.itemrec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mymedialite.IItemSimilarityProvider;
 import org.mymedialite.correlation.BinaryCosine;
 import org.mymedialite.correlation.Jaccard;
+import org.mymedialite.data.WeightedItem;
 
 /**
  * Unweighted k-nearest neighbor item-based collaborative filtering using cosine similarity.
@@ -32,9 +34,7 @@ import org.mymedialite.correlation.Jaccard;
  */
 public class ItemKNN extends KNN implements IItemSimilarityProvider {
 
-  /**
-   * 
-   */
+  @Override
   public void train() {
     correlation = BinaryCosine.create(feedback.itemMatrix());
     
@@ -44,9 +44,7 @@ public class ItemKNN extends KNN implements IItemSimilarityProvider {
       nearest_neighbors[i] = correlation.getNearestNeighbors(i, k);
   }
 
-  /**
-   * 
-   */
+  @Override
   public double predict(int user_id, int item_id) {
     if ((user_id < 0) || (user_id > maxUserID))
       return 0;
@@ -60,17 +58,37 @@ public class ItemKNN extends KNN implements IItemSimilarityProvider {
     }
     return (double) count / k;
   }
+  
+  // TODO experimental - REMOVE
+//  @Override
+//  public List<WeightedItem> scoreItems(List<Integer> accessed_items, List<Integer> candidate_items) {
+//    List<WeightedItem> weightedItems = new ArrayList<WeightedItem>();
+//    
+//    for(int candidate_item : candidate_items) {
+//      double weight;     
+//    
+//      if ((candidate_item < 0) || (candidate_item > maxItemID)) {
+//        // Return zero for unknown items.
+//        weight = 0.0;
+//      } else {
+//        int count = 0;
+//        for (int neighbor : nearest_neighbors[candidate_item]) {
+//          if(accessed_items.contains(neighbor))
+//            count++;
+//        }
+//        weight = (double) count / k;
+//      }
+//      weightedItems.add(new WeightedItem(candidate_item, weight));
+//    }
+//    return weightedItems;
+//  }
 
-  /**
-   * 
-   */
+  @Override
   public float getItemSimilarity(int item_id1, int item_id2) {
     return correlation.get(item_id1, item_id2);
   }
 
-  /**
-   * 
-   */
+  @Override
   public int[] getMostSimilarItems(int item_id, int n) {
     if (n == k)
       return nearest_neighbors[item_id];
@@ -83,9 +101,7 @@ public class ItemKNN extends KNN implements IItemSimilarityProvider {
     }
   }
 
-  /**
-   * 
-   */
+  @Override
   public String toString() {
     return "ItemKNN k=" + (k == Integer.MAX_VALUE ? "inf" : Integer.toString(k));
   }

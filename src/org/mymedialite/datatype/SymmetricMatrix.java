@@ -70,11 +70,8 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
     this.data = new Object[dim][];
     for (int i = 0; i < dim; i++)
       data[i] = new Object[i + 1];
-    
-    if(d != null)
-      for (int i = 0; i < dim; i++)
-        for (int j = 0; j <= i; j++)
-          data[i][j] = d;
+           
+    if(d != null) init(d); 
   }
 
   /**
@@ -136,6 +133,7 @@ public class SymmetricMatrix<T> implements IMatrix<T> {
         new_data[i] = new Object[i + 1];
 
       for (int i = 0; i < dim; i++)
+        // TODO use arraycopy here. 
         for (int j = 0; j <= i; j++)
           new_data[i][j] = get(i, j);
 

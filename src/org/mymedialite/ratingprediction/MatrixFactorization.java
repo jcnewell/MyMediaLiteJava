@@ -298,22 +298,30 @@ public class MatrixFactorization extends IncrementalRatingPredictor implements I
     itemFactors.setRowToOneValue(item_id, 0.0);
   }
 
-  /**
-   * @throws IOException 
-   */
+  @Override
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
-    writer.println(Double.toString(globalBias));
-    IMatrixExtensions.writeMatrix(writer, userFactors);
-    IMatrixExtensions.writeMatrix(writer, itemFactors);
+    saveModel(writer);
     writer.flush();
     writer.close();
   }
 
-  /**
-   */
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
+    writer.println(Double.toString(globalBias));
+    IMatrixExtensions.writeMatrix(writer, userFactors);
+    IMatrixExtensions.writeMatrix(writer, itemFactors);
+  }
+
+  @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
     double bias = Double.parseDouble(reader.readLine());
 
     Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));

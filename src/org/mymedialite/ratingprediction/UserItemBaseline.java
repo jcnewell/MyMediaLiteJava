@@ -206,16 +206,27 @@ public class UserItemBaseline extends IncrementalRatingPredictor implements IIte
   @Override
   public void saveModel(String filename) throws IOException {  
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
-    writer.println(globalAverage);
-    VectorExtensions.writeVectorArray(writer, userBiases);
-    VectorExtensions.writeVectorArray(writer, itemBiases);
+    saveModel(writer);
     writer.flush();
     writer.close();
   }
 
   @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
+    writer.println(globalAverage);
+    VectorExtensions.writeVectorArray(writer, userBiases);
+    VectorExtensions.writeVectorArray(writer, itemBiases);
+  }
+
+  @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
     double globalAverage = Double.parseDouble(reader.readLine());
     double[] userBiases = VectorExtensions.readVectorArray(reader);
     double[] itemBiases = VectorExtensions.readVectorArray(reader);

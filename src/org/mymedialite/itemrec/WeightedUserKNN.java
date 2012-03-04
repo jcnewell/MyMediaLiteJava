@@ -18,6 +18,10 @@
 
 package org.mymedialite.itemrec;
 
+import java.util.List;
+
+import org.mymedialite.data.WeightedItem;
+
 /**
  * Weighted k-nearest neighbor user-based collaborative filtering using cosine-similarity.
  * 
@@ -26,9 +30,7 @@ package org.mymedialite.itemrec;
  */
 public class WeightedUserKNN extends UserKNN {
 
-  /**
-   * 
-   */
+  @Override
   public double predict(int user_id, int item_id) {
 
     if ((user_id < 0) || (user_id > maxUserID))
@@ -48,9 +50,7 @@ public class WeightedUserKNN extends UserKNN {
     }
   }
 
-  /**
-   * 
-   */
+  @Override
   public String toString() {
     return "WeightedUserKNN k=" + (k == Integer.MAX_VALUE ? "inf" : Integer.toString(k));
   }

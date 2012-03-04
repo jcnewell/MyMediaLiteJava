@@ -33,9 +33,6 @@ public class ItemAttributeKNN extends ItemKNN implements IItemAttributeAwareReco
 
   private SparseBooleanMatrix itemAttributes;
 
-  /**
-   * 
-   */
   @Override
   public SparseBooleanMatrix getItemAttributes() {
     return itemAttributes;
@@ -44,20 +41,16 @@ public class ItemAttributeKNN extends ItemKNN implements IItemAttributeAwareReco
   @Override
   public void setItemAttributes(SparseBooleanMatrix itemAttributes) {
     this.itemAttributes = itemAttributes;
-    this.maxItemID = Math.max(maxItemID, itemAttributes.numberOfRows() - 1);
+    // TODO report this?
+    //this.maxItemID = Math.max(maxItemID, itemAttributes.numberOfRows() - 1);
+    this.maxItemID = itemAttributes.numberOfRows() - 1;
   }
 
-  /**
-   * 
-   */
   @Override
   public int numItemAttributes() {
     return itemAttributes.numberOfColumns();
   }
 
-  /**
-   * 
-   */
   @Override
   public void train() {
     this.correlation = BinaryCosine.create(itemAttributes);
@@ -68,9 +61,6 @@ public class ItemAttributeKNN extends ItemKNN implements IItemAttributeAwareReco
       nearest_neighbors[i] = correlation.getNearestNeighbors(i, k);
   }
 
-  /**
-   * 
-   */
   @Override
   public String toString() {
     return "ItemAttributeKNN k=" + (k == Integer.MAX_VALUE ? "inf" : Integer.toString(k));

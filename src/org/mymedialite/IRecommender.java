@@ -17,7 +17,9 @@
 
 package org.mymedialite;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Generic interface for simple recommenders.
@@ -53,11 +55,23 @@ public interface IRecommender extends Cloneable {
   void saveModel(String filename) throws IOException;
 
   /**
+   * Save the model parameters to a PrintWriter
+   * @param filename the PrintWriter to write to
+   */
+  void saveModel(PrintWriter writer) throws IOException;
+  
+  /**
    * Get the model parameters from a file
    * @param filename the file to read from
    */
   void loadModel(String filename) throws IOException;
 
+  /**
+   * Get the model parameters from a BufferedReader
+   * @param filename the BufferedReader to read from
+   */
+  void loadModel(BufferedReader reader) throws IOException;
+  
   /** 
    * Return a string representation of the recommender
    * @return the class name and all hyperparameters, separated by space characters.

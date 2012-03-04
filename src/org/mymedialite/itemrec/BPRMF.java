@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.*;
 import java.util.*;
+
 import org.mymedialite.datatype.*;
 import org.mymedialite.io.IMatrixExtensions;
 import org.mymedialite.io.Model;
@@ -63,8 +64,8 @@ public class BPRMF extends MF {
    * 
    * TODO find out why fast sampling does not improve performance
    */
-  //public int fastSamplingMemoryLimit = 1024;
-  public int fastSamplingMemoryLimit = 0; // 1024;
+  //public int fastSamplingMemoryLimit = 1200;
+  public int fastSamplingMemoryLimit = 0;
 
   /** Sample positive observations with (true) or without (false) replacement */
   public boolean withReplacement = false;
@@ -140,7 +141,6 @@ public class BPRMF extends MF {
     itemBias = new double[maxItemID + 1];
   }
 
-  /** {@inheritDoc} */
   public void train() {
     initModel();
 
@@ -369,7 +369,7 @@ public class BPRMF extends MF {
     }
   }
 
-  /** {@inheritDoc} */
+  @Override
   public void addFeedback(int user_id, int item_id) {
     super.addFeedback(user_id, item_id);
     if (fastSampling)
@@ -377,10 +377,21 @@ public class BPRMF extends MF {
 
     // retrain
     retrainUser(user_id);
-    retrainItem(item_id);
+    // TODO uncomment below or implement isUpdateUser flag. 
+    //retrainItem(item_id);
   }
 
-  /** {@inheritDoc} */
+  @Override
+  public void addFeedback(int user_id, List<Integer> item_ids) {
+    super.addFeedback(user_id, item_ids);
+    if (fastSampling) createFastSamplingData(user_id);
+    
+    // retrain
+    retrainUser(user_id);
+    // TODO uncomment below or implement isUpdateUser flag. 
+    //retrainItem(item_id);
+  }
+  
   public void removeFeedback(int user_id, int item_id) {
     super.removeFeedback(user_id, item_id);
     if (fastSampling)
@@ -388,10 +399,10 @@ public class BPRMF extends MF {
 
     // retrain
     retrainUser(user_id);
-    retrainItem(item_id);
+    // TODO uncomment below or implement isUpdateUser flag. 
+    //retrainItem(item_id);
   }
 
-  /** {@inheritDoc} */
   public void addUser(int user_id) {
     super.addUser(user_id);
 
@@ -399,7 +410,6 @@ public class BPRMF extends MF {
     MatrixExtensions.rowInitNormal(userFactors, user_id, initMean, initStDev);
   }
 
-  /** {@inheritDoc} */
   public void addItem(int item_id) {
     super.addItem(item_id);
     itemFactors.addRows(item_id + 1);
@@ -410,7 +420,6 @@ public class BPRMF extends MF {
     this.itemBias = itemBias;
   }
 
-  /** {@inheritDoc} */
   public void removeUser(int user_id) {
     super.removeUser(user_id);
     if (fastSampling) {
@@ -421,7 +430,6 @@ public class BPRMF extends MF {
     userFactors.setRowToOneValue(user_id, 0.0);
   }
 
-  /** {@inheritDoc} */
   public void removeItem(int item_id) {
     super.removeItem(item_id);
     // TODO remove from fast sampling data structures
@@ -577,6 +585,8 @@ public class BPRMF extends MF {
   }
 
   public double predict(int user_id, int item_id) {
+    if (item_id >= itemBias.length)
+      throw new IllegalArgumentException("item_id is too big: " + item_id + ", itemBias.length: " + itemBias.length);
     return itemBias[item_id] + MatrixExtensions.rowScalarProduct(userFactors, user_id, itemFactors, item_id);
   }
 
@@ -593,19 +603,20 @@ public class BPRMF extends MF {
     IMatrixExtensions.writeMatrix(writer, itemFactors);
   }
 
-  /** { @inheritDoc } */
+  @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
     loadModel(reader);
     reader.close();
   }
 
-  /** { @inheritDoc } */
+  @Override
   public void loadModel(BufferedReader reader) throws IOException {
-    Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0, null));
+    Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0, null));    
     double[] item_bias = org.mymedialite.io.VectorExtensions.readVectorArray(reader);
+    
     Matrix<Double> item_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0, null));
-
+    
     if (user_factors.numberOfColumns() != item_factors.numberOfColumns())
       throw new IOException("Number of user and item factors must match: " + user_factors.numberOfColumns() + " != " + item_factors.numberOfColumns());
     if (item_bias.length != item_factors.dim1)
@@ -614,6 +625,8 @@ public class BPRMF extends MF {
     this.maxUserID = user_factors.numberOfRows() - 1;
     this.maxItemID = item_factors.numberOfRows() - 1;
 
+    System.out.println("Read BPR model users: " +  user_factors.numberOfRows() + " items: " + item_factors.numberOfRows() + " factors: " + user_factors.numberOfColumns() + " item_biases: " + item_bias.length);
+    
     // Assign new model.
     if (this.numFactors != user_factors.numberOfColumns()) {
       System.err.println("Set num_factors to " + user_factors.numberOfColumns());

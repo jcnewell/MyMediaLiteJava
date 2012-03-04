@@ -28,9 +28,6 @@ package org.mymedialite.itemrec;
  */
 public class WeightedItemAttributeKNN extends ItemAttributeKNN {
  
-  /**
-   * 
-   */
   @Override
   public double predict(int user_id, int item_id) {
     if ((user_id < 0) || (user_id > maxUserID))
@@ -49,9 +46,6 @@ public class WeightedItemAttributeKNN extends ItemAttributeKNN {
     }
   }
 
-  /**
-   * 
-   */
   @Override
   public String toString() {
     return "WeightedItemAttributeKNN k=" + (k == Integer.MAX_VALUE ? "inf" : Integer.toString(k));

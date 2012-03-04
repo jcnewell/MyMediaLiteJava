@@ -107,33 +107,36 @@ public abstract class KNN extends IncrementalRatingPredictor {
    */
   protected CorrelationMatrix correlation;
 
-  // TODO Check whether k value should be preserved k in the load/save methods below.
-  
-  /**
-   * 
-   */
   @Override
   public void saveModel(String filename) throws IOException {
     baseline_predictor.saveModel(filename + "-global-effects");
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
-    correlation.write(writer);
+    saveModel(writer);
     writer.flush();
     writer.close();
   }
 
-  /**
-   * 
-   */
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
+    correlation.write(writer);
+  }
+
   @Override
   public void loadModel(String filename) throws IOException {
     baseline_predictor.loadModel(filename + "-global-effects");
     if (ratings != null)
       baseline_predictor.setRatings(ratings);
 
-    BufferedReader reader = Model.getReader(filename, this.getClass());    
-    CorrelationMatrix correlation = CorrelationMatrix.readCorrelationMatrix(reader);
-    this.correlation = correlation;
+    BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
     reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
+    CorrelationMatrix correlation = CorrelationMatrix.readCorrelationMatrix(reader);
+    reader.close();
+    this.correlation = correlation;
   }
   
 }

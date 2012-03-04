@@ -163,13 +163,16 @@ public class BiPolarSlopeOne extends RatingPredictor {
     for(int i=0; i < maxUserID + 1; i++) user_average.add(null);
   }
 
-  /**
-   * 
-   */
+  @Override
   public void loadModel(String filename) throws IOException {
-    initModel();
-
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
+    initModel();
     double global_average = Double.parseDouble(reader.readLine());
 
     SkewSymmetricSparseMatrix diff_matrix_like = (SkewSymmetricSparseMatrix) IMatrixExtensions.readFloatMatrix(reader, this.diff_matrix_like);
@@ -186,22 +189,24 @@ public class BiPolarSlopeOne extends RatingPredictor {
     this.diff_matrix_dislike = diff_matrix_dislike;
     this.freq_matrix_dislike = freq_matrix_dislike;
     this.user_average = user_average;
-
   }
 
-  /**
-   * 
-   */
+  @Override
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    saveModel(writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
     writer.println(Double.toString(global_average));
     IMatrixExtensions.writeSparseMatrix(writer, diff_matrix_like);
     IMatrixExtensions.writeSparseMatrix(writer, freq_matrix_like);
     IMatrixExtensions.writeSparseMatrix(writer, diff_matrix_dislike);
     IMatrixExtensions.writeSparseMatrix(writer, freq_matrix_dislike);
     VectorExtensions.writeVector(writer, user_average);
-    writer.flush();
-    writer.close();
   }
   
 }

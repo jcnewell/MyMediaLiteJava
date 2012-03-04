@@ -17,6 +17,10 @@
 
 package org.mymedialite.ratingprediction;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 /**
  * Uses a constant rating value for prediction.
  * 
@@ -60,21 +64,18 @@ public class Constant extends IncrementalRatingPredictor {
     return constantRating;
   }
 
-  /**
-   * 
-   */
   @Override
   public void saveModel(String filename) { /* do nothing */ }
 
-  /**
-   * 
-   */
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException { /* do nothing */ }
+
   @Override
   public void loadModel(String filename) { /* do nothing */ }
 
-  /**
-   * 
-   */
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException { /* do nothing */ }
+  
   @Override
   public String toString() {
     return "Constant constant_rating=" + constantRating;

@@ -18,6 +18,7 @@
 
 package org.mymedialite.ratingprediction;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.mymedialite.data.IRatings;
@@ -29,16 +30,16 @@ import org.mymedialite.data.IRatings;
 public abstract class RatingPredictor implements IRatingPredictor {
 
   /** Maximum user ID */
-  public int maxUserID;
+  protected int maxUserID;
 
   /** Maximum item ID */
-  public int maxItemID;
+  protected int maxItemID;
 
   /** The maximum rating value */
-  public double maxRating;
+  protected double maxRating;
 
   /** The minimum rating value */
-  public double minRating;
+  protected double minRating;
 
 //  // TODO find clearer name for this
 //  /** true if users shall be updated when doing online updates */
@@ -50,6 +51,14 @@ public abstract class RatingPredictor implements IRatingPredictor {
   /** The rating data */
   protected IRatings ratings;
 
+  public int maxUserID() {
+    return maxUserID;
+  }
+
+  public int maxItemID() {
+    return maxItemID;
+  }
+  
   @Override
   public double getMaxRating() {
     return maxRating;
@@ -98,15 +107,6 @@ public abstract class RatingPredictor implements IRatingPredictor {
 //    maxUserID = ratings.maxUserID();
 //    maxItemID = ratings.maxItemID();
 //  }
-
-  /// <inheritdoc/>
-  public abstract void train();
-
-  /// <inheritdoc/>
-  public abstract void saveModel(String filename) throws IOException ;
-
-  /// <inheritdoc/>
-  public abstract void loadModel(String filename) throws IOException ;    
 
   /// <inheritdoc/>
   public boolean canPredict(int user_id, int item_id) {

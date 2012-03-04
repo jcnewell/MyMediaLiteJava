@@ -115,6 +115,13 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
   @Override
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    saveModel(writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
     writer.println(global_average);
     VectorExtensions.writeVector(writer, entity_averages);
     writer.flush();
@@ -124,6 +131,12 @@ public abstract class EntityAverage extends IncrementalRatingPredictor {
   @Override
   public void loadModel(String filename) throws IOException {
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
     this.global_average = Double.parseDouble(reader.readLine());   
     this.entity_averages = VectorExtensions.readVector(reader);
     reader.close();

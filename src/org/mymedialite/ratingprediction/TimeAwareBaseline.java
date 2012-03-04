@@ -18,7 +18,9 @@
 
 package org.mymedialite.ratingprediction;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -404,7 +406,17 @@ public class TimeAwareBaseline extends TimeAwareRatingPredictor implements IIter
   }
 
   @Override
+  public void saveModel(PrintWriter writer) throws IOException {
+    throw new UnsupportedOperationException(); 
+  }
+  
+  @Override
   public void loadModel(String filename) throws IOException {
+    throw new UnsupportedOperationException(); 
+  }
+
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
     throw new UnsupportedOperationException(); 
   }
   

@@ -36,6 +36,14 @@ public abstract class ItemRecommender implements IRecommender {
 
   /** The maximum item ID */
   protected int maxItemID;
+  
+  public int maxUserID() {
+    return maxUserID;
+  }
+
+  public int maxItemID() {
+    return maxItemID;
+  }
 
   /** The feedback data to be used for training */
   protected IPosOnlyFeedback feedback;

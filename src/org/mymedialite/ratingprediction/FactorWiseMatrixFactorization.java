@@ -254,6 +254,13 @@ public class FactorWiseMatrixFactorization extends RatingPredictor implements II
   public void saveModel(String filename) throws IOException {
     global_effects.saveModel(filename + "-global-effects");
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    saveModel(writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
     writer.println(num_learned_factors);
     IMatrixExtensions.writeMatrix(writer, userFactors);
     IMatrixExtensions.writeMatrix(writer, itemFactors);
@@ -270,6 +277,11 @@ public class FactorWiseMatrixFactorization extends RatingPredictor implements II
       global_effects.setRatings(ratings);
 
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  public void loadModel(BufferedReader reader) throws IOException {
     int num_learned_factors = Integer.parseInt(reader.readLine());
 
     Matrix<Double> user_factors = (Matrix<Double>) IMatrixExtensions.readDoubleMatrix(reader, new Matrix<Double>(0, 0));

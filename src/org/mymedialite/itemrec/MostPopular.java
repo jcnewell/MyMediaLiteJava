@@ -90,16 +90,16 @@ public class MostPopular extends IncrementalItemRecommender {
     }
   }
 
+  @Override
   public void loadModel(String filename) throws IOException {
-    System.out.println("MostPopular.loadModel()");
     BufferedReader reader = Model.getReader(filename, this.getClass());
     loadModel(reader);
     reader.close();
   }
   
+  @Override
   public void loadModel(BufferedReader reader) throws IOException {
     int size = Integer.parseInt(reader.readLine());
-    System.out.println("MostPopular size: " + size);
     List<Integer> view_count = new ArrayList<Integer>(size);
     
     String line;

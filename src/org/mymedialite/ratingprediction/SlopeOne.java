@@ -118,11 +118,16 @@ public class SlopeOne extends RatingPredictor {
         diff_matrix.set(i, j, diff_matrix.get(i, j) / freq_matrix.get(i, j));
   }
 
-  /**
-   */
+  @Override
   public void loadModel(String filename) throws IOException {
     initModel();
     BufferedReader reader = Model.getReader(filename, this.getClass());
+    loadModel(reader);
+    reader.close();
+  }
+  
+  @Override
+  public void loadModel(BufferedReader reader) throws IOException {
     double global_average = Double.parseDouble(reader.readLine());
 
     SkewSymmetricSparseMatrix diff_matrix = (SkewSymmetricSparseMatrix) IMatrixExtensions.readFloatMatrix(reader, this.diff_matrix);
@@ -136,10 +141,16 @@ public class SlopeOne extends RatingPredictor {
 
   }
 
-  /**
-   */
+  @Override
   public void saveModel(String filename) throws IOException {
     PrintWriter writer = Model.getWriter(filename, this.getClass(), VERSION);
+    saveModel(writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Override
+  public void saveModel(PrintWriter writer)  throws IOException {
     writer.println(Double.toString(global_average));
     IMatrixExtensions.writeSparseMatrix(writer, diff_matrix);
     IMatrixExtensions.writeSparseMatrix(writer, freq_matrix);
