@@ -117,10 +117,11 @@ public class Items {
       candidate_items = Utils.intersect(test.allItems(), training.allItems());
     } else if(candidate_item_mode.equals(CandidateItems.UNION)) {
       candidate_items = Utils.union(test.allItems(), training.allItems());
+    } else if(candidate_item_mode.equals(CandidateItems.EXPLICIT)) {
+      if (candidate_items == null)
+        throw new IllegalArgumentException("candidate_items == null!");
     }
-    
-    if (candidate_items == null)
-      throw new IllegalArgumentException("candidate_items == null!");
+
     if (test_users == null)
       test_users = test.allUsers();
     

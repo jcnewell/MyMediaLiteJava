@@ -44,6 +44,7 @@ import org.mymedialite.itemrec.IIncrementalItemRecommender;
 import org.mymedialite.itemrec.ItemRecommender;
 import org.mymedialite.util.Handlers;
 import org.mymedialite.util.Memory;
+import org.mymedialite.util.Random;
 import org.mymedialite.util.Recommender;
 import org.mymedialite.util.Utils;
 
