@@ -30,7 +30,7 @@ import org.mymedialite.itemrec.ItemRecommender;
  */
 public class Random extends ItemRecommender {
 
-  org.mymedialite.util.java.util.Random random;
+  org.mymedialite.util.Random random;
   
   public Random() { 
     random = new org.mymedialite.util.Random();
